@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>EazyHelpers</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	{% load static %}
+	<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+
+	<div class="wrapper d-flex align-items-stretch">
+		<nav id="sidebar">
+			<div class="custom-menu">
+				<button type="button" id="sidebarCollapse" class="btn btn-primary">
+					<i class="fa fa-bars"></i>
+					<span class="sr-only">Toggle Menu</span>
+				</button>
+			</div>
+			<div class="p-4">
+				<h1>
+					<a href="{% url 'home' %}" class="logo">EzyHelpers
+						<span>{{request.user}}</span>
+						<span>{% if request.user.is_superuser %}SUPERUSER{% else %}EMPLOYEE{% endif %}</span>
+					</a>
+				</h1>
+
+				{% with request.resolver_match.url_name as url_name %} {% comment %} for get url name {% endcomment %}
+				<ul class="list-unstyled components mb-5">
+					<!--Dashboard url-->
+					<li class="{% if url_name == 'super_user_dashboard' or url_name == 'employee_dashboard' %}active{% endif %}">
+
+						<a href="{% url 'home' %}"><span class="fa fa-home mr-3"></span> Dashboard</a>
+					</li>
+					
+					{% if request.user.is_superuser %}
+
+					<!-- superuser urls  -->
+					<li
+						class="{% if url_name == 'superuser_user_create' or url_name == 'superuser_user_list' %}active{% endif %}">
+						<a href="{% url 'superuser_user_list' %}"><span class="fa fa-user mr-3"></span> User</a>
+					</li>
+					{% endif %}
+
+					
+					<!-- normal user  -->
+					{% if not request.user.is_superuser %}
+					  
+
+					{% endif %}
+
+					<!--logout url -->
+					<li>
+						<a href="{% url 'logout' %}"><span class="fa-solid fa-power-off mr-3"></span> Logout</a>
+					</li>
+
+				</ul>
+				{% endwith %}
+
+		</nav>
+
+		<!-- Page Content  -->
+		<div id="content" class="p-4 p-md-5 pt-5">
+
+			<!-- Nav for the user details dropdown   -->
+			<nav class="shadow-sm navbar-light bg-light">
+				<ul class="nav nav-tabs justify-content-end">
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							<i class="fa-solid fa-user"></i> {{request.user}} 
+						</a>
+						<div class="dropdown-menu">
+							<!-- profile  -->
+							<a class="dropdown-item" href="{% url 'profile' request.user.id %}"><i class="fa-solid fa-address-card mr-2"></i> my profile</a>
+							<!-- logout  -->
+							<a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-solid fa-power-off mr-2"></i> logout</a>
+						</div>
+					</li>
+				
+				</ul>
+			</nav>
+				
+			<!-- Page body  -->
+			{% block body %}
+
+
+
+			{% endblock body %}
+		</div>
+	</div>
+
+	<script src="{% static 'backnd.js' %}"></script>
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/popper.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>

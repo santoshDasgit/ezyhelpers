@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block body %}
+
+<!-- Navigate display  -->
+<section class="super_user_dash shadow-sm rounded p-2">
+    <div class='dash-box'>
+        <h1> SUPERUSER </h1>
+        <p>User / User creation form</p>
+    </div>
+</section>
+
+		<!-- If any message show  -->
+    {% include "msg.html" %}
+
+<section class='user_update_fm'>
+
+    <form action="" method="post" class="shadow p-3">
+        {% csrf_token %}
+
+        <label for="">Email </label>
+        <input type="email" class='form-control' value="{{user.email}}" name='email' required>
+
+        <label for="">First name</label>
+        <input type="text" class='form-control' value="{{user.first_name}}" name='first_name' required>
+
+        <label for="">Last name</label>
+        <input type="text" class='form-control' value="{{user.last_name}}" name='last_name'>
+
+     
+
+        <button type="submit" class="btn btn-primary my-3">Save</button>
+
+       <!-- back button -->
+        <a href="{% url 'superuser_user_list' %}" class='btn btn-secondary'>Back</a>
+    </form>
+
+</section>
+
+
+
+
+{% endblock body %}

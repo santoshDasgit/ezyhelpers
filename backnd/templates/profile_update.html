@@ -1,0 +1,32 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+		<!-- If any message show  -->
+        {% include "msg.html" %}
+
+        <section class='profile_update_fm'>
+        
+            <form action="" method="post" class="shadow p-3">
+                {% csrf_token %}
+        
+                <label for="">Email </label>
+                <input type="email" class='form-control' value="{{email}}" name='email' readonly  required>
+        
+                <label for="">First name</label>
+                <input type="text" class='form-control' value="{{request.user.first_name}}" name='first_name'  required>
+        
+                <label for="">Last name</label>
+                <input type="text" class='form-control' value="{{request.user.last_name}}" name='last_name'  >
+        
+             
+              <!-- profile_update  -->
+                <button type="submit" class="btn btn-primary my-3">Save</button>
+        
+               <!-- back button -->
+                <a href="{% url 'home' %}" class='btn btn-secondary'>Back</a>
+            </form>
+        
+        </section>
+
+{% endblock body %}

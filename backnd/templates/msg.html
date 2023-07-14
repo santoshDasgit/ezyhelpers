@@ -1,0 +1,14 @@
+{% if messages %}
+{% for i in messages %}
+<div class="alert {% if i.tags == 'error' %}
+alert-danger
+{% else %}
+alert-{{i.tags}}  {% endif %} container" role="alert">
+    <div class="w-100"> <i class="fa-solid fa-xmark login_cross"
+            onclick="this.parentElement.parentElement.style.display = 'none'" style="width: fit-content; 
+    display: block;
+    margin-left: auto;"></i></div>
+    {{i|safe}}
+</div>
+{% endfor %}
+{% endif %}    

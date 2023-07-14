@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+
+{% block body %}
+  <!--form-->
+<form action="" method="post" class='shadow p-3'>
+
+     <!--message-->
+     {% include "msg.html" %}
+
+    <h3>Lead add form</h3>
+    {% csrf_token %}
+
+    <div class="row">
+        <!--form object-->
+        {% for i in fm %}
+
+         <!--if some error!-->
+        {% if i.errors %}
+        <label for="" class='text-danger'>*{{i.errors}}</label>
+        {% endif %}
+
+        <!--form input & labels-->
+        <div class="col-md-4">
+            {{i.label}}
+            {{i}}
+        </div>
+
+        {% endfor %}
+    </div>
+    <h5>Preferred Language</h5>
+    <input type="checkbox" name="language" value="hindi" class='ml-2'>Hindi
+    <input type="checkbox" name="language" value="english"class='ml-2'>English
+    <input type="checkbox" name="language" value="kanada"class='ml-2'>Kanada
+    <br>
+    <label for="">Other</label>
+    <input type="text" name='language'>
+
+
+    <h5 class='mt-3'>aAdditional Details</h5>
+    <input type="checkbox" name="ad" value="Pet-friendly"class='ml-2'>Pet friendly
+    <input type="checkbox" name="ad" value="non-smoker"class='ml-2'>Non-smoker
+    <br>
+    <label for="">Other</label> 
+    <input type="text" name='ad'>
+    <br>
+    <button class='submit btn btn-primary my-2'>Submit</button>
+</form>
+
+
+{% endblock body %}

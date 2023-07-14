@@ -1,0 +1,72 @@
+
+
+/* super/dashboard */
+
+.super_user_dash .dash-box h1{
+text-align: left;
+font-weight: 200;
+}
+
+/* super/user_creation_fm */
+
+/* Style the container for inputs */
+.user_creation_fm .container {
+    background-color: #f1f1f1;
+    padding: 20px;
+  }
+  
+  /* The message box is shown when the user clicks on the password field */
+.user_creation_fm  #message {
+    display:none;
+    background: #f1f1f1;
+    color: #000;
+    position: relative;
+    padding: 20px;
+    margin-top: 10px;
+  }
+  
+.user_creation_fm  #message p {
+    padding: 10px 35px;
+    font-size: 18px;
+  }
+  
+  /* Add a green text color and a checkmark when the requirements are right */
+.user_creation_fm  .valid {
+    color: green;
+  }
+  
+.user_creation_fm  .valid:before {
+    position: relative;
+    left: -35px;
+    content: "✔";
+  }
+  
+  /* Add a red text color and an "x" when the requirements are wrong */
+.user_creation_fm  .invalid {
+    color: red;
+  }
+  
+.user_creation_fm  .invalid:before {
+    position: relative;
+    left: -35px;
+    content: "✖";
+  }
+
+  /* super user_list.html */
+  .user_list{
+    width: 100%;
+    overflow-x: scroll;
+  }
+
+  /* employee/dashboard.html  */
+  .employee_user_dash .dash-box h1{
+    text-align: left;
+    font-weight: 200;
+    }
+
+/* lead_list.html  */
+
+.lead_list{
+  height: 40vh;
+  overflow-y: scroll;
+}
