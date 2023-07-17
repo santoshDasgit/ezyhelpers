@@ -30,7 +30,10 @@ urlpatterns = [
     path('profile_update/<id>/<email>',ProfileUpdateView,name='profile_update'),
     path('email_validate_profile/<id>/<url>',EmailVerifyProfileView,name='email_validate_profile'),
     path('password_change/',PasswordChangedView,name='password_change'),
-    path('lead_add/',LeadAdd,name='lead_add'),
+    path('lead_add/',LeadAddView,name='lead_add'),
+    path('lead_view/<id>',LeadDetailsView,name='lead_view'),
+    path('lead_status_update/<id>',LeadStatusUpdateView,name='lead_status_update'),
+    path('excel_file_lead_upload',ExcelFileLeadFileView,name='excel_file_lead_upload'),
 
   
 

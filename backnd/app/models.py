@@ -47,7 +47,7 @@ CONTACT_STATUS = (
     ('pending','Pending'),
     ('first_contact','First Contact'),
     ('follow_up','Follow Up'),
-    ('failed','Field'),
+    ('failed','Failed'),
     ('conformed','Conformed'),
 )
 
@@ -72,6 +72,8 @@ class LeadModel(models.Model):
     country = models.CharField(max_length=100,choices=COUNTRY,null=False,blank=False)
     additional_comment = models.TextField(blank=True,null=True)
 
+    def __str__(self) -> str:
+        return self.first_name
 # Lead languages
 class LeadPreferredLanguageModel(models.Model):
     lead = models.ForeignKey(LeadModel,on_delete=models.CASCADE)

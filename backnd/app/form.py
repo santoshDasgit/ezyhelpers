@@ -13,8 +13,8 @@ class LeadForm(forms.ModelForm):
             'last_name': forms.DateTimeInput(attrs={'class': 'form-control my-2'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control my-2'}),
             'middle_name': forms.TextInput(attrs={'class': 'form-control my-2'}),
-            'primary_phone': forms.NumberInput(attrs={'class': 'form-control my-2','title':"Enter valid number",'pattern':"[1-9]{1}[0-9]{9}"}),
-            'secondary_phone': forms.NumberInput(attrs={'class': 'form-control my-2','title':"Enter valid number",'pattern':"[1-9]{1}[0-9]{9}"}),
+            'primary_phone': forms.TextInput(attrs={'class': 'form-control my-2','maxlength':'10','pattern':'[1-9]{1}[0-9]{9}', 'title':'Please enter exactly 10 digits'}),
+            'secondary_phone': forms.TextInput(attrs={'class': 'form-control my-2','maxlength':'10','pattern':'[1-9]{1}[0-9]{9}','title':'Please enter exactly 10 digits'}),
             'email_id': forms.EmailInput(attrs={'class': 'form-control my-2'}),
             'street': forms.TextInput(attrs={'class': 'form-control my-2'}),
             'city': forms.TextInput(attrs={'class': 'form-control my-2'}),
@@ -27,7 +27,15 @@ class LeadForm(forms.ModelForm):
            
           
         }
-        # labels = {
-        #     'lead_id':'',
-        #     'contact_status':''
-        # }
+        labels = {
+            'first_name':"first name <b class='text-danger'>*</b>",
+            'last_name':"last name <b class='text-danger'>*</b>",
+            'primary_phone':"Primary Phone <b class='text-danger'>*</b>",
+             'email_id':"Email id <b class='text-danger'>*</b>",
+             'street':"Street <b class='text-danger'>*</b>",
+             'city':"City <b class='text-danger'>*</b>",
+            'zipcode':"Zipcode <b class='text-danger'>*</b>",
+            'state':"State <b class='text-danger'>*</b>",
+            'country':"Country <b class='text-danger'>*</b>",
+        }
+

@@ -12,6 +12,8 @@ import random
 from app.form import *
 import hashlib
 import random
+from app.resources import LeadModelResources
+from tablib import Dataset
 
 # Home page 
 def HomeView(request):
@@ -31,7 +33,7 @@ def LoginView(request):
     # if user not login 
     if not request.user.is_authenticated:
         if request.method == "POST":
-            username = request.POST["username"]
+            username = request.POST["username"].strip()
             password = request.POST["password"]
             
 
@@ -233,7 +235,7 @@ def generate_id(id):
 
 # lead data inserted
 @login_required
-def LeadAdd(request):
+def LeadAddView(request):
     fm = LeadForm()
 
     if request.method == "POST":
@@ -270,6 +272,78 @@ def LeadAdd(request):
     return render(request,'lead_add.html',data)
 
 
+# Lead all details showing 
+@login_required
+def LeadDetailsView(request,id):
+    lead = LeadModel.objects.get(id = id)
+    data = {
+      'lead':lead,
+      'language':LeadPreferredLanguageModel.objects.filter(lead = lead),
+      'additional_details':LeadAdditionalDetailsModel.objects.filter(lead=lead)
+    }
+    return render(request,'lead_view.html',data)
+
+
+# lead status update logic 
+@login_required
+def LeadStatusUpdateView(request,id):
+    if request.method == 'POST':
+        lead_status_inp = request.POST['lead-status-inp']
+        lead = LeadModel.objects.get(id = id)
+        lead.lead_status = lead_status_inp
+        lead.save()
+    return redirect('home')
+
+
+
+
+
+# excel file through lead create 
+@login_required
+def ExcelFileLeadFileView(request):
+    if request.method == 'POST':
+        lead_resources = LeadModelResources()
+        data_set = Dataset()
+        myfile = request.FILES['myfile']
+
+        # check excel file or not!
+        if not myfile.name.endswith('xlsx'):
+            messages.error(request,'Excel file only allow!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            try:
+                 # all excel data store in 'excel_data' in form of table 
+                excel_data =data_set.load(myfile.read(),format='xlsx')
+                for i in excel_data:
+                    lead = LeadModel(
+                        first_name = i[0],
+                        last_name = 'NULL',
+                        primary_phone = int(i[1]),
+                        email_id = i[2],
+                        street = 'NULL STREET',
+                        city = i[3],
+                        zipcode = 7540065,
+                        state = "NULL STATE",
+                        country = 'NULL COUNTRY'
+
+                    )
+
+                    lead.save()
+                    lead.lead_id = generate_id(lead.pk) # lead id generate and store it 
+                    lead.save()
+
+                # if all right then success message 
+                messages.success(request,'file upload successful!')
+            except:
+                # wrong message
+                messages.error(request,'Something error happen!')
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+    return render(request,'lead_excel.html')
+            
 
 
 
