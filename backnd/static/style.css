@@ -67,6 +67,6 @@ font-weight: 200;
 /* lead_list.html  */
 
 .lead_list{
-  height: 40vh;
+  height: 50vh;
   overflow-y: scroll;
 }

@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+{% block body %}
+
+<!-- message --> 
+{% include "msg.html" %}
+
+<!--Excel file upload-->
+
+<h1 class='text-center'><u><i>upload excel files</i></u></h1>
+
+<form action="{% url 'excel_file_lead_upload' %}" class='border p-3'  method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+   <h6>Upload excel file</h6>
+   <input type="file" name='myfile' required>
+   <button type='submit' class='btn btn-info' >Upload</button>
+   
+   <!--back button-->
+   <a href="{% url 'home' %}" class='btn btn-secondary'>Back</a>
+</form>
+</section>
+{% endblock body %}

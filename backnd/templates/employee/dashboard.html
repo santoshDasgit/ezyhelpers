@@ -13,8 +13,9 @@
 <!--lead-->
 <section class='lead'>
     <nav class="navbar navbar-light bg-light shadow-sm">
-        <form class="form-inline">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <form class="form-inline" method='post'>
+            {% csrf_token %}
+            <input class="form-control mr-sm-2" type="search" name='search' placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
         <button class='btn btn-primary' data-toggle="modal" data-target="#exampleModalCenter">Add</button>
@@ -36,6 +37,7 @@
                 <div class="modal-body justify-content-between w-100">
                     <a href="{% url 'lead_add' %}" class='btn btn-primary mr-2'>Lead</a>
                     <a href="#" class='btn btn-primary'>Helper</a>
+                    <a href="{% url 'excel_file_lead_upload' %}" class='btn btn-primary'>Lead(Excel)</a>
                 </div>
                
             </div>
@@ -43,7 +45,7 @@
     </div>
 
    <!-- lisd list -->
-   <section class='lead_list'>
+   <section class='lead_list shadow p-2'>
     <table class="table">
         <thead>
           <tr>
@@ -57,10 +59,26 @@
             <!--Getting data from Lead-->
             {% for i in lead_list %}
             <tr>
-                <th scope="row">{{i.first_name}}</th>
+                <th scope="row">
+                    <i class="fa-solid fa-user"></i> 
+                    <!--Url for lead details-->
+                    <a href="{% url 'lead_view' i.id %}">{{i.first_name|capfirst}}</a>
+                </th>
                 <td>{{i.lead_id}}</td>
                 <td>{{i.primary_phone}}</td>
-                <td>{{i.lead_status}}</td>
+                <td>
+                    <form action="{% url 'lead_status_update' i.id %}" class="lead-status-fm" method="post">
+                        {% csrf_token %}
+                        <select name="lead-status-inp" class='form-control lead-status-inp'>
+                          <option value="pending" {% if i.lead_status == "pending" %} selected {% endif %}>Pending</option>
+                          <option value="first_contact" {% if i.lead_status == 'first_contact' %} selected {% endif %}>First Contact
+                          </option>
+                          <option value="follow_up" {% if i.lead_status == 'follow_up' %} selected {% endif %}>Follow Up</option>
+                          <option value="failed" {% if i.lead_status == 'failed' %} selected {% endif %}>Failed</option>
+                          <option value="conformed" {% if i.lead_status == 'conformed' %} selected {% endif %}>Conformed</option>
+                        </select>
+                      </form>
+                </td>
               </tr>
             {% endfor %}
         </tbody>
@@ -68,4 +86,15 @@
 </section>
 </section>
 
+<script>
+    let lead_status_inp = document.querySelectorAll('.lead-status-inp')
+    let lead_status_fm = document.querySelectorAll('.lead-status-fm')
+  
+    for (let i = 0; i < lead_status_inp.length; i++) {
+  
+      lead_status_inp[i].onchange = function () {
+        lead_status_fm[i].submit()
+      }
+    }
+  </script>
 {% endblock body %}
