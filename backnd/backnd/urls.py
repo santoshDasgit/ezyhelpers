@@ -30,10 +30,14 @@ urlpatterns = [
     path('profile_update/<id>/<email>',ProfileUpdateView,name='profile_update'),
     path('email_validate_profile/<id>/<url>',EmailVerifyProfileView,name='email_validate_profile'),
     path('password_change/',PasswordChangedView,name='password_change'),
+
+    path('helper_list',HelperListViews,name='helper_list'),
     path('helper_add/',HelperAddView,name='helper_add'),
     path('helper_view/<id>',HelperDetailsView,name='helper_view'),
     path('helper_status_update/<id>',HelperStatusUpdateView,name='helper_status_update'),
     path('excel_file_helper_upload',ExcelFileHelperFileView,name='excel_file_helper_upload'),
+
+
     path('lead_list',LeadList,name='lead_list'),
     path('lead_details/<no>',LeadDetailsView,name='lead_details'),
     path('lead_edit/<no>',LeadEditView,name='lead_edit'),

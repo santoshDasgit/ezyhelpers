@@ -8,17 +8,25 @@
     <form class="form-inline" method="POST">
       <input type="hidden" name="csrfmiddlewaretoken"
         value="0ifKCxlesfEJyMoTGQtrHgYAKcr4g88M60ZMKErZqIz9Q9cqkuotM2McygB8jVHl">
-      <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" id="filterInput"
+        aria-label="Search">
+      <!-- Select column to filter -->
+      <select id="filterColumn" class="form-control">
+        <option value="all">All Columns</option>
+        <option value="0">Name</option>
+        <option value="1">phone</option>
+        <option value="2">email</option>
+        <option value="3">address</option>
+      </select>
     </form>
     <a href="{% url 'lead_add' %}" class="btn btn-primary">Add</a>
   </nav>
 
-    <!--messages-->
-    {% include "msg.html" %}
+  <!--messages-->
+  {% include "msg.html" %}
 
   <div class="table-div p-3 shadow">
-    <table class="table">
+    <table class="table" id="data-table">
       <thead class="thead-dark">
         <tr>
           <th scope="col">No.</th>
@@ -32,7 +40,7 @@
       <tbody>
         {% for i in data %}
 
-        <tr>
+        <tr id="itemList">
           <th scope="row">{{forloop.counter}}</th>
           <td><a href="{% url 'lead_details' forloop.counter %}">{{i.name}}</a></td>
           <td>{{i.phone}}</td>
@@ -44,13 +52,14 @@
                 class="fa-solid fa-pen-to-square"></i></a>
 
             <!--delete-->
-            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#exampleModal{{forloop.counter}}">
+            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+              data-target="#exampleModal{{forloop.counter}}">
               <i class="fa-solid fa-trash"></i>
             </button>
 
             <!-- Modal -->
-            <div class="modal fade" id="exampleModal{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-              aria-hidden="true">
+            <div class="modal fade" id="exampleModal{{forloop.counter}}" tabindex="-1" role="dialog"
+              aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -65,7 +74,7 @@
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <a href="{% url 'lead_delete' forloop.counter %}" class="btn btn-danger">Remove</a>
-                    
+
                   </div>
                 </div>
               </div>
@@ -79,4 +88,44 @@
     </table>
   </div>
 </section>
+
+<script>
+  // Get the input element, table, and select element
+  const filterInput = document.getElementById('filterInput');
+  const table = document.getElementById('data-table');
+  const filterColumnSelect = document.getElementById('filterColumn');
+
+  // Add event listener to the input and select elements to trigger the filtering
+  filterInput.addEventListener('keyup', filterTable);
+  filterColumnSelect.addEventListener('change', filterTable);
+
+  function filterTable() {
+    const filterValue = filterInput.value.toLowerCase();
+    const filterColumnIndex = parseInt(filterColumnSelect.value);
+
+    const rows = table.getElementsByTagName('tr');
+    for (let i = 1; i < rows.length; i++) {
+      const cells = rows[i].getElementsByTagName('td');
+      let rowVisible = false;
+
+      for (let j = 0; j < cells.length; j++) {
+        const cellText = cells[j].textContent.toLowerCase();
+        if (filterColumnIndex === 0 || filterColumnIndex === j) {
+          if (cellText.includes(filterValue)) {
+            rowVisible = true;
+            break;
+          }
+        }
+      }
+
+      // Show/hide rows based on the filter value
+      if (rowVisible) {
+        rows[i].style.display = '';
+      } else {
+        rows[i].style.display = 'none';
+      }
+    }
+  }
+</script>
+
 {% endblock body %}

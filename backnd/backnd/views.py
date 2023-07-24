@@ -15,6 +15,7 @@ import random
 from app.resources import HelperModelResources
 from tablib import Dataset
 import gspread
+from django.db.models import Q
 
 # Home page 
 def HomeView(request):
@@ -234,6 +235,28 @@ def generate_id(id):
     return hex_digit[:10]
 
 
+
+# Dashboard or home of a superuser 
+@login_required
+def HelperListViews(request):
+
+    helper = HelperModel.objects.all().order_by('-id') # helper model object
+
+    # post for data searching propose
+    if request.method == 'POST':
+        search = request.POST['search'].strip() # strip for remove space from both of sides
+
+        # according to input data is filtering 
+        helper = HelperModel.objects.filter(Q(helper_id__icontains = search) | Q(first_name__icontains = search) | Q(email_id__icontains = search) | Q(primary_phone__icontains = search))
+            
+
+    # all data sent on html file in object format 
+    data = {
+        'helper_list': helper
+    }
+    return render(request,"helper_list.html",data)
+
+
 # Helper data inserted
 @login_required
 def HelperAddView(request):
@@ -248,7 +271,7 @@ def HelperAddView(request):
         # language required condition 
         if language == ['']:
             messages.error(request,'* Preferred Language required')
-        else:
+        else: 
             fm = HelperForm(request.POST)
             if fm.is_valid():
                 data = fm.save()
@@ -420,7 +443,6 @@ def LeadEditView(request,no):
         row_num = int(no)+1
         values_list = current_sheet.row_values(row_num)
 
-        print('==================>>',values_list)
         data = {
             'name' : values_list[0],
             'phone' : values_list[1],
@@ -482,6 +504,7 @@ def LeadDeleteView(request,no):
          # exception handle 
         messages.error('Data not to be deleted something error try again!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 # data insert into lead sheet 
 @login_required

@@ -38,9 +38,9 @@
 
 
 					<!--common urls-->
-					<li class="{% if url_name == 'super_user_dashboard' or url_name == 'employee_dashboard' %}active{% endif %}">
+					<li class="{% if url_name == 'helper_list' or url_name == 'helper_add' or url_name == 'excel_file_helper_upload' or url_name == 'helper_view'  %}active{% endif %}">
 
-						<a href="{% url 'home' %}"><i class="fa-solid fa-person-shelter mr-3"></i> Helpers</a>
+						<a href="{% url 'helper_list' %}"><i class="fa-solid fa-person-shelter mr-3"></i> Helpers</a>
 					</li>
 					<li class="{% if url_name == 'lead_list' or url_name == 'lead_add' or url_name == 'lead_edit'  %}active{% endif %}">
 
@@ -52,7 +52,7 @@
 
 					<!-- superuser urls  -->
 					<li
-						class="{% if url_name == 'superuser_user_create' or url_name == 'superuser_user_list' %}active{% endif %}">
+						class="{% if url_name == 'superuser_user_create' or url_name == 'superuser_user_list' or url_name == 'superuser_user_update' %}active{% endif %}">
 						<a href="{% url 'superuser_user_list' %}"><span class="fa fa-user mr-3"></span> User</a>
 					</li>
 					{% endif %}
