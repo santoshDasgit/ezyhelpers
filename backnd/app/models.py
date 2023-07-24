@@ -2,7 +2,7 @@ from django.db import models
 
 
 
-# <<-----------------------------------------Lead models ----------------------------------------->>
+# <<-----------------------------------------Helper models ----------------------------------------->>
 
 # state 
 STATE = (
@@ -51,10 +51,10 @@ CONTACT_STATUS = (
     ('conformed','Conformed'),
 )
 
-class LeadModel(models.Model):
+class HelperModel(models.Model):
     # model id 
-    lead_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
-    lead_status = models.CharField(max_length=20,choices=CONTACT_STATUS,default='pending')
+    helper_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
+    helper_status = models.CharField(max_length=20,choices=CONTACT_STATUS,default='pending')
 
     # personal details
     first_name = models.CharField(max_length=100,null=False,blank=False)
@@ -74,12 +74,18 @@ class LeadModel(models.Model):
 
     def __str__(self) -> str:
         return self.first_name
-# Lead languages
-class LeadPreferredLanguageModel(models.Model):
-    lead = models.ForeignKey(LeadModel,on_delete=models.CASCADE)
+# Helper languages
+class HelperPreferredLanguageModel(models.Model):
+    helper = models.ForeignKey(HelperModel,on_delete=models.CASCADE)
     language = models.CharField(max_length=100)
+    def __str__(self):
+        return self.language
 
-class LeadAdditionalDetailsModel(models.Model):
-    lead = models.ForeignKey(LeadModel,on_delete=models.CASCADE)
+class HelperAdditionalDetailsModel(models.Model):
+    helper = models.ForeignKey(HelperModel,on_delete=models.CASCADE)
     additional_details = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.additional_details
+    
 

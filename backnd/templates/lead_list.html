@@ -1,0 +1,82 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+<section class='lead-list'>
+
+  <!--nav-->
+  <nav class="navbar navbar-light bg-light shadow-sm">
+    <form class="form-inline" method="POST">
+      <input type="hidden" name="csrfmiddlewaretoken"
+        value="0ifKCxlesfEJyMoTGQtrHgYAKcr4g88M60ZMKErZqIz9Q9cqkuotM2McygB8jVHl">
+      <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <a href="{% url 'lead_add' %}" class="btn btn-primary">Add</a>
+  </nav>
+
+    <!--messages-->
+    {% include "msg.html" %}
+
+  <div class="table-div p-3 shadow">
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">No.</th>
+          <th scope="col">Name</th>
+          <th scope="col">Phone</th>
+          <th scope="col">Email</th>
+          <th scope="col">Address</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in data %}
+
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="{% url 'lead_details' forloop.counter %}">{{i.name}}</a></td>
+          <td>{{i.phone}}</td>
+          <td>{{i.email}}</td>
+          <td>{{i.addr}}</td>
+          <td>
+            <!--edit-->
+            <a href="{% url 'lead_edit' forloop.counter %}" class="btn btn-sm btn-primary"><i
+                class="fa-solid fa-pen-to-square"></i></a>
+
+            <!--delete-->
+            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#exampleModal{{forloop.counter}}">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <span class="text text-danger"><b>Conform remove this data!</b></span>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="{% url 'lead_delete' forloop.counter %}" class="btn btn-danger">Remove</a>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+
+
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock body %}

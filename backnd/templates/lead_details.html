@@ -1,0 +1,43 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+<!--messages-->
+{% include "msg.html" %}
+
+<table>
+    <thead>
+       <tr>
+        <th>name</th>
+        <th><u>details</u></th>
+       </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td>Lead name : </td>
+            <td><b>{{name}}</b></td>
+        </tr>   
+        
+        
+        <tr>
+            <td>Phone no. : </td>
+            <td><b>{{phone}}</b></td>
+        </tr> 
+
+        
+        <tr>
+            <td>Lead Email : </td>
+            <td><b>{{email}}</b></td>
+        </tr> 
+
+        
+        <tr>
+            <td>Lead adderss : </td>
+            <td><b>{{addr}}</b></td>
+        </tr> 
+    </tbody>
+</table>
+
+<a href="{% url 'lead_list' %}" class='btn btn-secondary my-3'>Back</a>
+{% endblock body %}

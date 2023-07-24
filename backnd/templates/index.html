@@ -35,10 +35,18 @@
 				{% with request.resolver_match.url_name as url_name %} {% comment %} for get url name {% endcomment %}
 				<ul class="list-unstyled components mb-5">
 					<!--Dashboard url-->
+
+
+					<!--common urls-->
 					<li class="{% if url_name == 'super_user_dashboard' or url_name == 'employee_dashboard' %}active{% endif %}">
 
-						<a href="{% url 'home' %}"><span class="fa fa-home mr-3"></span> Dashboard</a>
+						<a href="{% url 'home' %}"><i class="fa-solid fa-person-shelter mr-3"></i> Helpers</a>
 					</li>
+					<li class="{% if url_name == 'lead_list' or url_name == 'lead_add' or url_name == 'lead_edit'  %}active{% endif %}">
+
+						<a href="{% url 'lead_list' %}"><span class="fa-solid fa-users mr-3"></span> Lead</a>
+					</li>
+					
 					
 					{% if request.user.is_superuser %}
 
@@ -56,10 +64,6 @@
 
 					{% endif %}
 
-					<!--logout url -->
-					<li>
-						<a href="{% url 'logout' %}"><span class="fa-solid fa-power-off mr-3"></span> Logout</a>
-					</li>
 
 				</ul>
 				{% endwith %}

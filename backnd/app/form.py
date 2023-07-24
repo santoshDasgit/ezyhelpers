@@ -1,9 +1,9 @@
 from django import forms
 from .models import *
 
-class LeadForm(forms.ModelForm):
+class HelperForm(forms.ModelForm):
     class Meta:
-        model = LeadModel
+        model = HelperModel
         fields = ['first_name','middle_name','last_name','primary_phone','secondary_phone',
                   'email_id','street','city','zipcode','state','country','additional_comment'
                   

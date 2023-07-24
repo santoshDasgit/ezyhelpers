@@ -2,53 +2,40 @@
 
 {% block body %}
 
+<!--messages-->
+{% include "msg.html" %}
 
-<section class='lead-add shadow'>
-  <!--form-->
-  <form action="" method="post" class="border p-2">
-
-    <!--message-->
-    {% include "msg.html" %}
-
-   <h3>Lead add form</h3>
-   {% csrf_token %}
-
-   <div class="row">
-       <!--form object-->
-       {% for i in fm %}
-
-        <!--if some error!-->
-       {% if i.errors %}
-       <label for="" class='text-danger'>*{{i.errors}}</label>
-       {% endif %}
-
-       <!--form input & labels-->
-       <div class="col-md-4">
-           {{i.label|safe}}
-           {{i}}
-       </div>
-
-       {% endfor %}
-   </div>
-   <h5>Preferred Language <b class='text-danger'>*</b></h5>
-   <input type="checkbox" name="language" value="hindi" class='ml-2' >Hindi
-   <input type="checkbox" name="language" value="english"class='ml-2'>English
-   <input type="checkbox" name="language" value="kanada"class='ml-2'>Kanada
-   <br>
-   <label for="">Other</label>
-   <input type="text" name='language'>
+<!--basic info-->
 
 
-   <h5 class='mt-3'>aAdditional Details</h5>
-   <input type="checkbox" name="ad" value="Pet-friendly"class='ml-2'>Pet friendly
-   <input type="checkbox" name="ad" value="non-smoker"class='ml-2'>Non-smoker
-   <br>
-   <label for="">Other</label> 
-   <input type="text" name='ad'>
-   <br>
-   <button class='submit btn btn-primary my-2'>Submit</button>
-   <a href="{% url 'home' %}" class='btn btn-secondary'>Back</a>
+<section class="super_user_dash shadow-sm rounded p-2">
+    <div class='dash-box'>
+        {% if request.user.is_superuser %}
+        <h1> LEAD ADD </h1>
+        {% else %}
+        <h1> EMPLOYEE </h1>
+        {% endif %}
+        <p>Lead / Lead add</p>
+     </div>
+</section>
+
+<form action="" method="post" class='shadow p-3'>
+    {% csrf_token %}
+
+
+    <label for="">name</label>
+    <input type="text" class="form-control"  name='name' required>
+
+    <label for="">phone</label>
+    <input type="text" class="form-control"  name='phone' required>
+
+    <label for="">email</label>
+    <input type="email" class="form-control"  name='email' required>
+
+    <label for="">address</label>
+    <input type="text" class="form-control"  name='addr' required>
+    <button type='submit' class='btn btn-primary my-2'>Create</button>
+    <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
 </form>
-
-
 {% endblock body %}
+

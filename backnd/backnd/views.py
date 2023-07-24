@@ -12,8 +12,9 @@ import random
 from app.form import *
 import hashlib
 import random
-from app.resources import LeadModelResources
+from app.resources import HelperModelResources
 from tablib import Dataset
+import gspread
 
 # Home page 
 def HomeView(request):
@@ -233,10 +234,10 @@ def generate_id(id):
     return hex_digit[:10]
 
 
-# lead data inserted
+# Helper data inserted
 @login_required
-def LeadAddView(request):
-    fm = LeadForm()
+def HelperAddView(request):
+    fm = HelperForm()
 
     if request.method == "POST":
         
@@ -248,20 +249,22 @@ def LeadAddView(request):
         if language == ['']:
             messages.error(request,'* Preferred Language required')
         else:
-            fm = LeadForm(request.POST)
+            fm = HelperForm(request.POST)
             if fm.is_valid():
                 data = fm.save()
-                data.lead_id = generate_id(data.id) # function to create id and convert into Hexa
+                data.helper_id = generate_id(data.id) # function to create id and convert into Hexa
                 data.save()
                 messages.success(request,'data added successful..!')
 
                 # preferences language inserted
                 for i in language:
-                    LeadPreferredLanguageModel(lead = data,language=i).save()
+                    if i!='':
+                        HelperPreferredLanguageModel(helper = data,language=i).save()
                 
                 # additional_details inserted
                 for i in additional_details:
-                    LeadAdditionalDetailsModel(lead = data,additional_details=i).save()
+                    if i !='':
+                        HelperAdditionalDetailsModel(helper = data,additional_details=i).save()
 
                 
             else:
@@ -269,40 +272,37 @@ def LeadAddView(request):
     data = {
         'fm':fm,
     }
-    return render(request,'lead_add.html',data)
+    return render(request,'helper_add.html',data)
 
 
-# Lead all details showing 
+# helper all details showing 
 @login_required
-def LeadDetailsView(request,id):
-    lead = LeadModel.objects.get(id = id)
+def HelperDetailsView(request,id):
+    helper = HelperModel.objects.get(id = id)
     data = {
-      'lead':lead,
-      'language':LeadPreferredLanguageModel.objects.filter(lead = lead),
-      'additional_details':LeadAdditionalDetailsModel.objects.filter(lead=lead)
+      'helper':helper,
+      'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
+      'additional_details':HelperAdditionalDetailsModel.objects.filter(helper=helper)
     }
-    return render(request,'lead_view.html',data)
+    return render(request,'helper_view.html',data)
 
 
-# lead status update logic 
+# Helper status update logic 
 @login_required
-def LeadStatusUpdateView(request,id):
+def HelperStatusUpdateView(request,id):
     if request.method == 'POST':
-        lead_status_inp = request.POST['lead-status-inp']
-        lead = LeadModel.objects.get(id = id)
-        lead.lead_status = lead_status_inp
-        lead.save()
+        helper_status_inp = request.POST['helper-status-inp']
+        helper = HelperModel.objects.get(id = id)
+        helper.helper_status = helper_status_inp
+        helper.save()
     return redirect('home')
 
 
-
-
-
-# excel file through lead create 
+# excel file through helper create 
 @login_required
-def ExcelFileLeadFileView(request):
+def ExcelFileHelperFileView(request):
     if request.method == 'POST':
-        lead_resources = LeadModelResources()
+        helper_resources = HelperModelResources()
         data_set = Dataset()
         myfile = request.FILES['myfile']
 
@@ -317,7 +317,7 @@ def ExcelFileLeadFileView(request):
                  # all excel data store in 'excel_data' in form of table 
                 excel_data =data_set.load(myfile.read(),format='xlsx')
                 for i in excel_data:
-                    lead = LeadModel(
+                    helper = HelperModel(
                         first_name = i[0],
                         last_name = 'NULL',
                         primary_phone = int(i[1]),
@@ -330,20 +330,205 @@ def ExcelFileLeadFileView(request):
 
                     )
 
-                    lead.save()
-                    lead.lead_id = generate_id(lead.pk) # lead id generate and store it 
-                    lead.save()
+                    helper.save()
+                    helper.helper_id = generate_id(helper.pk) # helper id generate and store it 
+                    helper.save()
 
                 # if all right then success message 
                 messages.success(request,'file upload successful!')
             except:
-                # wrong message
+                # exception handle 
                 messages.error(request,'Something error happen!')
             # redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
-    return render(request,'lead_excel.html')
+    return render(request,'helper_excel.html')
+
+
+# lead logic on the basics of google sheet 
+@login_required
+def LeadList(request):
+    all_value = ''
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+    
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+
+        # Data get dictionary format 
+        all_value = current_sheet.get_all_records()
+
+    except:
+        # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
+    
+    data = {
+        'data':all_value
+    }
+    return render(request,'lead_list.html',data)   
+
+
+# lead details show 
+@login_required
+def LeadDetailsView(request,no):
+    data = {}
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+        
+        # all row data
+        row_num = int(no)+1
+        values_list = current_sheet.row_values(row_num)
+        data = {
+            'name' : values_list[0],
+            'phone' : values_list[1],
+            'email' : values_list[2],
+            'addr' : values_list[3],
+        }
+    except:
+         # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
+
+    return render(request,'lead_details.html',data)  
+
+
+# update the lead 
+@login_required
+def LeadEditView(request,no):
+    data = {}
+    try:
+           # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+        
+        # all row data
+        row_num = int(no)+1
+        values_list = current_sheet.row_values(row_num)
+
+        print('==================>>',values_list)
+        data = {
+            'name' : values_list[0],
+            'phone' : values_list[1],
+            'email' : values_list[2],
+            'addr' : values_list[3],
+        }
+        
+    
+        # POST
+        if request.method == "POST":
+
+            # all value get by input in lead_edit.html
+            name = request.POST['name']
+            phone = request.POST['phone']
+            email = request.POST['email']
+            addr = request.POST['addr']
+
+            # values set/update in sheets 
+            current_sheet.update_cell(row_num, 1, name)
+            current_sheet.update_cell(row_num, 2, phone)
+            current_sheet.update_cell(row_num, 3, email)
+            current_sheet.update_cell(row_num, 4, addr)
             
+
+            # message to success
+            messages.success(request,'Data updated successful!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+     
+    except:
+         # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
+    return render(request,'lead_edit.html',data)
+     
+
+# delete data from sheet 
+@login_required
+def LeadDeleteView(request,no):
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+        
+        # all row data
+        row_num = int(no)+1
+
+        # delete the row by help of row num 
+        current_sheet.delete_row(row_num)
+
+        # success message 
+        messages.success(request,'data remove successful.!')
+    except:
+         # exception handle 
+        messages.error('Data not to be deleted something error try again!')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+# data insert into lead sheet 
+@login_required
+def LeadInsertDataView(request):
+    if request.method == 'POST':
+        try:
+            # configuration json file 
+            gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+            # open google sheet by help of key
+            worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+            
+            # which sheet you want to open! 
+            current_sheet = worksheet.worksheet('Sheet1')
+            
+            # value get from lead_add.html
+            name = request.POST['name']
+            phone = request.POST['phone']
+            email = request.POST['email']
+            addr = request.POST['addr']
+
+            # all value in list format 
+            lst = [name,phone,email,addr]
+
+            # row append in sheet 
+            current_sheet.append_row(lst)
+
+            messages.success(request,"Data add successful!")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        except:
+            # exception handle 
+            messages.error(request,'Something error try again! may be network issue!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    return render(request,'lead_add.html')
+
+
+      
+
+       
+
+       
+
+        
+
+
+
 
 
 

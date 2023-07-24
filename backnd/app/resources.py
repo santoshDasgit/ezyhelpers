@@ -1,6 +1,6 @@
 from import_export import resources
-from .models import LeadModel
+from .models import HelperModel
 
-class LeadModelResources(resources.ModelResource):
+class HelperModelResources(resources.ModelResource):
     class Meta:
-        model = LeadModel
+        model = HelperModel

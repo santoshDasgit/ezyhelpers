@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+<!--messages-->
+{% include "msg.html" %}
+
+<form action="" method="post" class='shadow p-3'>
+    {% csrf_token %}
+
+    <label for="">name</label>
+    <input type="text" class="form-control" value={{name}} name='name' required>
+
+    <label for="">phone</label>
+    <input type="text" class="form-control" value={{phone}} name='phone' required>
+
+    <label for="">email</label>
+    <input type="email" class="form-control" value={{email}} name='email' required>
+
+    <label for="">address</label>
+    <input type="text" class="form-control" value={{addr}} name='addr' required>
+    <button type='submit' class='btn btn-primary my-2'>Save</button>
+    <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
+</form>
+{% endblock body %}

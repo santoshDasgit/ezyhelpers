@@ -64,9 +64,15 @@ font-weight: 200;
     font-weight: 200;
     }
 
-/* lead_list.html  */
+/* helper_list.html  */
 
-.lead_list{
+.helper_list{
   height: 50vh;
+  overflow-y: scroll;
+}
+
+/* lead list.html  */
+.lead-list .table-div{
+  height: 63vh;
   overflow-y: scroll;
 }
