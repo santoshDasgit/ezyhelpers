@@ -71,13 +71,12 @@
             <form action="{% url 'helper_status_update' i.id %}" class="helper-status-fm" method="post">
               {% csrf_token %}
               <select name="helper-status-inp" class='form-control helper-status-inp'>
-                <option value="pending" {% if i.helper_status == "pending" %} selected {% endif %}>Pending</option>
-                <option value="first_contact" {% if i.helper_status == 'first_contact' %} selected {% endif %}>First
-                  Contact
+                <option value="placed" {% if i.helper_status == 'placed' %} selected {% endif %}>
+                  Placed
                 </option>
-                <option value="follow_up" {% if i.helper_status == 'follow_up' %} selected {% endif %}>Follow Up</option>
-                <option value="failed" {% if i.helper_status == 'failed' %} selected {% endif %}>Failed</option>
-                <option value="conformed" {% if i.helper_status == 'conformed' %} selected {% endif %}>Conformed</option>
+                <option value="pending" {% if i.helper_status == "pending" %} selected {% endif %}>Pending</option>
+                <option value="need_to_contact" {% if i.helper_status == 'need_to_contact' %} selected {% endif %}>Need to contact</option>
+
               </select>
             </form>
           </td>

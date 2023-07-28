@@ -44,11 +44,9 @@ COUNTRY = (
 
 # contact status 
 CONTACT_STATUS = (
+    ('placed','Placed'),
     ('pending','Pending'),
-    ('first_contact','First Contact'),
-    ('follow_up','Follow Up'),
-    ('failed','Failed'),
-    ('conformed','Conformed'),
+    ('need_to_contact','Need to contact'),
 )
 
 class HelperModel(models.Model):

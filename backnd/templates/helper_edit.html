@@ -28,48 +28,89 @@
             {% endfor %}
         </div>
 
-           <!--helper  language-->
-           <div>
+        <!--helper  language-->
+        <div class="helper-language-div">
             <b>Helper preferred language : </b> <br>
-            {% for i in helper_language  %}
-            <label for="" class='bg-danger '>
-                <input type="text" name='language' value="{{i.language}}">
-            
-            </label>
+            {% for i in helper_language %}
+
+            <input type="text" name='language' value="{{i.language}}">
+
             {% empty %}
             <b class='text-danger'>NULL</b>
             {% endfor %}
+            <div>
+                <!--input-->
+            </div>
+            <button class="btn btn-primary btn-sm helper-language-btn" type="button"><i
+                    class="fa-solid fa-plus"></i></button>
         </div>
 
+
         <!--helper skill-->
-        <div>
+        <div class="helper-skill">
             <b>Helper skill : </b> <br>
-            {% for i in skill  %}
+            {% for i in skill %}
             <label for="" class='bg-danger '>
                 <input type="text" name='skill' value="{{i.skill}}">
             </label>
             {% empty %}
             <b class='text-danger'>NULL</b>
             {% endfor %}
+            <div>
+                <!--input-->
+            </div>
+            <button class="btn btn-primary btn-sm helper-skill-btn" type="button"><i
+                    class="fa-solid fa-plus"></i></button>
         </div>
 
-         <!--helper additional skill-->
-         <div>
+        <!--helper additional skill-->
+        <div class="helper-add-skill">
             <b>Helper additional skill : </b> <br>
-            {% for i in additional_skill  %}
+            {% for i in additional_skill %}
             <label for="" class='bg-danger '>
                 <input type="text" name='ad-skill' value="{{i.additional_skill}}">
             </label>
             {% empty %}
             <b class='text-danger'>NULL</b>
-             
             {% endfor %}
+            <div>
+                <!-- input  -->
+            </div>
+            <button class="btn btn-primary btn-sm helper-ad-skill-btn" type="button"><i
+                    class="fa-solid fa-plus"></i></button>
         </div>
 
-        <button type='submit' class='btn btn-primary'>Save</button>
-        <a href="{% url 'helper_list' %}" class='btn btn-secondary'>Back</a>
+
+        <button type='submit' class='btn btn-primary mt-2'>Save</button>
+        <a href="{% url 'helper_list' %}" class='btn btn-secondary mt-2'>Back</a>
     </form>
 
-    
+
+    <script>
+
+        // div 
+        let helper_language_div = document.querySelector('.helper-language-div div')
+        let helper_skill_div = document.querySelector('.helper-skill div')
+        let helper_add_skill_div = document.querySelector('.helper-add-skill div')
+
+        // button
+        let helper_language_btn = document.querySelector(".helper-language-btn")
+        let helper_skill_btn = document.querySelector(".helper-skill-btn")
+        let helper_ad_skill_btn = document.querySelector(".helper-ad-skill-btn")
+
+        //    add inp logic 
+        helper_language_btn.addEventListener('click', function () {
+            helper_language_div.innerHTML += "<input type='text' name='language'>"
+        })
+
+        helper_skill_btn.addEventListener('click', function () {
+            helper_skill_div.innerHTML += "<input type='text' name='skill'>"
+        })
+
+        helper_ad_skill_btn.addEventListener('click', function () {
+            helper_add_skill_div.innerHTML += "<input type='text' name='ad-skill'>"
+        })
+    </script>
+
 </section>
 {% endblock body %}
