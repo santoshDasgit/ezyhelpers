@@ -1,0 +1,75 @@
+{% extends 'index.html' %}
+
+{% block body %}
+<section class='shadow  p-2'>
+
+    <!--message-->
+    {% include "msg.html" %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!--helper form-->
+        <div class="row">
+            <!--form object-->
+            {% for i in fm %}
+
+            <!--if some error!-->
+            {% if i.errors %}
+            <label for="" class='text-danger'>*{{i.errors}}</label>
+            {% endif %}
+
+            <!--form input & labels-->
+            <div class="col-md-4">
+                {{i.label|safe}}
+                {{i}}
+            </div>
+
+            {% endfor %}
+        </div>
+
+           <!--helper  language-->
+           <div>
+            <b>Helper preferred language : </b> <br>
+            {% for i in helper_language  %}
+            <label for="" class='bg-danger '>
+                <input type="text" name='language' value="{{i.language}}">
+            
+            </label>
+            {% empty %}
+            <b class='text-danger'>NULL</b>
+            {% endfor %}
+        </div>
+
+        <!--helper skill-->
+        <div>
+            <b>Helper skill : </b> <br>
+            {% for i in skill  %}
+            <label for="" class='bg-danger '>
+                <input type="text" name='skill' value="{{i.skill}}">
+            </label>
+            {% empty %}
+            <b class='text-danger'>NULL</b>
+            {% endfor %}
+        </div>
+
+         <!--helper additional skill-->
+         <div>
+            <b>Helper additional skill : </b> <br>
+            {% for i in additional_skill  %}
+            <label for="" class='bg-danger '>
+                <input type="text" name='ad-skill' value="{{i.additional_skill}}">
+            </label>
+            {% empty %}
+            <b class='text-danger'>NULL</b>
+             
+            {% endfor %}
+        </div>
+
+        <button type='submit' class='btn btn-primary'>Save</button>
+        <a href="{% url 'helper_list' %}" class='btn btn-secondary'>Back</a>
+    </form>
+
+    
+</section>
+{% endblock body %}

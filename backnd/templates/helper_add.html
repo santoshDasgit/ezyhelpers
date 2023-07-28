@@ -38,14 +38,36 @@
    <label for="">Other</label>
    <input type="text" name='language'>
 
-
-   <h5 class='mt-3'>aAdditional Details</h5>
-   <input type="checkbox" name="ad" value="Pet-friendly"class='ml-2'>Pet friendly
-   <input type="checkbox" name="ad" value="non-smoker"class='ml-2'>Non-smoker
+   <!--skill set-->
+   <h5 class='mt-3'>Skill set </h5>
+   <input type="checkbox" name="skill" value="Cooking"class='ml-2'>Cooking
+   <input type="checkbox" name="skill" value="Cleaning"class='ml-2'>Cleaning
+   <input type="checkbox" name="skill" value="Cleaning"class='ml-2'>Cleaning
+   <input type="checkbox" name="skill" value="Elderly Care"class='ml-2'>Elderly Care
+   <input type="checkbox" name="skill" value="Caregiver"class='ml-2'>Caregiver
+   <br>
+   <input type="checkbox" name="skill" value="Pet care"class='ml-2'>Pet care
+   <input type="checkbox" name="skill" value="Gardening"class='ml-2'>Gardening
+   <input type="checkbox" name="skill" value="Nanny"class='ml-2'>Nanny
+   <input type="checkbox" name="skill" value="Housekeeper"class='ml-2'>Housekeeper 
+   <input type="checkbox" name="skill" value="PA"class='ml-2'>PA
    <br>
    <label for="">Other</label> 
-   <input type="text" name='ad'>
+   <input type="text" name='skill'>
    <br>
+
+      <!--Additional skill set-->
+      <h5 class='mt-3'>Additional Skill set </h5>
+      <input type="checkbox" name="ad-skill" value="First Aid"class='ml-2'>First Aid
+      <input type="checkbox" name="ad-skill" value="Pet friendly"class='ml-2'>Pet friendly
+      <input type="checkbox" name="ad-skill" value="CPR"class='ml-2'>CPR
+      <input type="checkbox" name="ad-skill" value="Driving Licence"class='ml-2'>Driving Licence
+   
+      <label for="">Other</label> 
+      <br>
+      <input type="text" name='ad-skill'>
+      <br>
+
    <button class='submit btn btn-primary my-2'>Submit</button>
    <a href="{% url 'helper_list' %}" class='btn btn-secondary'>Back</a>
 </form>

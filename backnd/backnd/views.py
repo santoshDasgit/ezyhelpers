@@ -266,7 +266,8 @@ def HelperAddView(request):
         
         # data input 
         language = request.POST.getlist('language')
-        additional_details = request.POST.getlist('ad')
+        additional_skill = request.POST.getlist('ad-skill')
+        skill = request.POST.getlist('skill')
 
         # language required condition 
         if language == ['']:
@@ -284,18 +285,24 @@ def HelperAddView(request):
                     if i!='':
                         HelperPreferredLanguageModel(helper = data,language=i).save()
                 
-                # additional_details inserted
-                for i in additional_details:
+                # additional_skill inserted
+                for i in additional_skill:
                     if i !='':
-                        HelperAdditionalDetailsModel(helper = data,additional_details=i).save()
+                        HelperAdditionalSkillSetModel(helper = data,additional_skill=i).save()
 
-                
+                # skill inserted
+                for i in skill:
+                    if i !='':
+                        HelperSkillSetModel(helper = data,skill=i).save()
             else:
                 messages.error(request,'please enter the valid data')
+
     data = {
         'fm':fm,
     }
     return render(request,'helper_add.html',data)
+
+                
 
 
 # helper all details showing 
@@ -305,7 +312,8 @@ def HelperDetailsView(request,id):
     data = {
       'helper':helper,
       'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
-      'additional_details':HelperAdditionalDetailsModel.objects.filter(helper=helper)
+       'skill':HelperSkillSetModel.objects.filter(helper = helper),
+      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper)
     }
     return render(request,'helper_view.html',data)
 
@@ -318,7 +326,7 @@ def HelperStatusUpdateView(request,id):
         helper = HelperModel.objects.get(id = id)
         helper.helper_status = helper_status_inp
         helper.save()
-    return redirect('home')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 # excel file through helper create 
@@ -368,6 +376,85 @@ def ExcelFileHelperFileView(request):
     return render(request,'helper_excel.html')
 
 
+# helper object delete 
+@login_required
+def HelperDeleteView(request,id):
+    HelperModel.objects.get(id = id).delete()
+    messages.warning(request,"Data remove successful!")
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+# helper object update 
+@login_required
+def HelperEditView(request,id):
+
+    # all model object get as of our requirement 
+    helper = HelperModel.objects.get(id = id) 
+    helper_skill = HelperSkillSetModel.objects.filter(helper = helper)
+    helper_additional_skill = HelperAdditionalSkillSetModel.objects.filter(helper = helper)
+    helper_language = HelperPreferredLanguageModel.objects.filter(helper = helper)
+    
+    fm = HelperForm(instance=helper) # form 
+
+    if request.method == "POST":
+        # all additional input get 
+        skill_inp = request.POST.getlist('skill')
+        add_skill_inp = request.POST.getlist('ad-skill')
+        language_inp = request.POST.getlist('language')
+
+        fm=HelperForm(request.POST,instance=helper) # all input value 
+        
+        # language empty or not check 
+        language_inpIsEmpty = False
+        for i in language_inp:
+            if i.strip()!="":
+                language_inpIsEmpty  = True
+                break
+        
+        # if language all are empty under the code not executed
+        if(not language_inpIsEmpty):
+            messages.error(request,"language must mandatory!")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+        if fm.is_valid():
+
+            # all additional data remove
+            helper_skill.delete()
+            helper_additional_skill.delete()
+            helper_language.delete()
+
+            #  --------update again------- 
+
+            # skill update
+            for i in skill_inp:
+                if i.strip()!="":
+                    HelperSkillSetModel(helper = helper , skill = i.strip()).save()
+            
+            # additional skill update 
+            for i in add_skill_inp:
+                if i.strip() != "":
+                    HelperAdditionalSkillSetModel(helper = helper ,additional_skill = i.strip()).save()
+            
+            # language update 
+            for i in language_inp:
+                if i.strip()!="":
+                    HelperPreferredLanguageModel(helper = helper , language = i.strip()).save()
+
+            # Helper form save  
+            fm.save()
+            messages.success(request,'Data updated successful!')
+        else:
+            messages.error(request,'please enter valid data')
+
+    data = {
+        'fm':fm,
+        'skill': helper_skill,
+        'additional_skill':helper_additional_skill,
+        'helper_language':helper_language
+    }
+    return render(request,'helper_edit.html',data)
+
+
 # lead logic on the basics of google sheet 
 @login_required
 def LeadList(request):
@@ -390,7 +477,7 @@ def LeadList(request):
         messages.error(request,'Something error try again! may be network issue!')
     
     data = {
-        'data':all_value
+        'data':all_value,
     }
     return render(request,'lead_list.html',data)   
 
@@ -540,6 +627,10 @@ def LeadInsertDataView(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request,'lead_add.html')
+
+
+
+
 
 
       

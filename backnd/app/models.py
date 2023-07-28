@@ -54,7 +54,8 @@ CONTACT_STATUS = (
 class HelperModel(models.Model):
     # model id 
     helper_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
-    helper_status = models.CharField(max_length=20,choices=CONTACT_STATUS,default='pending')
+    helper_status = models.CharField(max_length=50,choices=CONTACT_STATUS,default='pending')
+
 
     # personal details
     first_name = models.CharField(max_length=100,null=False,blank=False)
@@ -72,8 +73,20 @@ class HelperModel(models.Model):
     country = models.CharField(max_length=100,choices=COUNTRY,null=False,blank=False)
     additional_comment = models.TextField(blank=True,null=True)
 
+    # work
+    work_experience = models.IntegerField(default=0)
+    availability_status_week = models.IntegerField(default=0)
+
     def __str__(self) -> str:
         return self.first_name
+   
+
+# skill set 
+class HelperSkillSetModel(models.Model):
+    helper = models.ForeignKey(HelperModel,on_delete=models.CASCADE)
+    skill = models.CharField(max_length=200)
+    
+
 # Helper languages
 class HelperPreferredLanguageModel(models.Model):
     helper = models.ForeignKey(HelperModel,on_delete=models.CASCADE)
@@ -81,11 +94,13 @@ class HelperPreferredLanguageModel(models.Model):
     def __str__(self):
         return self.language
 
-class HelperAdditionalDetailsModel(models.Model):
+
+# Helper additional details 
+class HelperAdditionalSkillSetModel(models.Model):
     helper = models.ForeignKey(HelperModel,on_delete=models.CASCADE)
-    additional_details = models.CharField(max_length=100)
+    additional_skill = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.additional_details
+        return self.additional_skill
     
 

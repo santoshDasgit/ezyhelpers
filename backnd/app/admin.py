@@ -4,6 +4,7 @@ from .models import *
 
 # Helper model 
 admin.site.register(HelperModel)
-admin.site.register(HelperAdditionalDetailsModel)
+admin.site.register(HelperAdditionalSkillSetModel)
+admin.site.register(HelperSkillSetModel)
 admin.site.register(HelperPreferredLanguageModel)
 

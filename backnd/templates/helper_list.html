@@ -1,99 +1,132 @@
-
 {% extends "index.html" %}
 {% load static %}
 {% block body %}
 
+{% include "msg.html" %}
+
 <section class="super_user_dash shadow-sm rounded p-2">
-    <div class='dash-box'>
-        <h1> HELPERS </h1>
-        <p>Dashboard / {{request.user}}</p>
-     </div>
+  <div class='dash-box'>
+    <h1> HELPERS </h1>
+    <p>Dashboard / {{request.user}}</p>
+  </div>
 </section>
 
 <!--helper-->
 <section class='helper'>
-    <nav class="navbar navbar-light bg-light shadow-sm">
-        <form class="form-inline" method='post'>
-            {% csrf_token %}
-            <input class="form-control mr-sm-2" type="search" name='search' placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
-        <button class='btn btn-primary' data-toggle="modal" data-target="#exampleModalCenter">Add</button>
-    </nav>
+  <nav class="navbar navbar-light bg-light shadow-sm">
+    <form class="form-inline" method='post'>
+      {% csrf_token %}
+      <input class="form-control mr-sm-2" type="search" name='search' placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <button class='btn btn-primary' data-toggle="modal" data-target="#exampleModalCenter">Add</button>
+  </nav>
 
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Pleace select</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body justify-content-between w-100">
-                  <a href="{% url 'helper_add' %}" class='btn btn-primary mr-2'>Helper</a>
-                    <a href="{% url 'excel_file_helper_upload' %}" class='btn btn-primary'>Helper(Excel)</a>
-                </div>
-               
-            </div>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Pleace select</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-    </div>
+        <div class="modal-body justify-content-between w-100">
+          <a href="{% url 'helper_add' %}" class='btn btn-primary mr-2'>Helper</a>
+          <a href="{% url 'excel_file_helper_upload' %}" class='btn btn-primary'>Helper(Excel)</a>
+        </div>
 
-   <!-- Helper list -->
-   <section class='helper_list shadow p-2'>
+      </div>
+    </div>
+  </div>
+
+  <!-- Helper list -->
+  <section class='helper_list shadow p-2'>
     <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">helper Name</th>
-            <th scope="col">helper id</th>
-            <th scope="col">Phone Number</th>
-            <th scope="col">Contact Status</th>
-          </tr>
-        </thead>
-        <tbody>
-            <!--Getting data from helper-->
-            {% for i in helper_list %}
-            <tr>
-                <th scope="row">
-                    <i class="fa-solid fa-user"></i> 
-                    <!--Url for helper details-->
-                    <a href="{% url 'helper_view' i.id %}">{{i.first_name|capfirst}}</a>
-                </th>
-                <td>{{i.helper_id}}</td>
-                <td>{{i.primary_phone}}</td>
-                <td>
-                    <form action="{% url 'helper_status_update' i.id %}" class="helper-status-fm" method="post">
-                        {% csrf_token %}
-                        <select name="helper-status-inp" class='form-control helper-status-inp'>
-                          <option value="pending" {% if i.helper_status == "pending" %} selected {% endif %}>Pending</option>
-                          <option value="first_contact" {% if i.helper_status == 'first_contact' %} selected {% endif %}>First Contact
-                          </option>
-                          <option value="follow_up" {% if i.helper_status == 'follow_up' %} selected {% endif %}>Follow Up</option>
-                          <option value="failed" {% if i.helper_status == 'failed' %} selected {% endif %}>Failed</option>
-                          <option value="conformed" {% if i.helper_status == 'conformed' %} selected {% endif %}>Conformed</option>
-                        </select>
-                      </form>
-                </td>
-              </tr>
-            {% endfor %}
-        </tbody>
-      </table>
-</section>
+      <thead>
+        <tr>
+          <th scope="col">helper Name</th>
+          <th scope="col">helper id</th>
+          <th scope="col">Phone Number</th>
+          <th scope="col">Helper Status</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--Getting data from helper-->
+        {% for i in helper_list %}
+        <tr>
+          <th scope="row">
+            <i class="fa-solid fa-user"></i>
+            <!--Url for helper details-->
+            <a href="{% url 'helper_view' i.id %}">{{i.first_name|capfirst}}</a>
+          </th>
+          <td>{{i.helper_id}}</td>
+          <td>{{i.primary_phone}}</td>
+          <td>
+            <form action="{% url 'helper_status_update' i.id %}" class="helper-status-fm" method="post">
+              {% csrf_token %}
+              <select name="helper-status-inp" class='form-control helper-status-inp'>
+                <option value="pending" {% if i.helper_status == "pending" %} selected {% endif %}>Pending</option>
+                <option value="first_contact" {% if i.helper_status == 'first_contact' %} selected {% endif %}>First
+                  Contact
+                </option>
+                <option value="follow_up" {% if i.helper_status == 'follow_up' %} selected {% endif %}>Follow Up</option>
+                <option value="failed" {% if i.helper_status == 'failed' %} selected {% endif %}>Failed</option>
+                <option value="conformed" {% if i.helper_status == 'conformed' %} selected {% endif %}>Conformed</option>
+              </select>
+            </form>
+          </td>
+
+          <td>
+            <!--helper edit-->
+            <a href="{% url 'helper_edit' i.id %}" class="btn btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></a>
+           
+            <!--helper delete-->
+            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#ampleModal{{forloop.counter}}"><i
+                class="fa-solid fa-trash"></i></button>
+          </td>
+          <!-- Modal -->
+          <div class="modal fade" id="ampleModal{{forloop.counter}}" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Confrom remove</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                <b class='text-danger'>* {{i.helper_id}}</b>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <a href="{% url 'helper_delete' i.id %}" class="btn btn-danger">Remove</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
 </section>
 
 <script>
-    let helper_status_inp = document.querySelectorAll('.helper-status-inp')
-    let helper_status_fm = document.querySelectorAll('.helper-status-fm')
-  
-    for (let i = 0; i < helper_status_inp.length; i++) {
-  
-      helper_status_inp[i].onchange = function () {
-        helper_status_fm[i].submit()
-      }
+  let helper_status_inp = document.querySelectorAll('.helper-status-inp')
+  let helper_status_fm = document.querySelectorAll('.helper-status-fm')
+
+  for (let i = 0; i < helper_status_inp.length; i++) {
+
+    helper_status_inp[i].onchange = function () {
+      helper_status_fm[i].submit()
     }
-  </script>
+  }
+</script>
 {% endblock body %}

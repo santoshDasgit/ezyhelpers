@@ -36,6 +36,9 @@ urlpatterns = [
     path('helper_view/<id>',HelperDetailsView,name='helper_view'),
     path('helper_status_update/<id>',HelperStatusUpdateView,name='helper_status_update'),
     path('excel_file_helper_upload',ExcelFileHelperFileView,name='excel_file_helper_upload'),
+    path('helper_delete/<id>',HelperDeleteView,name='helper_delete'),
+    path('helper_edit/<id>',HelperEditView,name='helper_edit'),
+
 
 
     path('lead_list',LeadList,name='lead_list'),

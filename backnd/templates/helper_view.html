@@ -106,13 +106,24 @@
         </tr>
 
         <tr>
-            <td>Helper Additional Details : </td>
+            <td>Helper Skill : </td>
             <td>
-                {% for i in additional_details %}
-                 {{i.additional_details}},
+                {% for i in skill %}
+                 {{i.skill}},
               {% endfor %}
             </td>
         </tr>
+
+        
+        <tr>
+            <td>Helper Additional Skill : </td>
+            <td>
+                {% for i in additional_skill %}
+                 {{i.additional_skill}},
+              {% endfor %}
+            </td>
+        </tr>
+
         
     </tbody>
 </table>
