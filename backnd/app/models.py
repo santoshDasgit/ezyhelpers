@@ -1,4 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+# employee user model
+class EmployeeModel(models.Model):
+    employee = models.ForeignKey(User,on_delete=models.CASCADE)
 
 
 
@@ -100,5 +105,22 @@ class HelperAdditionalSkillSetModel(models.Model):
 
     def __str__(self):
         return self.additional_skill
-    
+
+
+LEAD_CONTACT_STATUS = (
+    ('pending','Pending'),
+    ('first contact','First contact'),
+    ('follow up','Follow up'),
+    ('failed','Failed'),
+    ('confirmed','Confirmed'),
+)
+
+# lead notification 
+class LeadStatusNotificationModel(models.Model):
+    lead = models.CharField(max_length=100)
+    employee = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+    status = models.CharField(max_length=50,choices=LEAD_CONTACT_STATUS,default='pending')
+    msg = models.CharField(max_length=400)
+    date = models.DateTimeField(auto_now_add=True)
+
 

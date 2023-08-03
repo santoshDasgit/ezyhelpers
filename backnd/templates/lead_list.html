@@ -15,7 +15,7 @@
         <option value="0">Name</option>
         <option value="1">phone</option>
         <option value="2">email</option>
-        <option value="3">address</option>
+        <option value="3">id</option>
       </select>
     </form>
     <a href="{% url 'lead_add' %}" class="btn btn-primary">Add</a>
@@ -32,7 +32,8 @@
           <th scope="col">Name</th>
           <th scope="col">Phone</th>
           <th scope="col">Email</th>
-          <th scope="col">Address</th>
+          <th scope="col">Id</th>
+          <th scope="col">Status</th>
           <th scope="col">Action</th>
         </tr>
       </thead>
@@ -44,7 +45,20 @@
           <td><a href="{% url 'lead_details' forloop.counter %}">{{i.name}}</a></td>
           <td>{{i.phone}}</td>
           <td>{{i.email}}</td>
-          <td>{{i.addr}}</td>
+          <td>{{i.id}}</td>
+          <td>
+            <form action="{% url 'lead_status_update' forloop.counter %}" class="lead_status_fm" method="post">
+              {% csrf_token %}
+            <select name="lead_status_inp"  class='form-control status_inp'>
+              <option value="pending" {% if i.status == 'pending'  %} selected {% endif %}>Pending</option>
+              <option value="first contact" {% if i.status == 'first contact'  %} selected {% endif %}>First contact</option>
+              <option value="follow up" {% if i.status == 'follow up'  %} selected {% endif %}>Follow up</option>
+              <option value="failed" {% if i.status == 'failed'  %} selected {% endif %}>Failed</option>
+              <option value="confirmed" {% if i.status == 'confirmed'  %} selected {% endif %}>Confirmed</option>
+            </select>
+          </form>
+          </td>
+
           <td>
             <!--edit-->
             <a href="{% url 'lead_edit' forloop.counter %}" class="btn btn-sm btn-primary"><i
@@ -125,6 +139,21 @@
       }
     }
   }
+
+
+  // status update 
+
+
+  let lead_status_inp = document.querySelectorAll('.status_inp')
+  let lead_status_fm = document.querySelectorAll('.lead_status_fm')
+
+  for (let i = 0; i < lead_status_inp.length; i++) {
+
+    lead_status_inp[i].onchange = function () {
+      lead_status_fm[i].submit()
+    }
+  }
+ 
 </script>
 
 {% endblock body %}

@@ -8,6 +8,7 @@ from django.core.mail import send_mail,EmailMultiAlternatives
 from django.conf import settings
 from app.models import *
 from django.db.models import Q
+from django.utils import timezone
 
 
 # Dashboard or home of a superuser 
@@ -16,19 +17,16 @@ def SuperUserDashBoard(request):
     if not request.user.is_superuser:
         return HttpResponse("<h1>Not a valid user to access this page.!</h1>")
     else:
-        helper = HelperModel.objects.all().order_by('-id') # helper model object
 
-        # post for data searching propose
-        if request.method == 'POST':
-            search = request.POST['search'].strip() # strip for remove space from both of sides
+        # Get the current date and time as a datetime object
+        current_datetime = timezone.now()
 
-            # according to input data is filtering 
-            helper = HelperModel.objects.filter(Q(helper_id__icontains = search) | Q(first_name__icontains = search) | Q(email_id__icontains = search) | Q(primary_phone__icontains = search))
-            
-
+        # Calculate the threshold date (current date and time minus 24 hours)
+        threshold_datetime = current_datetime - timezone.timedelta(hours=4)
+        notify = LeadStatusNotificationModel.objects.filter(date__lt = threshold_datetime)    
         # all data sent on html file in object format 
         data = {
-            'helper_list': helper
+            'notify': notify
         }
         return render(request,"super/dashboard.html",data)
 
@@ -107,6 +105,8 @@ def UserCreationView(request):
                     user.set_password(password)
                     user.save()
 
+                    # user set in employee 
+                    EmployeeModel(employee = user).save()
                     # show message to superuser
                     messages.success(request,f"{email} user created successful.!")
                 except:
@@ -120,7 +120,7 @@ def UserListViews(request):
     # if you are not a superuser 
     if not request.user.is_superuser:
         return HttpResponse("<h1>Not a valid user to access this page!</h1>")
-    user = User.objects.all()
+    user = EmployeeModel.objects.all()
     data = {
         'user':user
     }

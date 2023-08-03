@@ -46,6 +46,7 @@ urlpatterns = [
     path('lead_edit/<no>',LeadEditView,name='lead_edit'),
     path('lead_delete/<no>',LeadDeleteView,name='lead_delete'),
     path('lead_add',LeadInsertDataView,name='lead_add'),
+    path('lead_status_update/<row>',LeadStatusUpdateView,name='lead_status_update'),
 
 
   

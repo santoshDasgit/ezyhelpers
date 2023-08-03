@@ -349,9 +349,9 @@ def ExcelFileHelperFileView(request):
                 excel_data =data_set.load(myfile.read(),format='xlsx')
                 for i in excel_data:
                     helper = HelperModel(
-                        first_name = i[0],
+                        first_name = i[0] or "not mention",
                         last_name = 'NULL',
-                        primary_phone = int(i[1]),
+                        primary_phone = int(i[1] or 0),
                         email_id = i[2],
                         street = 'NULL STREET',
                         city = i[3],
@@ -396,7 +396,7 @@ def HelperEditView(request,id):
     
     fm = HelperForm(instance=helper) # form 
 
-    if request.method == "POST":
+    if request.method == "POST":  
         # all additional input get 
         skill_inp = request.POST.getlist('skill')
         add_skill_inp = request.POST.getlist('ad-skill')
@@ -455,6 +455,16 @@ def HelperEditView(request,id):
     return render(request,'helper_edit.html',data)
 
 
+
+def lead_generate_id(id):
+    # Generate a random number
+    random_num = str(id+1000000000).encode()
+
+    # Generate a SHA-256 hash of the random number.
+    hash_obj = hashlib.sha256(random_num)
+    hex_digit = hash_obj.hexdigest()
+    return hex_digit[:10]
+
 # lead logic on the basics of google sheet 
 @login_required
 def LeadList(request):
@@ -471,7 +481,6 @@ def LeadList(request):
 
         # Data get dictionary format 
         all_value = current_sheet.get_all_records()
-
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -504,6 +513,7 @@ def LeadDetailsView(request,no):
             'phone' : values_list[1],
             'email' : values_list[2],
             'addr' : values_list[3],
+            'id': values_list[8]
         }
     except:
          # exception handle 
@@ -607,17 +617,34 @@ def LeadInsertDataView(request):
             # which sheet you want to open! 
             current_sheet = worksheet.worksheet('Sheet1')
             
+            
+            
+            
+
             # value get from lead_add.html
             name = request.POST['name']
             phone = request.POST['phone']
             email = request.POST['email']
             addr = request.POST['addr']
+            id = lead_generate_id(len(current_sheet.get_all_records())+2)
 
             # all value in list format 
-            lst = [name,phone,email,addr]
+            lst = [name,phone,email,addr," "," "," ","pending",id]
 
             # row append in sheet 
             current_sheet.append_row(lst)
+
+            # notification 
+            lead = id
+            employee = request.user
+            msg = "pending message"
+            status = "pending"
+            LeadStatusNotificationModel(
+                lead = lead,
+                employee = employee,
+                status = status,
+                msg = msg
+            ).save()
 
             messages.success(request,"Data add successful!")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -627,6 +654,35 @@ def LeadInsertDataView(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request,'lead_add.html')
+
+@login_required
+def LeadStatusUpdateView(request,row):
+    row = int(row)+1
+    col = 8
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+            
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+        
+        lead_status_inp = request.POST['lead_status_inp']
+
+        # update status 
+        current_sheet.update_cell(row,col,lead_status_inp)
+
+        messages.success(request,"Data update successful.!")
+    except:
+        # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 
 
 
