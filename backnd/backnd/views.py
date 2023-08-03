@@ -348,22 +348,27 @@ def ExcelFileHelperFileView(request):
                  # all excel data store in 'excel_data' in form of table 
                 excel_data =data_set.load(myfile.read(),format='xlsx')
                 for i in excel_data:
-                    helper = HelperModel(
-                        first_name = i[0] or "not mention",
-                        last_name = 'NULL',
-                        primary_phone = int(i[1] or 0),
-                        email_id = i[2],
-                        street = 'NULL STREET',
-                        city = i[3],
-                        zipcode = 7540065,
-                        state = "NULL STATE",
-                        country = 'NULL COUNTRY'
+                    # row fully empty or not check
+                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='') and (i[2]==None or i[2]=='') and (i[3]==None or i[3]=='') ):
+                         pass
+                    else:
+                        helper = HelperModel(
+                            first_name = i[0] or "not mention",
+                            last_name = 'NULL',
+                            primary_phone = int(i[1] or 0),
+                            email_id = i[2],
+                            street = 'NULL STREET',
+                            city = i[3],
+                            zipcode = 7540065,
+                            state = "NULL STATE",
+                            country = 'NULL COUNTRY'
 
-                    )
+                        )
 
-                    helper.save()
-                    helper.helper_id = generate_id(helper.pk) # helper id generate and store it 
-                    helper.save()
+                        helper.save()
+                        helper.helper_id = generate_id(helper.pk) # helper id generate and store it 
+                        helper.save()
+                       
 
                 # if all right then success message 
                 messages.success(request,'file upload successful!')

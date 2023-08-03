@@ -8,6 +8,7 @@ from django.core.mail import send_mail,EmailMultiAlternatives
 from django.conf import settings
 from app.models import *
 from django.db.models import Q
+from django.utils import timezone
 
 # Employee dashboard 
 @login_required
@@ -15,18 +16,14 @@ def EmployeeDashboard(request):
     if request.user.is_superuser:
         return HttpResponse("<h1>Not a valid user to access this page.!</h1>")
     else:
-        helper = HelperModel.objects.all().order_by('-id') # helper model object
+        # Get the current date and time as a datetime object
+        current_datetime = timezone.now()
 
-        # post for data searching propose
-        if request.method == 'POST':
-            search = request.POST['search'].strip()  # strip for remove space from both of sides
-
-            # according to input data is filtering 
-            helper = HelperModel.objects.filter(Q(helper_id__icontains = search) | Q(first_name__icontains = search) | Q(email_id__icontains = search) | Q(primary_phone__icontains = search))
-            
-
+        # Calculate the threshold date (current date and time minus 24 hours)
+        threshold_datetime = current_datetime - timezone.timedelta(hours=24)
+        notify = LeadStatusNotificationModel.objects.filter(date__lt = threshold_datetime)    
         # all data sent on html file in object format 
         data = {
-            'helper_list': helper
+            'notify': notify
         }
     return render(request,'employee/dashboard.html',data)

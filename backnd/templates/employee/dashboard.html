@@ -11,4 +11,20 @@
 </section>
 
 
+<section class='admin_dash'>
+
+    <!-- notification -->
+    {% for i in notify %}
+    <div class="row shadow-sm my-2 p-3">
+      <div class="col-1"><i class="fa-solid fa-bell"></i></div>
+      <div class="col-11">
+        <label><b>{{i.msg}}</b></label>
+        <label>{{i.date}}</label>
+        <label>{{i.status}}</label>
+        <label><i><b>{{i.employee.username}}</b></i></label>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
 {% endblock body %}
