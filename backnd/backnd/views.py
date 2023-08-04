@@ -49,10 +49,10 @@ def LoginView(request):
                     return redirect("home") # if all are correct redirect to home
                 else:
                     # if password invalid
-                    messages.error(request,"Invalid password")
+                    messages.error(request,"Invalid password!")
             else:
                 # if username does'not exists 
-                messages.error(request,"Invalid email address.")
+                messages.error(request,"Invalid email address!")
     else:
         return redirect("home")
     return render(request,'login.html')
@@ -64,7 +64,7 @@ def LoginView(request):
 @login_required 
 def LogoutView(request):
     logout(request)
-    messages.success(request,"Logout success.!")
+    messages.success(request,"Logout success!")
     return redirect('/')
 
 
@@ -80,7 +80,7 @@ def EmailVerifyProfileView(request,id,url):
         email = request.POST.get('email')
         user = User.objects.get(pk = id)
         if(User.objects.filter(email = email).exists() and user.email != email):
-            messages.error(request,f"{email} already exists try another email.!")
+            messages.error(request,f"{email} already exists try another email!")
         else:
             url =f'http://{url}/profile_update/{id}/{email}'
             subject = "user data updated url!!"
@@ -90,7 +90,7 @@ def EmailVerifyProfileView(request,id,url):
             email_box = EmailMultiAlternatives(subject,message,from_email,[to])
             email_box.content_subtype='html'
             email_box.send()
-            messages.success(request,'check url on your email to update the data.!')
+            messages.success(request,'check url on your email to update the data!')
        
 
     return render(request,"email_validate.html")
@@ -101,7 +101,7 @@ def EmailVerifyProfileView(request,id,url):
 def ProfileUpdateView(request,id,email):
     # if user is not login 
     if not request.user.is_authenticated:
-        messages.warning(request,'at the time of profile update Login mandatory!!')
+        messages.warning(request,'at the time of profile update Login mandatory!')
         return redirect('login')
         
 
@@ -122,7 +122,7 @@ def ProfileUpdateView(request,id,email):
         # if same name of email is already exists 
         if(User.objects.filter(email = email).exists() and user.email != email):
             
-            messages.error(request,f"{email} already exists try another email.!")
+            messages.error(request,f"{email} already exists try another email!")
         else:
             # try catch from network issue handle 
             try:
@@ -144,9 +144,9 @@ def ProfileUpdateView(request,id,email):
                 user.save()
 
                 # messages to update 
-                messages.success(request,"Profile update successful.!")
+                messages.success(request,"Profile update successful!")
             except:
-                messages.error("There is an error please try again!!")
+                messages.error("There is an error please try again!")
 
             # page redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -161,23 +161,23 @@ def password_check(passwd,request):
     val = True
      
     if len(passwd) <= 8:
-        messages.error(request,'length should be at least 8')
+        messages.error(request,'length should be at least 8!')
         val = False
          
     if not any(char.isdigit() for char in passwd):
-        messages.error(request,'Password should have at least one numeral')
+        messages.error(request,'Password should have at least one numeral!')
         val = False
          
     if not any(char.isupper() for char in passwd):
-        messages.error(request,'Password should have at least one uppercase letter')
+        messages.error(request,'Password should have at least one uppercase letter!')
         val = False
          
     if not any(char.islower() for char in passwd):
-        messages.error(request,'Password should have at least one lowercase letter')
+        messages.error(request,'Password should have at least one lowercase letter!')
         val = False
          
     if not any(char in SpecialSym for char in passwd):
-        messages.error(request,'Password should have at least one of the symbols $@#')
+        messages.error(request,'Password should have at least one of the symbols $@#!')
         val = False
     if  ' ' in  passwd:
         messages.error(request,'Space not allow!')
@@ -210,15 +210,15 @@ def PasswordChangedView(request):
                     update_session_auth_hash(request,user)
 
                     # message 
-                    messages.success(request,'password changed successful!!')
+                    messages.success(request,'password changed successful!')
 
                      # page redirect with same page 
                     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
                     
                 else:
-                    messages.error(request,"conform password doesn't match")
+                    messages.error(request,"conform password doesn't match!")
             else:
-                messages.error(request,'old password is incorrect!!')
+                messages.error(request,'old password is incorrect!')
         else:
             pass
 
@@ -271,7 +271,7 @@ def HelperAddView(request):
 
         # language required condition 
         if language == ['']:
-            messages.error(request,'* Preferred Language required')
+            messages.error(request,'* Preferred Language required!')
         else: 
             fm = HelperForm(request.POST)
             if fm.is_valid():
@@ -295,7 +295,7 @@ def HelperAddView(request):
                     if i !='':
                         HelperSkillSetModel(helper = data,skill=i).save()
             else:
-                messages.error(request,'please enter the valid data')
+                messages.error(request,'please enter the valid data!')
 
     data = {
         'fm':fm,
@@ -449,7 +449,7 @@ def HelperEditView(request,id):
             fm.save()
             messages.success(request,'Data updated successfully!')
         else:
-            messages.error(request,'please enter valid data')
+            messages.error(request,'please enter valid data!')
 
     data = {
         'fm':fm,
@@ -602,7 +602,7 @@ def LeadDeleteView(request,no):
         current_sheet.delete_row(row_num)
 
         # success message 
-        messages.success(request,'data remove successful.!')
+        messages.success(request,'data remove successful!')
     except:
          # exception handle 
         messages.error('Data not to be deleted something error try again!')
