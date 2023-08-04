@@ -146,7 +146,7 @@ def ProfileUpdateView(request,id,email):
                 # messages to update 
                 messages.success(request,"Profile update successful.!")
             except:
-                messages.error("Something error happen please try again!!")
+                messages.error("There is an error please try again!!")
 
             # page redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -278,7 +278,7 @@ def HelperAddView(request):
                 data = fm.save()
                 data.helper_id = generate_id(data.id) # function to create id and convert into Hexa
                 data.save()
-                messages.success(request,'data added successful..!')
+                messages.success(request,'data added successfully!')
 
                 # preferences language inserted
                 for i in language:
@@ -374,7 +374,7 @@ def ExcelFileHelperFileView(request):
                 messages.success(request,'file upload successful!')
             except:
                 # exception handle 
-                messages.error(request,'Something error happen!')
+                messages.error(request,'There is an error!')
             # redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
@@ -385,7 +385,7 @@ def ExcelFileHelperFileView(request):
 @login_required
 def HelperDeleteView(request,id):
     HelperModel.objects.get(id = id).delete()
-    messages.warning(request,"Data remove successful!")
+    messages.warning(request,"Data remove successfully!")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
@@ -447,7 +447,7 @@ def HelperEditView(request,id):
 
             # Helper form save  
             fm.save()
-            messages.success(request,'Data updated successful!')
+            messages.success(request,'Data updated successfully!')
         else:
             messages.error(request,'please enter valid data')
 
@@ -492,6 +492,7 @@ def LeadList(request):
     
     data = {
         'data':all_value,
+        'length':len(all_value)
     }
     return render(request,'lead_list.html',data)   
 

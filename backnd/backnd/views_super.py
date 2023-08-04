@@ -110,7 +110,7 @@ def UserCreationView(request):
                     # show message to superuser
                     messages.success(request,f"{email} user created successful.!")
                 except:
-                    messages.error(request,'something error happen try again.!')
+                    messages.error(request,'There is an error please try again.!')
     return render(request,'super/user_creation_fm.html')
 
 
@@ -164,9 +164,9 @@ def userUpdate(request,id):
                 user.email = email
                 user.last_name  = last_name
                 user.save()
-                messages.success(request,"User update successful..!")
+                messages.success(request,"User data updated successfully!")
         except:
-            messages.error(request,"Something error happen try again!")
+            messages.error(request,"There is an error please try again!")
 
     
     data = {
@@ -182,7 +182,7 @@ def userDelete(request,id):
         return HttpResponse("<h1>Not a valid user to access this page!</h1>")
     
     User.objects.get(pk = id).delete()
-    messages.success(request,"Remove user successfully")
+    messages.success(request,"User remove successfully")
 
     return redirect('superuser_user_list')
 
