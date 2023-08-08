@@ -71,8 +71,17 @@ font-weight: 200;
   overflow-y: scroll;
 }
 
+.helper nav form{
+  width: 87%;
+}
+
+
 /* lead list.html  */
 .lead-list .table-div{
   height: 63vh;
   overflow-y: scroll;
+}
+
+.lead-list form{
+  width: 85%;
 }

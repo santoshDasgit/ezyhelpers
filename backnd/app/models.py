@@ -54,6 +54,13 @@ CONTACT_STATUS = (
     ('need_to_contact','Need to contact'),
 )
 
+LOCALITY = (
+    ('a','a'),
+    ('b','b'),
+    ('c','c'),
+    ('d','d'),
+    
+)
 class HelperModel(models.Model):
     # model id 
     helper_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
@@ -79,6 +86,19 @@ class HelperModel(models.Model):
     # work
     work_experience = models.IntegerField(default=0)
     availability_status_week = models.IntegerField(default=0)
+
+    # locality 
+    locality = models.CharField(max_length=30,choices=LOCALITY)
+    near_by = models.BooleanField(default=False)
+
+  
+
+    
+    dob = models.DateField()
+
+    # create and update 
+    create_date = models.DateField(auto_now_add=True)
+    update_date = models.DateField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.first_name

@@ -5,7 +5,8 @@ class HelperForm(forms.ModelForm):
     class Meta:
         model = HelperModel
         fields = ['first_name','middle_name','last_name','primary_phone','secondary_phone',
-                  'email_id','street','city','zipcode','state','country','work_experience','availability_status_week','additional_comment'
+                  'email_id','street','city','zipcode','state','country','work_experience','availability_status_week','additional_comment',
+                  'locality','near_by'
                   
                   ]
         widgets = {
@@ -24,7 +25,9 @@ class HelperForm(forms.ModelForm):
             'availability_status_week': forms.NumberInput(attrs={'class': 'form-control my-2'}),
             'work_experience': forms.NumberInput(attrs={'class': 'form-control my-2'}),
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
-           
+            'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
+            'locality':forms.Select(attrs={'class': 'form-control my-2','rows':'2'}),
+            'near_by':forms.CheckboxInput(attrs={'class': 'mb-4'}),
           
            
           
@@ -42,6 +45,7 @@ class HelperForm(forms.ModelForm):
             'work_experience':"Working experience <b class='text-danger'>*</b>",
             'availability_status_week':"Availability Status(weekly)<b class='text-danger'>*</b>",
             'additional_comment':"Additional comment <b class='text-danger'>*</b>",
+            'near_by':" <b class='mb-4'>Near by</b>",
           
         }
 

@@ -72,13 +72,24 @@
         </tr>
 
         <tr>
-            <td>state</td>
-            <td>{{helper.status}}</td>
+            <td>State</td>
+            <td>{{helper.state}}</td>
         </tr>
 
+        
         <tr>
             <td>country</td>
             <td>{{helper.country}}</td>
+        </tr>
+        
+        <tr>
+            <td>Locality</td>
+            <td>{{helper.locality}}</td>
+        </tr>
+
+        <tr>
+            <td>Near by</td>
+            <td>{% if not helper.near_by %}Current location {% else %}Range in   <b>5 k.m</b> {% endif %}</td>
         </tr>
 
           <!--Additional comment -->

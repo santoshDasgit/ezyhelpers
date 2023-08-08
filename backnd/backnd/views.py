@@ -392,7 +392,7 @@ def HelperDeleteView(request,id):
 # helper object update 
 @login_required
 def HelperEditView(request,id):
-
+   
     # all model object get as of our requirement 
     helper = HelperModel.objects.get(id = id) 
     helper_skill = HelperSkillSetModel.objects.filter(helper = helper)
@@ -519,7 +519,9 @@ def LeadDetailsView(request,no):
             'phone' : values_list[1],
             'email' : values_list[2],
             'addr' : values_list[3],
-            'id': values_list[8]
+            'id': values_list[8],
+            'locality':values_list[9],
+            'near_by':values_list[10]
         }
     except:
          # exception handle 
@@ -551,6 +553,8 @@ def LeadEditView(request,no):
             'phone' : values_list[1],
             'email' : values_list[2],
             'addr' : values_list[3],
+            'locality':values_list[9],
+            'near_by':values_list[10]
         }
         
     
@@ -562,12 +566,20 @@ def LeadEditView(request,no):
             phone = request.POST['phone']
             email = request.POST['email']
             addr = request.POST['addr']
+            locality = request.POST['locality']
+            near_by = request.POST.get('near_by',False)
+
+            # near_by set
+            if near_by == 'on':
+                near_by = True
 
             # values set/update in sheets 
             current_sheet.update_cell(row_num, 1, name)
             current_sheet.update_cell(row_num, 2, phone)
             current_sheet.update_cell(row_num, 3, email)
             current_sheet.update_cell(row_num, 4, addr)
+            current_sheet.update_cell(row_num, 10, locality)
+            current_sheet.update_cell(row_num, 11, near_by)
             
 
             # message to success
@@ -623,19 +635,24 @@ def LeadInsertDataView(request):
             # which sheet you want to open! 
             current_sheet = worksheet.worksheet('Sheet1')
             
-            
-            
-            
 
             # value get from lead_add.html
             name = request.POST['name']
             phone = request.POST['phone']
             email = request.POST['email']
             addr = request.POST['addr']
+            locality = request.POST['locality']
+            near_by = request.POST.get('near_by',False)
+    
+            # id generate 
             id = lead_generate_id(len(current_sheet.get_all_records())+2)
 
+            # near_by field
+            if near_by == 'on':
+                near_by = True
+
             # all value in list format 
-            lst = [name,phone,email,addr," "," "," ","pending",id]
+            lst = [name,phone,email,addr," "," "," ","pending",id,locality,near_by]
 
             # row append in sheet 
             current_sheet.append_row(lst)

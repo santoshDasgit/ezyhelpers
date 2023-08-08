@@ -19,6 +19,20 @@
 
     <label for="">address</label>
     <input type="text" class="form-control" value={{addr}} name='addr' required>
+
+    <label for="">Locality</label>
+    <select name="locality" id="" class='form-control' required>
+        <option value="a" {% if locality == 'a' %} selected {% endif %}>a</option>
+        <option value="b" {% if locality == 'b' %} selected {% endif %}>b</option>
+        <option value="c" {% if locality == 'c' %} selected {% endif %}>c</option>
+        <option value="d" {% if locality == 'd' %} selected {% endif %}>d</option>
+    </select>
+
+    <label for="" class='mt-3'><b>Near by : </b></label>
+    <input type="checkbox" {% if near_by == 'TRUE' %} checked {% endif %} name="near_by" id="" class='mt-3'>
+
+    <br><br>
+
     <button type='submit' class='btn btn-primary my-2'>Save</button>
     <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
 </form>

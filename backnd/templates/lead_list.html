@@ -8,7 +8,7 @@
     <form class="form-inline" method="POST">
       <input type="hidden" name="csrfmiddlewaretoken"
         value="0ifKCxlesfEJyMoTGQtrHgYAKcr4g88M60ZMKErZqIz9Q9cqkuotM2McygB8jVHl">
-      <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" id="filterInput"
+      <input class="form-control mr-sm-2 w-75" type="search" name="search" placeholder="Search" id="filterInput"
         aria-label="Search">
       <!-- Select column to filter -->
       <select id="filterColumn" class="form-control">
@@ -17,6 +17,8 @@
         <option value="2">email</option>
         <option value="3">id</option>
       </select>
+
+      <a type='button' href="{% url 'lead_list' %}" class='btn btn-outline-primary mx-2' id="all_data">All</a>
     </form>
     <a href="{% url 'lead_add' %}" class="btn btn-primary">Add</a>
   </nav>
@@ -104,11 +106,17 @@
 </section>
 
 <script>
+
+  
   // Get the input element, table, and select element
   const filterInput = document.getElementById('filterInput');
   const table = document.getElementById('data-table');
   const filterColumnSelect = document.getElementById('filterColumn');
-
+  
+  // input data empty for all data get 
+  document.querySelector("#all_data").addEventListener('click',function(){
+    filterInput.value="";
+  })
   // Add event listener to the input and select elements to trigger the filtering
   filterInput.addEventListener('keyup', filterTable);
   filterColumnSelect.addEventListener('change', filterTable);

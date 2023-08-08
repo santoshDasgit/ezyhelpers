@@ -40,23 +40,23 @@ def password_check(passwd,request):
     val = True
      
     if len(passwd) <= 8:
-        messages.error(request,'length should be at least 8')
+        messages.error(request,'length should be at least 8!')
         val = False
          
     if not any(char.isdigit() for char in passwd):
-        messages.error(request,'Password should have at least one numeral')
+        messages.error(request,'Password should have at least one numeral!')
         val = False
          
     if not any(char.isupper() for char in passwd):
-        messages.error(request,'Password should have at least one uppercase letter')
+        messages.error(request,'Password should have at least one uppercase letter!')
         val = False
          
     if not any(char.islower() for char in passwd):
-        messages.error(request,'Password should have at least one lowercase letter')
+        messages.error(request,'Password should have at least one lowercase letter!')
         val = False
          
     if not any(char in SpecialSym for char in passwd):
-        messages.error(request,'Password should have at least one of the symbols $@#')
+        messages.error(request,'Password should have at least one of the symbols $@#!')
         val = False
     if val:
         return val
@@ -81,7 +81,7 @@ def UserCreationView(request):
 
             # user  exists or not check 
             if User.objects.filter(username = email).exists():
-                messages.warning(request,f"{email} already exists.!")
+                messages.warning(request,f"{email} already exists!")
             else:
                 # User model data inserted 
                 user = User(
@@ -108,9 +108,9 @@ def UserCreationView(request):
                     # user set in employee 
                     EmployeeModel(employee = user).save()
                     # show message to superuser
-                    messages.success(request,f"{email} user created successful.!")
+                    messages.success(request,f"{email} user created successful!")
                 except:
-                    messages.error(request,'There is an error please try again.!')
+                    messages.error(request,'There is an error please try again!')
     return render(request,'super/user_creation_fm.html')
 
 
@@ -147,7 +147,7 @@ def userUpdate(request,id):
             # if same name of email is already exists 
             if(User.objects.filter(email = email).exists() and user.email != email):
             
-                messages.error(request,f"{email} already exists try another email.!")
+                messages.error(request,f"{email} already exists try another email!")
             else:
                 # email send Logic 
                 subject = "user data updated!!"
@@ -182,7 +182,7 @@ def userDelete(request,id):
         return HttpResponse("<h1>Not a valid user to access this page!</h1>")
     
     User.objects.get(pk = id).delete()
-    messages.success(request,"User remove successfully")
+    messages.success(request,"User remove successfully!")
 
     return redirect('superuser_user_list')
 
