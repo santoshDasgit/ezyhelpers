@@ -5,7 +5,7 @@ class HelperForm(forms.ModelForm):
     class Meta:
         model = HelperModel
         fields = ['first_name','middle_name','last_name','primary_phone','secondary_phone',
-                  'email_id','street','city','zipcode','state','country','work_experience','availability_status_week','additional_comment',
+                  'email_id','dob','street','city','zipcode','state','country','work_experience','availability_status','availability_status_week','additional_comment',
                   'locality','near_by'
                   
                   ]
@@ -22,13 +22,14 @@ class HelperForm(forms.ModelForm):
             'zipcode': forms.NumberInput(attrs={'class': 'form-control my-2'}),
             'state': forms.Select(attrs={'class': 'form-control my-2'}),
             'country': forms.Select(attrs={'class': 'form-control my-2'}),
-            'availability_status_week': forms.NumberInput(attrs={'class': 'form-control my-2'}),
-            'work_experience': forms.NumberInput(attrs={'class': 'form-control my-2'}),
+            'availability_status_week': forms.Select(attrs={'class': 'form-control my-2'}),
+            'availability_status': forms.Select(attrs={'class': 'form-control my-2'}),
+            'work_experience': forms.Select(attrs={'class': 'form-control my-2'}),
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
             'locality':forms.Select(attrs={'class': 'form-control my-2','rows':'2'}),
             'near_by':forms.CheckboxInput(attrs={'class': 'mb-4'}),
-          
+            'dob':forms.DateInput(attrs={'class': 'form-control my-2','type':'date','rows':'2'}),
            
           
         }

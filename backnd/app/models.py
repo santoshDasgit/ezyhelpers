@@ -1,8 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # employee user model
 class EmployeeModel(models.Model):
+    # create and update 
+    create_date = models.DateField(auto_now_add=True)
+    update_date = models.DateField(null=True,blank=True)
     employee = models.ForeignKey(User,on_delete=models.CASCADE)
 
 
@@ -61,6 +65,42 @@ LOCALITY = (
     ('d','d'),
     
 )
+
+EXPERIENCE = (
+    ('0-3 month','0-3 month'),
+    ('3-6 month','3-6 month'),
+    ('6-9 month','6-9 month'),
+    ('1 year','1 year'),
+    ('1.5 year','1.5 year'),
+    ('2 year','2 year'),
+    ('2.5 year','2.5 year'),
+    ('3 year','3 year'),
+    ('3.5 year','3.5 year'),
+    ('4 year','4 year'),
+    ('4.5 year','4.5 year'),
+    ('5 year','5 year'),
+    ('5.5 year','5.5 year'),
+    ('6 year','6 year'),
+    ('6.5 year','6.5 year'),
+    ('6 year+','6 year+'),
+)
+
+AVAILABILITY_STATUS = (
+    ('live_in','Live in'),
+     ('on_demand','On demand'),
+     ('full_time','Full time'),
+     ('part_time','Part time'),
+     ('misc','Misc'),
+) 
+WEEK=(
+        (1,1),
+         (2,2),
+          (3,3),
+           (4,4),
+            (5,5),
+             (6,6),
+              (7,7),
+)
 class HelperModel(models.Model):
     # model id 
     helper_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
@@ -73,7 +113,8 @@ class HelperModel(models.Model):
     last_name = models.CharField(max_length=100,null=False,blank=False)
     primary_phone = models.IntegerField(null=False,blank=False)
     secondary_phone = models.IntegerField(null=True,blank=True)
-    email_id = models.CharField(max_length=100,null=False,blank=False)
+    email_id = models.CharField(max_length=100,null=True,blank=True,default='Name@ezyhelpers.com')
+    dob = models.DateField()
 
     # address
     street = models.CharField(max_length=100,null=False,blank=False)
@@ -84,25 +125,22 @@ class HelperModel(models.Model):
     additional_comment = models.TextField(blank=True,null=True)
 
     # work
-    work_experience = models.IntegerField(default=0)
-    availability_status_week = models.IntegerField(default=0)
+    work_experience = models.CharField(max_length=30,choices=EXPERIENCE)
+    availability_status_week = models.IntegerField(default=1,choices=WEEK)
+    availability_status = models.CharField(max_length=60,choices=AVAILABILITY_STATUS)
 
     # locality 
     locality = models.CharField(max_length=30,choices=LOCALITY)
     near_by = models.BooleanField(default=False)
 
-  
-
-    
-    dob = models.DateField()
-
     # create and update 
+    admin_user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     create_date = models.DateField(auto_now_add=True)
-    update_date = models.DateField(auto_now_add=True)
+    update_date = models.DateField(null=True,blank=True)
 
     def __str__(self) -> str:
         return self.first_name
-   
+     
 
 # skill set 
 class HelperSkillSetModel(models.Model):
@@ -141,6 +179,59 @@ class LeadStatusNotificationModel(models.Model):
     employee = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     status = models.CharField(max_length=50,choices=LEAD_CONTACT_STATUS,default='pending')
     msg = models.CharField(max_length=400)
-    date = models.DateTimeField(auto_now_add=True)
+    create_date = models.DateField(auto_now_add=True)
+    update_date = models.DateField(null=True,blank=True)
 
 
+
+
+HISTORY_STATUS = (
+    ('create','create'),
+    ('delate','delete'),
+    ('update','update')
+)
+# helper History Model 
+class HelperHistoryModel(models.Model):
+    # model id 
+    helper_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
+    helper_status = models.CharField(max_length=50,choices=CONTACT_STATUS,default='pending')
+
+
+
+    # personal details
+    first_name = models.CharField(max_length=100,null=False,blank=False)
+    middle_name = models.CharField(max_length=100,null=True,blank=True)
+    last_name = models.CharField(max_length=100,null=False,blank=False)
+    primary_phone = models.IntegerField(null=False,blank=False)
+    secondary_phone = models.IntegerField(null=True,blank=True)
+    email_id = models.CharField(max_length=100,null=True,blank=True,default='Name@ezyhelpers.com')
+    dob = models.DateField()
+
+    # address
+    street = models.CharField(max_length=100,null=False,blank=False)
+    city = models.CharField(max_length=100,null=False,blank=False)
+    zipcode = models.IntegerField(null=False,blank=False)
+    state = models.CharField(max_length=100,choices=STATE,null=False,blank=False)
+    country = models.CharField(max_length=100,choices=COUNTRY,null=False,blank=False)
+    additional_comment = models.TextField(blank=True,null=True)
+
+    # work
+    work_experience = models.CharField(max_length=30,choices=EXPERIENCE)
+    availability_status_week = models.IntegerField(default=1,choices=WEEK)
+    availability_status = models.CharField(max_length=60,choices=AVAILABILITY_STATUS)
+
+    # locality 
+    locality = models.CharField(max_length=30,choices=LOCALITY)
+    near_by = models.BooleanField(default=False)
+
+    # create and update and remove status
+    admin_user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    create_date = models.DateField(auto_now_add=True)
+    update_date = models.DateField(null=True,blank=True)
+    history_status = models.CharField(max_length=100,choices=HISTORY_STATUS,default='create')
+
+    # History status
+
+    def __str__(self) -> str:
+        return self.first_name
+   

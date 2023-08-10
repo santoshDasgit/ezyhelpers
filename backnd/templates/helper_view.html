@@ -3,10 +3,10 @@
 {% block body %}
 <table>
     <thead>
-       <tr>
-        <th>name</th>
-        <th>details</th>
-       </tr>
+        <tr>
+            <th>name</th>
+            <th>details</th>
+        </tr>
     </thead>
     <tbody>
 
@@ -15,6 +15,10 @@
             <td>{{helper.helper_id}}</td>
         </tr>
 
+        <tr>
+            <td>email</td>
+            <td>{{helper.email_id}}</td>
+        </tr>
 
         <tr>
             <td>first name</td>
@@ -29,6 +33,11 @@
         <tr>
             <td>last name</td>
             <td>{{helper.last_name}}</td>
+        </tr>
+
+        <tr>
+            <td>Dob</td>
+            <td>{{helper.dob}}</td>
         </tr>
 
         <tr>
@@ -47,13 +56,16 @@
         </tr>
 
         <tr>
-            <td>email</td>
-            <td>{{helper.email_id}}</td>
+            <td>Inserted date</td>
+            <td>{{helper.create_date}}</td>
         </tr>
+
 
         <!--address details-->
         <tr>
-            <td colspan="2"><h6><u>address details</u></h6></td>
+            <td colspan="2">
+                <h6><u>address details</u></h6>
+            </td>
         </tr>
 
         <tr>
@@ -76,12 +88,12 @@
             <td>{{helper.state}}</td>
         </tr>
 
-        
+
         <tr>
             <td>country</td>
             <td>{{helper.country}}</td>
         </tr>
-        
+
         <tr>
             <td>Locality</td>
             <td>{{helper.locality}}</td>
@@ -89,12 +101,36 @@
 
         <tr>
             <td>Near by</td>
-            <td>{% if not helper.near_by %}Current location {% else %}Range in   <b>5 k.m</b> {% endif %}</td>
+            <td>{% if not helper.near_by %}Current location {% else %}Range in <b>5 k.m</b> {% endif %}</td>
         </tr>
 
-          <!--Additional comment -->
-          <tr class="mt-2">
-            <td colspan="2"> <h6><u>Additional comments</u></h6></td>
+         <!--Availability Status -->
+         <tr class="mt-2">
+            <td colspan="2">
+                <h6><u>Availability Status </u></h6>
+            </td>
+        </tr>
+
+        <tr>
+            <td> work experience</td>
+            <td>{{helper.work_experience}}</td>
+        </tr>
+        
+        <tr>
+            <td> Availability status </td>
+            <td>{{helper.availability_status}}</td>
+        </tr>
+
+        <tr>
+            <td> Availability status week</td>
+            <td>{{helper.availability_status_week}} day in week</td>
+        </tr>
+
+        <!--Additional comment -->
+        <tr class="mt-2">
+            <td colspan="2">
+                <h6><u>Additional comments</u></h6>
+            </td>
         </tr>
 
         <tr>
@@ -104,14 +140,16 @@
 
         <!--Additional details -->
         <tr class="mt-2">
-            <td colspan="2"> <h6><u>Additional details</u></h6></td>
+            <td colspan="2">
+                <h6><u>Additional details</u></h6>
+            </td>
         </tr>
-       
+
         <tr>
             <td> helper Preferred Language : </td>
             <td>
                 {% for i in language %}
-                   {{i.language}},
+                {{i.language}},
                 {% endfor %}
             </td>
         </tr>
@@ -120,22 +158,22 @@
             <td>Helper Skill : </td>
             <td>
                 {% for i in skill %}
-                 {{i.skill}},
-              {% endfor %}
+                {{i.skill}},
+                {% endfor %}
             </td>
         </tr>
 
-        
+
         <tr>
             <td>Helper Additional Skill : </td>
             <td>
                 {% for i in additional_skill %}
-                 {{i.additional_skill}},
-              {% endfor %}
+                {{i.additional_skill}},
+                {% endfor %}
             </td>
         </tr>
 
-        
+
     </tbody>
 </table>
 <a href="{% url 'helper_list' %}" class="btn btn-secondary">Back</a>

@@ -16,6 +16,7 @@ from app.resources import HelperModelResources
 from tablib import Dataset
 import gspread
 from django.db.models import Q
+from datetime import date
 
 # Home page 
 def HomeView(request):
@@ -277,6 +278,7 @@ def HelperAddView(request):
             if fm.is_valid():
                 data = fm.save()
                 data.helper_id = generate_id(data.id) # function to create id and convert into Hexa
+                data.admin_user = request.user
                 data.save()
                 messages.success(request,'data added successfully!')
 
@@ -445,6 +447,9 @@ def HelperEditView(request,id):
                 if i.strip()!="":
                     HelperPreferredLanguageModel(helper = helper , language = i.strip()).save()
 
+            # update_date is updated 
+            fm.instance.update_date = date.today()
+
             # Helper form save  
             fm.save()
             messages.success(request,'Data updated successfully!')
@@ -521,7 +526,8 @@ def LeadDetailsView(request,no):
             'addr' : values_list[3],
             'id': values_list[8],
             'locality':values_list[9],
-            'near_by':values_list[10]
+            'near_by':values_list[10],
+            'availability':values_list[11]
         }
     except:
          # exception handle 
@@ -554,7 +560,8 @@ def LeadEditView(request,no):
             'email' : values_list[2],
             'addr' : values_list[3],
             'locality':values_list[9],
-            'near_by':values_list[10]
+            'near_by':values_list[10],
+            'availability':values_list[11]
         }
         
     
@@ -568,6 +575,7 @@ def LeadEditView(request,no):
             addr = request.POST['addr']
             locality = request.POST['locality']
             near_by = request.POST.get('near_by',False)
+            availability = request.POST['availability']
 
             # near_by set
             if near_by == 'on':
@@ -580,6 +588,7 @@ def LeadEditView(request,no):
             current_sheet.update_cell(row_num, 4, addr)
             current_sheet.update_cell(row_num, 10, locality)
             current_sheet.update_cell(row_num, 11, near_by)
+            current_sheet.update_cell(row_num, 12, availability)
             
 
             # message to success
@@ -643,6 +652,7 @@ def LeadInsertDataView(request):
             addr = request.POST['addr']
             locality = request.POST['locality']
             near_by = request.POST.get('near_by',False)
+            availability = request.POST['availability']
     
             # id generate 
             id = lead_generate_id(len(current_sheet.get_all_records())+2)
@@ -652,7 +662,7 @@ def LeadInsertDataView(request):
                 near_by = True
 
             # all value in list format 
-            lst = [name,phone,email,addr," "," "," ","pending",id,locality,near_by]
+            lst = [name,phone,email,addr," "," "," ","pending",id,locality,near_by,availability]
 
             # row append in sheet 
             current_sheet.append_row(lst)
