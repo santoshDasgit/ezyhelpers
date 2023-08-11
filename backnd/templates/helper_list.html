@@ -90,6 +90,9 @@
             <!--helper delete-->
             <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#ampleModal{{forloop.counter}}"><i
                 class="fa-solid fa-trash"></i></button>
+
+            <!--helper pdf-->
+            <a href="{% url 'helper_pdf' i.id %}" class="btn btn-sm btn-primary" download><i class="fa-solid fa-download"></i></a>
           </td>
           <!-- Modal -->
           <div class="modal fade" id="ampleModal{{forloop.counter}}" tabindex="-1" role="dialog"

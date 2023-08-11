@@ -179,18 +179,20 @@ class LeadStatusNotificationModel(models.Model):
     employee = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     status = models.CharField(max_length=50,choices=LEAD_CONTACT_STATUS,default='pending')
     msg = models.CharField(max_length=400)
-    create_date = models.DateField(auto_now_add=True)
-    update_date = models.DateField(null=True,blank=True)
+    create_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(null=True,blank=True)
 
 
 
+
+# helper History Model 
 
 HISTORY_STATUS = (
     ('create','create'),
     ('delate','delete'),
     ('update','update')
 )
-# helper History Model 
+
 class HelperHistoryModel(models.Model):
     # model id 
     helper_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
@@ -226,8 +228,8 @@ class HelperHistoryModel(models.Model):
 
     # create and update and remove status
     admin_user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
-    create_date = models.DateField(auto_now_add=True)
-    update_date = models.DateField(null=True,blank=True)
+    create_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(null=True,blank=True)
     history_status = models.CharField(max_length=100,choices=HISTORY_STATUS,default='create')
 
     # History status

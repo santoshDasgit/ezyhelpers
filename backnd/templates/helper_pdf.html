@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!--logo-->
+    <u><i><h1>Ezyhelpers</h1></i></u>
+
+    <!--table-->
+    <table >
+        <h3 style="text-align: center; color: blue;">Helper details</h3>
+        <thead >
+            <tr style="background-color: yellow; padding: 5px;">
+                <th style="text-align: start;">name</th>
+                <th style="text-align: start;">details</th>
+            </tr>
+        </thead>
+        <tbody>
+    
+         
+    
+            <tr>
+                <td>email</td>
+                <td>{{helper.email_id}}</td>
+            </tr>
+
+            <tr>
+                <td>helper id</td>
+                <td>{{helper.helper_id}}</td>
+            </tr>
+    
+            <tr>
+                <td>first name</td>
+                <td>{{helper.first_name}}</td>
+            </tr>
+    
+            <tr>
+                <td>middle name</td>
+                <td>{{helper.middle_name}}</td>
+            </tr>
+    
+            <tr>
+                <td>last name</td>
+                <td>{{helper.last_name}}</td>
+            </tr>
+    
+            <tr>
+                <td>Dob</td>
+                <td>{{helper.dob}}</td>
+            </tr>
+    
+            <tr>
+                <td>helper status</td>
+                <td>{{helper.helper_status}}</td>
+            </tr>
+    
+            <tr>
+                <td>primary ph.</td>
+                <td>{{helper.primary_phone}}</td>
+            </tr>
+    
+            <tr>
+                <td>secondary ph.</td>
+                <td>{{helper.secondary_phone}}</td>
+            </tr>
+    
+            <tr>
+                <td>Inserted date</td>
+                <td>{{helper.create_date}}</td>
+            </tr>
+    
+    
+            <!--address details-->
+            <tr>
+                <td colspan="2">
+                    <h6><u>address details</u></h6>
+                </td>
+            </tr>
+    
+            <tr>
+                <td>street</td>
+                <td>{{helper.street}}</td>
+            </tr>
+    
+            <tr>
+                <td>city</td>
+                <td>{{helper.city}}</td>
+            </tr>
+    
+            <tr>
+                <td>Zipcode</td>
+                <td>{{helper.zipcode}}</td>
+            </tr>
+    
+            <tr>
+                <td>State</td>
+                <td>{{helper.state}}</td>
+            </tr>
+    
+    
+            <tr>
+                <td>country</td>
+                <td>{{helper.country}}</td>
+            </tr>
+    
+            <tr>
+                <td>Locality</td>
+                <td>{{helper.locality}}</td>
+            </tr>
+    
+            <tr>
+                <td>Near by</td>
+                <td>{% if not helper.near_by %}Current location {% else %}Range in <b>5 k.m</b> {% endif %}</td>
+            </tr>
+    
+             <!--Availability Status -->
+             <tr class="mt-2">
+                <td colspan="2">
+                    <h6><u>Availability Status </u></h6>
+                </td>
+            </tr>
+    
+            <tr>
+                <td> work experience</td>
+                <td>{{helper.work_experience}}</td>
+            </tr>
+            
+            <tr>
+                <td> Availability status </td>
+                <td>{{helper.availability_status}}</td>
+            </tr>
+    
+            <tr>
+                <td> Availability status week</td>
+                <td>{{helper.availability_status_week}} day in week</td>
+            </tr>
+    
+            <!--Additional comment -->
+            <tr class="mt-2">
+                <td colspan="2">
+                    <h6><u>Additional comments</u></h6>
+                </td>
+            </tr>
+    
+            <tr>
+                <td> additional comment</td>
+                <td>{{helper.additional_comment}}</td>
+            </tr>
+    
+            <!--Additional details -->
+            <tr class="mt-2">
+                <td colspan="2">
+                    <h6><u>Additional details</u></h6>
+                </td>
+            </tr>
+    
+            <tr>
+                <td> helper Preferred Language : </td>
+                <td>
+                    {% for i in language %}
+                    {{i.language}},
+                    {% endfor %}
+                </td>
+            </tr>
+    
+            <tr>
+                <td>Helper Skill : </td>
+                <td>
+                    {% for i in skill %}
+                    {{i.skill}},
+                    {% endfor %}
+                </td>
+            </tr>
+    
+    
+            <tr>
+                <td>Helper Additional Skill : </td>
+                <td>
+                    {% for i in additional_skill %}
+                    {{i.additional_skill}},
+                    {% endfor %}
+                </td>
+            </tr>
+    
+    
+        </tbody>
+    </table>
+</body>
+</html>

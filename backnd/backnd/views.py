@@ -17,6 +17,8 @@ from tablib import Dataset
 import gspread
 from django.db.models import Q
 from datetime import date
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 # Home page 
 def HomeView(request):
@@ -318,6 +320,27 @@ def HelperDetailsView(request,id):
       'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper)
     }
     return render(request,'helper_view.html',data)
+
+# Helper all data into pdf 
+def HelperPdfView(request,id):
+    helper = HelperModel.objects.get(id = id)
+    
+    data = {
+      'helper':helper,
+      'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
+       'skill':HelperSkillSetModel.objects.filter(helper = helper),
+      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper)
+    }
+    template = get_template('helper_pdf.html')
+    context = data # Add any context data you need for the template
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="{helper}.pdf"'
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error while generating PDF', status=500)
+    return response
+    
 
 
 # Helper status update logic 
