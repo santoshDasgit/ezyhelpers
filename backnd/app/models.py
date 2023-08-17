@@ -94,15 +94,7 @@ AVAILABILITY_STATUS = (
      ('part_time','Part time'),
      ('misc','Misc'),
 ) 
-WEEK=(
-        (1,1),
-         (2,2),
-          (3,3),
-           (4,4),
-            (5,5),
-             (6,6),
-              (7,7),
-)
+
 
 
 # pdf allow 
@@ -142,7 +134,7 @@ class HelperModel(models.Model):
 
     # work
     work_experience = models.CharField(max_length=30,choices=EXPERIENCE)
-    availability_status_week = models.IntegerField(default=1,choices=WEEK)
+    availability_status_week = models.CharField(max_length=400)
     availability_status = models.CharField(max_length=60,choices=AVAILABILITY_STATUS)
 
     # locality 

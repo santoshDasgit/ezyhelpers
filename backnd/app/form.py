@@ -22,7 +22,7 @@ class HelperForm(forms.ModelForm):
             'zipcode': forms.NumberInput(attrs={'class': 'form-control my-2'}),
             'state': forms.Select(attrs={'class': 'form-control my-2'}),
             'country': forms.Select(attrs={'class': 'form-control my-2'}),
-            'availability_status_week': forms.Select(attrs={'class': 'form-control my-2'}),
+            'availability_status_week': forms.TextInput(attrs={'class': 'form-control my-2'}),
             'availability_status': forms.Select(attrs={'class': 'form-control my-2'}),
             'work_experience': forms.Select(attrs={'class': 'form-control my-2'}),
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),

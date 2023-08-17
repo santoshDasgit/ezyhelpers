@@ -281,6 +281,19 @@ def HelperAddView(request):
         else: 
             fm = HelperForm(request.POST,request.FILES)
             if fm.is_valid():
+                # phone number exist or not valid (phone_valid)
+
+                # if secondary phone empty 
+                if fm.instance.secondary_phone != None and HelperModel.objects.filter(Q(primary_phone = fm.instance.primary_phone) | Q(secondary_phone = fm.instance.secondary_phone) | Q(primary_phone = fm.instance.secondary_phone) | Q(secondary_phone = fm.instance.primary_phone)).exists():
+                    fm.instance.phone_valid = True
+                    messages.warning(request,'Redundant phone number , please check in dashboard ! ')
+
+                # if secondary phone not empty 
+                if fm.instance.secondary_phone == None and HelperModel.objects.filter(Q(primary_phone = fm.instance.primary_phone) | Q(secondary_phone = fm.instance.primary_phone)).exists():
+                    fm.instance.phone_valid = True
+                    messages.warning(request,'Redundant phone number , please check in dashboard ! ')
+                    
+
                 data = fm.save()
                 data.helper_id = generate_id(data.id) # function to create id and convert into Hexa
                 data.admin_user = request.user
@@ -310,11 +323,9 @@ def HelperAddView(request):
                 ).save()
                 
                 messages.success(request,'data added successfully!')
-                # phone number exist or not valid (phone_valid)
-                if HelperModel.objects.filter(Q(primary_phone = data.primary_phone) | Q(secondary_phone = data.secondary_phone) | Q(primary_phone = data.secondary_phone) | Q(secondary_phone = data.primary_phone)):
-                    data.phone_valid = True
-                    data.save()
-                    messages.warning(request,'Redundant phone number , please check in dashboard ! ')
+          
+   
+   
 
                 # preferences language inserted
                 for i in language:
