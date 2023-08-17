@@ -7,6 +7,11 @@ text-align: left;
 font-weight: 200;
 }
 
+#super_user_dashboard .helper_list_not_valid{
+  height: 50vh;
+  overflow-y: scroll;
+}
+
 /* super/user_creation_fm */
 
 /* Style the container for inputs */
@@ -65,7 +70,6 @@ font-weight: 200;
     }
 
 /* helper_list.html  */
-
 .helper_list{
   height: 50vh;
   overflow-y: scroll;
@@ -73,6 +77,10 @@ font-weight: 200;
 
 .helper nav form{
   width: 87%;
+}
+
+.helper_list th{
+  cursor: pointer;
 }
 
 
@@ -84,4 +92,11 @@ font-weight: 200;
 
 .lead-list form{
   width: 85%;
+}
+
+
+
+/* history.html */
+.history ul{
+list-style: none;
 }

@@ -21,7 +21,7 @@ def EmployeeDashboard(request):
 
         # Calculate the threshold date (current date and time minus 24 hours)
         threshold_datetime = current_datetime - timezone.timedelta(hours=24)
-        notify = LeadStatusNotificationModel.objects.filter(date__lt = threshold_datetime)    
+        notify = LeadStatusNotificationModel.objects.filter(create_date__lt = threshold_datetime)    
         # all data sent on html file in object format 
         data = {
             'notify': notify

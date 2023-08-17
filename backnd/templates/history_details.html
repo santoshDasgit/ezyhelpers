@@ -1,0 +1,135 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+
+
+<!--helper -->
+{% if data.helper %}
+<div class='mt-4 shadow p-2'>
+    <!--time-->
+    <span>
+        <b><i class="fa-solid fa-clock"></i>   {{data.date}} ({{data.helper.history_status}})</b>
+    </span>
+    <table class="table shadow-sm p-2 mb-5">
+        <h5 class='text-center'>helpaer details</h5>
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">First name</th>
+            <th scope="col">Last name</th>
+            <th scope="col">email</th>
+            <th scope="col">phone</th>
+            <th scope="col">dob</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{data.helper.helper_id}}</th>
+            <td>{{data.helper.first_name}}</td>
+            <td>{{data.helper.last_name}}</td>
+            <td>{{data.helper.email_id}}</td>
+            <td>{{data.helper.primary_phone}}</td>
+            <td>{{data.helper.dob}}</td>
+          </tr>
+       
+          
+        </tbody>
+    </table>
+
+
+    <table class="table shadow-sm p-2 ">
+        <h5 class='text-center'>Admin details</h5>
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">First name</th>
+            <th scope="col">Last name</th>
+            <th scope="col">email</th>
+ 
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{data.helper.admin_user.id}}</th>
+            <td>{{data.helper.admin_user.first_name}}</td>
+            <td>{{data.helper.admin_user.last_name}}</td>
+            <td>{{data.helper.admin_user.email}}</td>
+    
+          </tr>
+       
+          
+        </tbody>
+    </table>
+
+        <!--back-->
+        <a href="{% url 'history' %}" class='btn btn-secondary'>Back</a>
+</div>
+{% endif %}
+
+
+<!--lead-->
+{% if data.lead %}
+<div class='mt-4 shadow p-2'>
+    <!--time-->
+    <span>
+        <b><i class="fa-solid fa-clock"></i>   {{data.date}} ({{data.lead.history_status}})</b>
+    </span>
+    <table class="table shadow-sm p-2 mb-5">
+        <h5 class='text-center'>lead details</h5>
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">name</th>
+            <th scope="col">email</th>
+            <th scope="col">phone</th>
+           
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{data.lead.lead_id}}</th>
+            <td>{{data.lead.name}}</td>
+            <td>{{data.lead.phone}}</td>
+            <td>{{data.lead.email}}</td>
+          </tr>
+       
+          
+        </tbody>
+    </table>
+
+
+    <table class="table shadow-sm p-2 ">
+        <h5 class='text-center'>Admin details</h5>
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">First name</th>
+            <th scope="col">Last name</th>
+            <th scope="col">email</th>
+ 
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{data.lead.admin_user.id}}</th>
+            <td>{{data.lead.admin_user.first_name}}</td>
+            <td>{{data.lead.admin_user.last_name}}</td>
+            <td>{{data.lead.admin_user.email}}</td>
+    
+          </tr>
+       
+          
+        </tbody>
+    </table>
+
+    <!--back-->
+    <a href="{% url 'history' %}" class='btn btn-secondary'>Back</a>
+</div>
+{% endif %}
+
+
+
+
+{% endblock body %}
+

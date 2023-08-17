@@ -18,7 +18,8 @@
       {% csrf_token %}
       <input class="form-control mr-sm-2 w-75" type="search" name='search' placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-      <a href = "{% url 'helper_list' %}" class="btn btn-outline-primary my-2 my-sm-0 mx-3" type="submit">All record</a href = "{% url 'lead_list' %}">
+      <a href="{% url 'helper_list' %}" class="btn btn-outline-primary my-2 my-sm-0 mx-3" type="submit">All record</a
+        href="{% url 'lead_list' %}">
     </form>
     <button class='btn btn-primary' data-toggle="modal" data-target="#exampleModalCenter">Add</button>
   </nav>
@@ -48,12 +49,13 @@
   <button class='btn btn-outline-success m-2'>Total <b>{{helper_list.count}}</b></button>
   <!-- Helper list -->
   <section class='helper_list shadow p-2'>
-    <table class="table">
+    <table class="table" id="myTable">
       <thead>
         <tr>
-          <th scope="col">helper Name</th>
-          <th scope="col">helper id</th>
-          <th scope="col">Phone Number</th>
+          <th scope="col" onclick="sortTable(0)">helper Name</th>
+          <th scope="col" onclick="sortTable(1)">helper id</th>
+          <th scope="col" onclick="sortTable(2)">email</th>
+          <th scope="col" onclick="sortTable(3)">Phone Number</th>
           <th scope="col">Helper Status</th>
           <th scope="col">Action</th>
         </tr>
@@ -61,61 +63,67 @@
       <tbody>
         <!--Getting data from helper-->
         {% for i in helper_list %}
-        <tr>
-          <th scope="row">
-            <i class="fa-solid fa-user"></i>
-            <!--Url for helper details-->
-            <a href="{% url 'helper_view' i.id %}">{{i.first_name|capfirst}}</a>
-          </th>
-          <td>{{i.helper_id}}</td>
-          <td>{{i.primary_phone}}</td>
-          <td>
-            <form action="{% url 'helper_status_update' i.id %}" class="helper-status-fm" method="post">
-              {% csrf_token %}
-              <select name="helper-status-inp" class='form-control helper-status-inp'>
-                <option value="placed" {% if i.helper_status == 'placed' %} selected {% endif %}>
-                  Placed
-                </option>
-                <option value="pending" {% if i.helper_status == "pending" %} selected {% endif %}>Pending</option>
-                <option value="need_to_contact" {% if i.helper_status == 'need_to_contact' %} selected {% endif %}>Need to contact</option>
-
-              </select>
-            </form>
-          </td>
-
-          <td>
-            <!--helper edit-->
-            <a href="{% url 'helper_edit' i.id %}" class="btn btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></a>
-           
-            <!--helper delete-->
-            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#ampleModal{{forloop.counter}}"><i
-                class="fa-solid fa-trash"></i></button>
-
-            <!--helper pdf-->
-            <a href="{% url 'helper_pdf' i.id %}" class="btn btn-sm btn-primary" download><i class="fa-solid fa-download"></i></a>
-          </td>
-          <!-- Modal -->
-          <div class="modal fade" id="ampleModal{{forloop.counter}}" tabindex="-1" role="dialog"
-            aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Confrom remove</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                <b class='text-danger'>* {{i.helper_id}}</b>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <a href="{% url 'helper_delete' i.id %}" class="btn btn-danger">Remove</a>
+           {% if not i.phone_valid %}
+           <tr>
+            <td scope="row" >
+              <i class="fa-solid fa-user"></i>
+              <!--Url for helper details-->
+              <a href="{% url 'helper_view' i.id %}" class="table_col">{{i.first_name|capfirst}}</a>
+            </td>
+            <td class="table_col" >{{i.helper_id}}</td>
+            <td class="table_col" >{{i.email_id}}</td>
+            <td class="table_col">{{i.primary_phone}}</td>
+            <td>
+              <form action="{% url 'helper_status_update' i.id %}" class="helper-status-fm" method="post">
+                {% csrf_token %}
+                <select name="helper-status-inp" class='form-control helper-status-inp'>
+                  <option value="placed" {% if i.helper_status == 'placed' %} selected {% endif %}>
+                    Placed
+                  </option>
+                  <option value="pending" {% if i.helper_status == "pending" %} selected {% endif %}>Pending</option>
+                  <option value="need_to_contact" {% if i.helper_status == 'need_to_contact' %} selected {% endif %}>Need to
+                    contact</option>
+  
+                </select>
+              </form>
+            </td>
+  
+            <td>
+              <!--helper edit-->
+              <a href="{% url 'helper_edit' i.id %}" class="btn btn-sm btn-primary"><i
+                  class="fa-solid fa-pen-to-square"></i></a>
+  
+              <!--helper delete-->
+              <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#ampleModal{{forloop.counter}}"><i
+                  class="fa-solid fa-trash"></i></button>
+  
+              <!--helper pdf-->
+              <a href="{% url 'helper_pdf' i.id %}" class="btn btn-sm btn-primary" download><i
+                  class="fa-solid fa-download"></i></a>
+            </td>
+            <!-- Modal -->
+            <div class="modal fade" id="ampleModal{{forloop.counter}}" tabindex="-1" role="dialog"
+              aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confrom remove</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <b class='text-danger'>* {{i.helper_id}}</b>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="{% url 'helper_delete' i.id %}" class="btn btn-danger">Remove</a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </tr>
+          </tr>
+           {% endif %}
         {% endfor %}
       </tbody>
     </table>
@@ -123,14 +131,64 @@
 </section>
 
 <script>
+
+  // if status change autosubmit 
   let helper_status_inp = document.querySelectorAll('.helper-status-inp')
   let helper_status_fm = document.querySelectorAll('.helper-status-fm')
 
   for (let i = 0; i < helper_status_inp.length; i++) {
-
     helper_status_inp[i].onchange = function () {
       helper_status_fm[i].submit()
     }
   }
+
+
+  // sorting column logic 
+  var currentColumn = -1;
+  var sortOrder = 1;
+
+  function sortTable(columnIndex) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById("myTable");
+    switching = true;
+
+    if (columnIndex === currentColumn) {
+      sortOrder *= -1; // Change the sort order if the same column is clicked
+    } else {
+      currentColumn = columnIndex;
+      sortOrder = 1; // Reset sort order if a different column is clicked
+    }
+
+    while (switching) {
+      switching = false;
+      rows = table.getElementsByTagName("tr");
+
+      for (i = 1; i < (rows.length - 1); i++) {
+        shouldSwitch = false;
+
+        x = rows[i].getElementsByClassName("table_col")[columnIndex];
+        y = rows[i + 1].getElementsByClassName("table_col")[columnIndex];
+
+        if (sortOrder === 1) {
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        } else {
+          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+      }
+
+      if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
+
+
 </script>
 {% endblock body %}

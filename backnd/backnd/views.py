@@ -19,6 +19,10 @@ from django.db.models import Q
 from datetime import date
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from datetime import datetime
+from django.shortcuts import render, get_object_or_404
+
+
 
 # Home page 
 def HomeView(request):
@@ -243,7 +247,7 @@ def generate_id(id):
 @login_required
 def HelperListViews(request):
 
-    helper = HelperModel.objects.all().order_by('-id') # helper model object
+    helper = HelperModel.objects.filter(phone_valid = False).order_by('-id') # helper model object
 
     # post for data searching propose
     if request.method == 'POST':
@@ -264,7 +268,6 @@ def HelperListViews(request):
 @login_required
 def HelperAddView(request):
     fm = HelperForm()
-
     if request.method == "POST":
         
         # data input 
@@ -276,13 +279,42 @@ def HelperAddView(request):
         if language == ['']:
             messages.error(request,'* Preferred Language required!')
         else: 
-            fm = HelperForm(request.POST)
+            fm = HelperForm(request.POST,request.FILES)
             if fm.is_valid():
                 data = fm.save()
                 data.helper_id = generate_id(data.id) # function to create id and convert into Hexa
                 data.admin_user = request.user
+                # helper_save 
                 data.save()
+
+
+                # History store 
+                current_datetime = datetime.now()
+                helper_data = HelperHistoryModel(
+                    helper_id = data.helper_id,
+                    first_name = data.first_name,
+                    middle_name = data.middle_name,
+                    last_name = data.last_name,
+                    primary_phone = data.primary_phone,
+                    email_id = data.email_id,
+                    dob = data.dob,
+                    create_date = current_datetime,
+
+                    admin_user = request.user,
+                    history_status = 'create'
+                )
+                helper_data.save()
+                HistoryModel(
+                    helper = helper_data,
+                    date = current_datetime
+                ).save()
+                
                 messages.success(request,'data added successfully!')
+                # phone number exist or not valid (phone_valid)
+                if HelperModel.objects.filter(Q(primary_phone = data.primary_phone) | Q(secondary_phone = data.secondary_phone) | Q(primary_phone = data.secondary_phone) | Q(secondary_phone = data.primary_phone)):
+                    data.phone_valid = True
+                    data.save()
+                    messages.warning(request,'Redundant phone number , please check in dashboard ! ')
 
                 # preferences language inserted
                 for i in language:
@@ -386,7 +418,8 @@ def ExcelFileHelperFileView(request):
                             city = i[3],
                             zipcode = 7540065,
                             state = "NULL STATE",
-                            country = 'NULL COUNTRY'
+                            country = 'NULL COUNTRY',
+                            dob = '2021-2-12'
 
                         )
 
@@ -406,15 +439,35 @@ def ExcelFileHelperFileView(request):
     return render(request,'helper_excel.html')
 
 
-# helper object delete 
+# helper delete 
 @login_required
 def HelperDeleteView(request,id):
-    HelperModel.objects.get(id = id).delete()
+    data = HelperModel.objects.get(id = id)
+
+    current_datetime = datetime.now()
+    helper_data = HelperHistoryModel(
+                helper_id = data.helper_id,
+                first_name = data.first_name,
+                middle_name = data.middle_name,
+                last_name = data.last_name,
+                primary_phone = data.primary_phone,
+                email_id = data.email_id,
+                dob = data.dob,
+                create_date = data.create_date,
+                update_date = current_datetime.today(),
+                admin_user = request.user,
+                history_status = 'delete'
+                )
+    
+    helper_data.save()
+    HistoryModel(helper = helper_data , date = current_datetime.today()).save()
+    data.delete()
+    
     messages.warning(request,"Data remove successfully!")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-# helper object update 
+# helper  update 
 @login_required
 def HelperEditView(request,id):
    
@@ -432,7 +485,7 @@ def HelperEditView(request,id):
         add_skill_inp = request.POST.getlist('ad-skill')
         language_inp = request.POST.getlist('language')
 
-        fm=HelperForm(request.POST,instance=helper) # all input value 
+        fm=HelperForm(request.POST,request.FILES,instance=helper) # all input value 
         
         # language empty or not check 
         language_inpIsEmpty = False
@@ -474,7 +527,54 @@ def HelperEditView(request,id):
             fm.instance.update_date = date.today()
 
             # Helper form save  
-            fm.save()
+            data = fm.save()
+
+            # History store 
+            current_datetime = datetime.now()
+            if not HelperHistoryModel.objects.filter(Q(helper_id = data.helper_id) & Q(history_status = 'update')).exists():
+                helper_data = HelperHistoryModel(
+                helper_id = data.helper_id,
+                first_name = data.first_name,
+                middle_name = data.middle_name,
+                last_name = data.last_name,
+                primary_phone = data.primary_phone,
+                email_id = data.email_id,
+                dob = data.dob,
+                create_date = data.create_date,
+                update_date = current_datetime.today(),
+                admin_user = request.user,
+                history_status = 'update'
+                )
+
+                helper_data.save()
+
+                HistoryModel(
+                    helper =HelperHistoryModel.objects.get(Q(helper_id = data.helper_id) & Q(history_status = 'update')),
+                    date = current_datetime
+                ).save()
+
+                
+
+            else:
+                helper_data = HelperHistoryModel.objects.filter(Q(helper_id = data.helper_id) & Q(history_status = 'update'))
+                helper_data.update(
+                        helper_id = data.helper_id,
+                        first_name = data.first_name,
+                        middle_name = data.middle_name,
+                        last_name = data.last_name,
+                        primary_phone = data.primary_phone,
+                        email_id = data.email_id,
+                        dob = data.dob,
+                        create_date = data.create_date,
+                        update_date = current_datetime.today(),
+                        admin_user = request.user,
+                        history_status = 'update'
+                )
+                HistoryModel.objects.filter(helper = HelperHistoryModel.objects.get(Q(helper_id = data.helper_id) & Q(history_status = 'update'))).update(
+                    helper = HelperHistoryModel.objects.get(Q(helper_id = data.helper_id) & Q(history_status = 'update')),
+                    date = current_datetime
+                )
+
             messages.success(request,'Data updated successfully!')
         else:
             messages.error(request,'please enter valid data!')
@@ -487,8 +587,35 @@ def HelperEditView(request,id):
     }
     return render(request,'helper_edit.html',data)
 
+# helper phone exist or not logic 
+@login_required
+def HelperPhoneNoValidateDetailsView(request,id):
+        helper = HelperModel.objects.get(id = id)
+        data = {
+        'helper':helper,
+        'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
+        'skill':HelperSkillSetModel.objects.filter(helper = helper),
+        'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper)
+        }  
+        return render(request,'helper_valid_check.html',data)  
+
+# accept helper 
+@login_required
+def HelperPhoneNoValidateAcceptView(request,id):
+    helper = HelperModel.objects.get(id = id)
+    helper.phone_valid = False
+    helper.save()
+    return redirect('home')
+
+# reject helper 
+@login_required
+def HelperPhoneNoValidateRejectedView(request,id):
+    helper = HelperModel.objects.get(id = id)
+    helper.delete()
+    return redirect('home')
 
 
+# lead random id generate 
 def lead_generate_id(id):
     # Generate a random number
     random_num = str(id+1000000000).encode()
@@ -558,12 +685,15 @@ def LeadDetailsView(request,no):
 
     return render(request,'lead_details.html',data)  
 
+import sys
 
 # update the lead 
 @login_required
 def LeadEditView(request,no):
     data = {}
     try:
+        current_datetime = datetime.now()
+
            # configuration json file 
         gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
 
@@ -612,7 +742,37 @@ def LeadEditView(request,no):
             current_sheet.update_cell(row_num, 10, locality)
             current_sheet.update_cell(row_num, 11, near_by)
             current_sheet.update_cell(row_num, 12, availability)
+
+            # lead_history model 
+            if not leadHistoryModel.objects.filter(Q(lead_id = values_list[8]) & Q(history_status = 'update')).exists():
+                lead_history = leadHistoryModel(
+                    lead_id = values_list[8],
+                    name = name,
+                    phone = phone,
+                    email = email,
+                    admin_user = request.user,
+                    history_status = 'update'
+                )
+                lead_history.save()
+
+                # history model 
+                HistoryModel(lead = lead_history).save()
             
+            else:
+                lead_history = leadHistoryModel.objects.filter(Q(lead_id = values_list[8]) & Q(history_status = 'update'))
+                lead_history.update(
+                     lead_id = values_list[8],
+                    name = name,
+                    phone = phone,
+                    email = email,
+                    admin_user = request.user,
+                    history_status = 'update'
+                )
+
+                HistoryModel.objects.filter(lead = leadHistoryModel.objects.get(Q(lead_id = values_list[8]) & Q(history_status = 'update'))).update(
+                    lead =  leadHistoryModel.objects.get(Q(lead_id = values_list[8]) & Q(history_status = 'update')),
+                    date = current_datetime.today()
+                )
 
             # message to success
             messages.success(request,'Data updated successful!')
@@ -621,7 +781,7 @@ def LeadEditView(request,no):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
      
     except:
-         # exception handle 
+       
         messages.error(request,'Something error try again! may be network issue!')
     return render(request,'lead_edit.html',data)
      
@@ -630,6 +790,7 @@ def LeadEditView(request,no):
 @login_required
 def LeadDeleteView(request,no):
     try:
+        current_datetime = datetime.now()
         # configuration json file 
         gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
 
@@ -641,6 +802,31 @@ def LeadDeleteView(request,no):
         
         # all row data
         row_num = int(no)+1
+
+        # get data 
+        values_list = current_sheet.row_values(row_num)
+
+        id = values_list[8]
+        phone = values_list[1]
+        name = values_list[0]
+        email = values_list[2]
+        
+        # lead_history model 
+        lead_history = leadHistoryModel(
+            lead_id = id,
+            name = name,
+            phone = phone,
+            email = email,
+            admin_user = request.user,
+            update_date = current_datetime.today(),
+            history_status = 'delete'
+        )
+        lead_history.save()
+
+        # history 
+        HistoryModel(
+            lead = lead_history
+        ).save()
 
         # delete the row by help of row num 
         current_sheet.delete_row(row_num)
@@ -702,6 +888,22 @@ def LeadInsertDataView(request):
                 msg = msg
             ).save()
 
+            # lead_history mode  
+            lead_history = leadHistoryModel(
+                lead_id = id,
+                name = name,
+                phone = phone,
+                email = email,
+                admin_user = request.user,
+                history_status = 'create'
+            )
+            lead_history.save()
+
+            # history model 
+            HistoryModel(
+                lead = lead_history,
+            ).save()
+
             messages.success(request,"Data add successful!")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         except:
@@ -737,6 +939,20 @@ def LeadStatusUpdateView(request,row):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def HistoryView(request):
+    data = {
+        'data':HistoryModel.objects.all().order_by('-date')
+    }
+    return render(request,'history.html',data)
+
+def HistoryDetailsView(request,id):
+    data = {
+      'data':HistoryModel.objects.get(id = id)
+    }
+    return render(request,"history_details.html",data)
+
 
 
 

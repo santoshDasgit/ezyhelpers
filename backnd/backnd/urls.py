@@ -1,19 +1,5 @@
-"""
-URL configuration for backnd project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from .views import *
@@ -39,7 +25,13 @@ urlpatterns = [
     path('helper_delete/<id>',HelperDeleteView,name='helper_delete'),
     path('helper_edit/<id>',HelperEditView,name='helper_edit'),
     path('helper_pdf/<id>',HelperPdfView,name='helper_pdf'),
+    path('helper__phone_validate_view/<id>',HelperPhoneNoValidateDetailsView,name='helper__phone_validate_view'),
+    path('helper__phone_validate_accept/<id>',HelperPhoneNoValidateAcceptView,name='helper__phone_validate_accept'),
+    path('helper__phone_validate_reject/<id>',HelperPhoneNoValidateRejectedView,name='helper__phone_validate_reject'),
 
+
+    path('history',HistoryView,name='history'),
+    path('history_view/<id>',HistoryDetailsView,name='history_view'),
 
 
     path('lead_list',LeadList,name='lead_list'),
@@ -66,3 +58,9 @@ urlpatterns = [
     path('employee/dashboard',EmployeeDashboard,name='employee_dashboard')
     
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

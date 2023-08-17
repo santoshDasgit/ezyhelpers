@@ -6,7 +6,7 @@ class HelperForm(forms.ModelForm):
         model = HelperModel
         fields = ['first_name','middle_name','last_name','primary_phone','secondary_phone',
                   'email_id','dob','street','city','zipcode','state','country','work_experience','availability_status','availability_status_week','additional_comment',
-                  'locality','near_by'
+                  'locality','near_by','id_pdf','id_type'
                   
                   ]
         widgets = {
@@ -30,6 +30,8 @@ class HelperForm(forms.ModelForm):
             'locality':forms.Select(attrs={'class': 'form-control my-2','rows':'2'}),
             'near_by':forms.CheckboxInput(attrs={'class': 'mb-4'}),
             'dob':forms.DateInput(attrs={'class': 'form-control my-2','type':'date','rows':'2'}),
+            'id_pdf':forms.FileInput(attrs={'class': 'form-control my-2','accept':'.pdf','required':'required','rows':'2'}),
+            'id_type':forms.Select(attrs={'class': 'form-control my-2','required':'required','rows':'2'}),
            
           
         }
@@ -47,6 +49,13 @@ class HelperForm(forms.ModelForm):
             'availability_status_week':"Availability Status(weekly)<b class='text-danger'>*</b>",
             'additional_comment':"Additional comment <b class='text-danger'>*</b>",
             'near_by':" <b class='mb-4'>Near by</b>",
+            'work_experience':" Work experience <b class='text-danger'>* </b>",
+            'dob':" DOB <b class='text-danger'>* </b>",
+            'availability_status':" Availability status <b class='text-danger'>* </b>",
+            'locality':" Locality <b class='text-danger'>* </b>",
+            
+            'id_type':" <b class='mb-4'>id prove type <b class='text-danger'>*</b></b>",
+            'id_pdf':" <b class='mb-4'>id file upload as pdf <b class='text-danger'>*</b></b>",
           
         }
 

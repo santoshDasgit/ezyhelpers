@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block body %}
+
+<section class="history">
+    <button class='btn btn-outline-primary my-2'>
+        total : {{data.count}}
+    </button>
+    
+    <ul>
+        {% for i in data %}
+
+        <!--Helper-->
+        {% if i.helper %}
+        <li><i class="fa-solid fa-circle-info mr-3 mb-2"></i> <a href="{% url 'history_view' i.id %}">Helper <b>{{i.helper.first_name}}</b> has been <u>{{i.helper.history_status}}</u> by <b><i>{{i.helper.admin_user}}</i></b> where helper id is : <u>{{i.helper.helper_id}}</u></a></li>
+        {% elif i.lead %}
+        <li><i class="fa-solid fa-circle-info mr-3 mb-2"></i> <a href="{% url 'history_view' i.id %}">lead <b>{{i.lead.first_name}}</b> has been <u>{{i.lead.history_status}}</u> by <b><i>{{i.lead.admin_user}}</i></b> where lead id is : <u>{{i.lead.lead_id}}</u></a></li>
+        {% endif %}
+        
+        {% endfor %}
+        </ul>
+</section>
+
+{% endblock body %}

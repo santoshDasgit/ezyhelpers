@@ -126,6 +126,30 @@
             <td>{{helper.availability_status_week}} day in week</td>
         </tr>
 
+        <!--id proved-->
+       {% if helper.id_type and helper.id_pdf %}
+        <tr>
+            <td colspan="2">
+                <h6><u>Id proved details </u></h6>
+            </td>
+          
+        </tr>
+
+        <tr>
+            <td> Id prove type </td>
+            <td><b>{{helper.id_type}}</b></td>
+        </tr>
+
+        <tr>
+            <td> PDF</td>
+            <td>
+                <a href="{{helper.id_pdf.url}}" class="btn btn-outline-primary btn-sm" download>download </a>
+                <a href="{{helper.id_pdf.url}}" target="_blank" class="btn btn-outline-success btn-sm">view</a>
+            </td>
+          
+        </tr>
+        {% endif %}
+
         <!--Additional comment -->
         <tr class="mt-2">
             <td colspan="2">
@@ -176,6 +200,6 @@
 
     </tbody>
 </table>
-<a href="{% url 'helper_pdf' helper.id %}" class='btn btn-outline-success'>View pdf</a>
+<a href="{% url 'helper_pdf' helper.id %}" target="_blank" class='btn btn-outline-success'>View pdf</a>
 <a href="{% url 'helper_list' %}" class="btn btn-secondary">Back</a>
 {% endblock body %}

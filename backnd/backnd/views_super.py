@@ -23,10 +23,14 @@ def SuperUserDashBoard(request):
 
         # Calculate the threshold date (current date and time minus 24 hours)
         threshold_datetime = current_datetime - timezone.timedelta(hours=24)
-        notify = LeadStatusNotificationModel.objects.filter(create_date__lt = threshold_datetime)    
+        notify = LeadStatusNotificationModel.objects.filter(create_date__lt = threshold_datetime)  
+        helper_not_valid_list = HelperModel.objects.filter(phone_valid = True).order_by('-id')
+
+
         # all data sent on html file in object format 
         data = {
-            'notify': notify
+            'notify': notify,
+            'helper_not_valid_list': helper_not_valid_list
         }
         return render(request,"super/dashboard.html",data)
 

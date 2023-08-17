@@ -2,6 +2,7 @@
 {% load static %}
 {% block body %}
 
+{{msg.html}}
 <section class="super_user_dash shadow-sm rounded p-2">
   <div class='dash-box'>
     <h1> ADMIN </h1>
@@ -11,20 +12,93 @@
 </section>
 
 
-<section class='admin_dash'>
+<section id='super_user_dashboard'>
+  <section class='admin_dash'>
 
-  <!-- notification -->
-  {% for i in notify %}
-  <div class="row shadow-sm my-2 p-3">
-    <div class="col-1"><i class="fa-solid fa-bell"></i></div>
-    <div class="col-11">
-      <label><b>{{i.msg}}</b></label>
-      <label>{{i.date}}</label>
-      <label>{{i.status}}</label>
-      <label><i><b>{{i.employee.username}}</b></i></label>
+    <!-- notification -->
+    {% for i in notify %}
+    <div class="row shadow-sm my-2 p-3">
+      <div class="col-1"><i class="fa-solid fa-bell"></i></div>
+      <div class="col-11">
+        <label><b>{{i.msg}}</b></label>
+        <label>{{i.date}}</label>
+        <label>{{i.status}}</label>
+        <label><i><b>{{i.employee.username}}</b></i></label>
+      </div>
     </div>
-  </div>
-  {% endfor %}
+    {% endfor %}
+  </section>
+  
+  
+  <section class='helper_list_not_valid shadow p-2'>
+    <h4 class='text-danger text-center'><b><u>please Check these helper</u></b></h4>
+    <table class="table" id="myTable">
+      <thead>
+        <tr>
+          <th scope="col" onclick="sortTable(0)">helper Name</th>
+          <th scope="col" onclick="sortTable(1)">helper id</th>
+          <th scope="col" onclick="sortTable(2)">email</th>
+          <th scope="col" onclick="sortTable(3)">Phone Number</th>
+   
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--Getting data from helper-->
+        {% for i in helper_not_valid_list %}
+      
+           <tr>
+            <td scope="row" >
+              <i class="fa-solid fa-user"></i>
+              <!--Url for helper details-->
+              <a href="{% url 'helper__phone_validate_view' i.id %}" class="table_col">{{i.first_name|capfirst}}</a>
+            </td>
+            <td class="table_col" >{{i.helper_id}}</td>
+            <td class="table_col" >{{i.email_id}}</td>
+            <td class="table_col">{{i.primary_phone}}</td>
+            
+  
+            <td>
+              <!--helper edit-->
+              <a href="{% url 'helper__phone_validate_accept' i.id %}" class="btn btn-sm btn-outline-primary">
+                accept
+              </a>
+  
+              <!--helper delete-->
+              <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#ampleModal{{forloop.counter}}">
+                Reject
+              </button>
+  
+              <!--helper pdf-->
+              <a href="{% url 'helper_pdf' i.id %}" class="btn btn-sm btn-primary" download><i
+                  class="fa-solid fa-download"></i></a>
+            </td>
+            <!-- Modal -->
+            <div class="modal fade" id="ampleModal{{forloop.counter}}" tabindex="-1" role="dialog"
+              aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confrom Reject</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <b class='text-danger'>* {{i.helper_id}}</b>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="{% url 'helper__phone_validate_reject' i.id %}" class="btn btn-danger">Reject</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
 </section>
 
 {% endblock body %}

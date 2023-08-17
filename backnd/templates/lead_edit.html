@@ -9,16 +9,16 @@
     {% csrf_token %}
 
     <label for="">name</label>
-    <input type="text" class="form-control" value={{name}} name='name' required>
+    <input type="text" class="form-control" value="{{name}}" name='name' required>
 
     <label for="">phone</label>
     <input type="text" class="form-control" value={{phone}} name='phone' required>
 
     <label for="">email</label>
-    <input type="email" class="form-control" value={{email}} name='email' required>
+    <input type="email" class="form-control" value="{{email}}" name='email' required>
 
     <label for="">address</label>
-    <input type="text" class="form-control" value={{addr}} name='addr' required>
+    <input type="text" class="form-control" value="{{addr}}" name='addr' required>
 
     <label for="">Locality</label>
     <select name="locality" id="" class='form-control' required>
