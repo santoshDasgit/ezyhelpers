@@ -45,6 +45,42 @@
                     class="fa-solid fa-plus"></i></button>
         </div>
 
+    
+             <!--helper additional skill-->
+             <div class="helper-job-role">
+                <b>Helper job role : </b> <br>
+                {% for i in job_role %}
+                <label for="" class='bg-danger '>
+                    <input type="text" name='job_role' value="{{i.job}}">
+                </label>
+                {% empty %}
+                <b class='text-danger'>NULL</b>
+                {% endfor %}
+                <div>
+                    <!-- input  -->
+                </div>
+                <button class="btn btn-primary btn-sm helper-job-role-btn" type="button"><i
+                        class="fa-solid fa-plus"></i></button>
+            </div>
+
+
+             <!--helper additional skill-->
+        <div class="helper-add-skill">
+            <b>Helper additional skill : </b> <br>
+            {% for i in additional_skill %}
+            <label for="" class='bg-danger '>
+                <input type="text" name='ad-skill' value="{{i.additional_skill}}">
+            </label>
+            {% empty %}
+            <b class='text-danger'>NULL</b>
+            {% endfor %}
+            <div>
+                <!-- input  -->
+            </div>
+            <button class="btn btn-primary btn-sm helper-ad-skill-btn" type="button"><i
+                    class="fa-solid fa-plus"></i></button>
+        </div>
+
 
         <!--helper skill-->
         <div class="helper-skill">
@@ -92,11 +128,13 @@
         let helper_language_div = document.querySelector('.helper-language-div div')
         let helper_skill_div = document.querySelector('.helper-skill div')
         let helper_add_skill_div = document.querySelector('.helper-add-skill div')
+        let helper_job_role_div = document.querySelector('.helper-job-role div')
 
         // button
         let helper_language_btn = document.querySelector(".helper-language-btn")
         let helper_skill_btn = document.querySelector(".helper-skill-btn")
         let helper_ad_skill_btn = document.querySelector(".helper-ad-skill-btn")
+        let helper_job_role_btn = document.querySelector(".helper-job-role-btn")
 
         //    add inp logic 
         helper_language_btn.addEventListener('click', function () {
@@ -109,6 +147,10 @@
 
         helper_ad_skill_btn.addEventListener('click', function () {
             helper_add_skill_div.innerHTML += "<input type='text' name='ad-skill'>"
+        })
+
+        helper_job_role_btn.addEventListener('click', function () {
+            helper_job_role_div.innerHTML += "<input type='text' name='job_role'>"
         })
     </script>
 

@@ -274,6 +274,7 @@ def HelperAddView(request):
         language = request.POST.getlist('language')
         additional_skill = request.POST.getlist('ad-skill')
         skill = request.POST.getlist('skill')
+        job_role = request.POST.getlist('job_role')
 
         # language required condition 
         if language == ['']:
@@ -303,7 +304,7 @@ def HelperAddView(request):
 
                 # History store 
                 current_datetime = datetime.now()
-                helper_data = HelperHistoryModel(
+                helper_history = HelperHistoryModel(
                     helper_id = data.helper_id,
                     first_name = data.first_name,
                     middle_name = data.middle_name,
@@ -316,9 +317,9 @@ def HelperAddView(request):
                     admin_user = request.user,
                     history_status = 'create'
                 )
-                helper_data.save()
+                helper_history.save()
                 HistoryModel(
-                    helper = helper_data,
+                    helper = helper_history,
                     date = current_datetime
                 ).save()
                 
@@ -341,6 +342,11 @@ def HelperAddView(request):
                 for i in skill:
                     if i !='':
                         HelperSkillSetModel(helper = data,skill=i).save()
+                
+                # job role
+                for i in job_role:
+                    if i !='':
+                        HelperJobRoleModel(helper = data,job=i).save()
             else:
                 messages.error(request,'please enter the valid data!')
 
@@ -360,7 +366,8 @@ def HelperDetailsView(request,id):
       'helper':helper,
       'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
        'skill':HelperSkillSetModel.objects.filter(helper = helper),
-      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper)
+      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper),
+      'job_role':HelperJobRoleModel.objects.filter(helper=helper),
     }
     return render(request,'helper_view.html',data)
 
@@ -372,7 +379,8 @@ def HelperPdfView(request,id):
       'helper':helper,
       'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
        'skill':HelperSkillSetModel.objects.filter(helper = helper),
-      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper)
+      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper),
+      'job_role':HelperJobRoleModel.objects.filter(helper=helper),
     }
     template = get_template('helper_pdf.html')
     context = data # Add any context data you need for the template
@@ -456,7 +464,7 @@ def HelperDeleteView(request,id):
     data = HelperModel.objects.get(id = id)
 
     current_datetime = datetime.now()
-    helper_data = HelperHistoryModel(
+    helper_history = HelperHistoryModel(
                 helper_id = data.helper_id,
                 first_name = data.first_name,
                 middle_name = data.middle_name,
@@ -470,8 +478,8 @@ def HelperDeleteView(request,id):
                 history_status = 'delete'
                 )
     
-    helper_data.save()
-    HistoryModel(helper = helper_data , date = current_datetime.today()).save()
+    helper_history.save()
+    HistoryModel(helper = helper_history , date = current_datetime.today()).save()
     data.delete()
     
     messages.warning(request,"Data remove successfully!")
@@ -487,16 +495,19 @@ def HelperEditView(request,id):
     helper_skill = HelperSkillSetModel.objects.filter(helper = helper)
     helper_additional_skill = HelperAdditionalSkillSetModel.objects.filter(helper = helper)
     helper_language = HelperPreferredLanguageModel.objects.filter(helper = helper)
+    job_role = HelperJobRoleModel.objects.filter(helper = helper)
     
-    fm = HelperForm(instance=helper) # form 
+    fm = HelperEditForm(instance=helper) # form 
 
     if request.method == "POST":  
         # all additional input get 
         skill_inp = request.POST.getlist('skill')
         add_skill_inp = request.POST.getlist('ad-skill')
         language_inp = request.POST.getlist('language')
+        job_role_inp = request.POST.getlist('job_role')
+        id_pdf = request.FILES.get('id_pdf')
 
-        fm=HelperForm(request.POST,request.FILES,instance=helper) # all input value 
+        fm=HelperEditForm(request.POST,request.FILES,instance=helper) # all input value 
         
         # language empty or not check 
         language_inpIsEmpty = False
@@ -516,6 +527,8 @@ def HelperEditView(request,id):
             helper_skill.delete()
             helper_additional_skill.delete()
             helper_language.delete()
+            job_role.delete()
+     
 
             #  --------update again------- 
 
@@ -534,16 +547,27 @@ def HelperEditView(request,id):
                 if i.strip()!="":
                     HelperPreferredLanguageModel(helper = helper , language = i.strip()).save()
 
+            # language update 
+            for i in job_role_inp:
+                if i.strip()!="":
+                    HelperJobRoleModel(helper = helper , job = i.strip()).save()
+
             # update_date is updated 
             fm.instance.update_date = date.today()
 
-            # Helper form save  
+            
+            # pdf upload logic 
+            if (id_pdf is None or id_pdf is "") and (fm.instance.id_pdf is not None or fm.instance.id_pdf != ""):
+                id_pdf = fm.instance.id_pdf
+            
+            # Helper form save
             data = fm.save()
+
 
             # History store 
             current_datetime = datetime.now()
             if not HelperHistoryModel.objects.filter(Q(helper_id = data.helper_id) & Q(history_status = 'update')).exists():
-                helper_data = HelperHistoryModel(
+                helper_history = HelperHistoryModel(
                 helper_id = data.helper_id,
                 first_name = data.first_name,
                 middle_name = data.middle_name,
@@ -557,7 +581,7 @@ def HelperEditView(request,id):
                 history_status = 'update'
                 )
 
-                helper_data.save()
+                helper_history.save()
 
                 HistoryModel(
                     helper =HelperHistoryModel.objects.get(Q(helper_id = data.helper_id) & Q(history_status = 'update')),
@@ -567,8 +591,8 @@ def HelperEditView(request,id):
                 
 
             else:
-                helper_data = HelperHistoryModel.objects.filter(Q(helper_id = data.helper_id) & Q(history_status = 'update'))
-                helper_data.update(
+                helper_history = HelperHistoryModel.objects.filter(Q(helper_id = data.helper_id) & Q(history_status = 'update'))
+                helper_history.update(
                         helper_id = data.helper_id,
                         first_name = data.first_name,
                         middle_name = data.middle_name,
@@ -594,7 +618,8 @@ def HelperEditView(request,id):
         'fm':fm,
         'skill': helper_skill,
         'additional_skill':helper_additional_skill,
-        'helper_language':helper_language
+        'helper_language':helper_language,
+        'job_role':HelperJobRoleModel.objects.filter(helper=helper),
     }
     return render(request,'helper_edit.html',data)
 
@@ -606,7 +631,8 @@ def HelperPhoneNoValidateDetailsView(request,id):
         'helper':helper,
         'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
         'skill':HelperSkillSetModel.objects.filter(helper = helper),
-        'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper)
+        'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper),
+        'job_role':HelperJobRoleModel.objects.filter(helper=helper),
         }  
         return render(request,'helper_valid_check.html',data)  
 

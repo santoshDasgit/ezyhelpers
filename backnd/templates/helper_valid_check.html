@@ -162,6 +162,24 @@
             <td>{{helper.additional_comment}}</td>
         </tr>
 
+
+          <!--Job role -->
+          <tr class="mt-2">
+            <td colspan="2">
+                <h6><u>Job role</u></h6>
+            </td>
+        </tr>
+
+        <tr>
+            <td> Job role</td>
+            <td>
+                {% for i in job_role %}
+                {{i.job}},
+                {% endfor %}
+            </td>
+        </tr>
+
+
         <!--Additional details -->
         <tr class="mt-2">
             <td colspan="2">

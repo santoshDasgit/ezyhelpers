@@ -12,4 +12,5 @@ admin.site.register(LeadStatusNotificationModel)
 admin.site.register(HelperHistoryModel)
 admin.site.register(leadHistoryModel)
 admin.site.register(HistoryModel)
+admin.site.register(HelperJobRoleModel)
 

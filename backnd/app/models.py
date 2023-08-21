@@ -179,6 +179,13 @@ class HelperAdditionalSkillSetModel(models.Model):
     def __str__(self):
         return self.additional_skill
 
+# Helper job role   
+class HelperJobRoleModel(models.Model):
+    helper = models.ForeignKey(HelperModel,on_delete=models.CASCADE)
+    job = models.CharField(max_length=100)
+    def __str__(self) -> str:
+        return f"{self.helper} __ {self.job}"
+
 
 LEAD_CONTACT_STATUS = (
     ('pending','Pending'),

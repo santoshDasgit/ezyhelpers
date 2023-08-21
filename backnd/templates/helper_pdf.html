@@ -8,7 +8,7 @@
 </head>
 <body>
     <!--logo-->
-    <u><i><h1>Ezyhelpers</h1></i></u>
+    <u><i><h1>Ezyhelper</h1></i></u>
 
     <!--table-->
     <table >
@@ -149,6 +149,22 @@
             <tr>
                 <td> additional comment</td>
                 <td>{{helper.additional_comment}}</td>
+            </tr>
+
+              <!--Job role -->
+              <tr class="mt-2">
+                <td colspan="2">
+                    <h6><u>Job role : </u></h6>
+                </td>
+            </tr>
+    
+            <tr>
+                <td>Job role</td>
+                <td>
+                    {% for i in job_role %}
+                    {{i.job}},
+                    {% endfor %}
+                </td>
             </tr>
     
             <!--Additional details -->
