@@ -60,6 +60,11 @@
             <td>{{helper.create_date}}</td>
         </tr>
 
+        <tr>
+            <td>Call ststus</td>
+            <td>{{helper.call_status}}</td>
+        </tr>
+
 
         <!--address details-->
         <tr>
@@ -104,6 +109,7 @@
             <td>{% if not helper.near_by %}Current location {% else %}Range in <b>5 k.m</b> {% endif %}</td>
         </tr>
 
+       
          <!--Availability Status -->
          <tr class="mt-2">
             <td colspan="2">
@@ -149,6 +155,9 @@
           
         </tr>
         {% endif %}
+
+    
+
 
         <!--Additional comment -->
         <tr class="mt-2">

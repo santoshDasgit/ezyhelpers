@@ -108,7 +108,11 @@ ID_TYPE = (
     ('pan','PAN')
 )
     
-
+CALL_STATUS = (
+    ('yes','Yes'),
+    ('no','No'),
+    ('not called','Not called')
+)
 class HelperModel(models.Model):
     # model id 
     helper_id = models.CharField(max_length=20,null=True,blank=True,unique=True)
@@ -149,6 +153,9 @@ class HelperModel(models.Model):
     # id proved
     id_pdf = models.FileField(upload_to='pdfs/', validators=[validate_pdf],null=True,blank=True)
     id_type = models.CharField(max_length=100,blank=True,null=True,choices=ID_TYPE)
+
+    # call status 
+    call_status = models.CharField(max_length=100,choices=CALL_STATUS,default=None,null=True)
 
     # if phone exist it convert to True
     phone_valid = models.BooleanField(default=False)
