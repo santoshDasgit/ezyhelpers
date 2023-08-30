@@ -267,6 +267,26 @@ def HelperListViews(request):
 # Helper data inserted
 @login_required
 def HelperAddView(request):
+
+    # location value get in Gspreed 
+    location_values = ''
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+    
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+
+        # Data get dictionary format 
+        location_values = current_sheet.get_all_records()
+    except:
+        # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
+
+
     fm = HelperForm()
     if request.method == "POST":
         
@@ -298,6 +318,14 @@ def HelperAddView(request):
                 data = fm.save()
                 data.helper_id = generate_id(data.id) # function to create id and convert into Hexa
                 data.admin_user = request.user
+
+                # first name and last name in upper case first char 
+                data.first_name = data.first_name[0].upper() + data.first_name[1:]
+                data.last_name = data.last_name[0].upper() + data.last_name[1:]
+
+                # locality 
+                data.locality = request.POST['locality']
+
                 # helper_save 
                 data.save()
 
@@ -352,6 +380,7 @@ def HelperAddView(request):
 
     data = {
         'fm':fm,
+        'locations':location_values
     }
     return render(request,'helper_add.html',data)
 
@@ -489,6 +518,24 @@ def HelperDeleteView(request,id):
 # helper  update 
 @login_required
 def HelperEditView(request,id):
+
+    # location value get in Gspreed 
+    location_values = ''
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+    
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+
+        # Data get dictionary format 
+        location_values = current_sheet.get_all_records()
+    except:
+        # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
    
     # all model object get as of our requirement 
     helper = HelperModel.objects.get(id = id) 
@@ -563,6 +610,13 @@ def HelperEditView(request,id):
             # Helper form save
             data = fm.save()
 
+            # first name and last name in upper case first char 
+            data.first_name = data.first_name[0].upper() + data.first_name[1:]
+            data.last_name = data.last_name[0].upper() + data.last_name[1:]
+            data.locality = request.POST['locality']
+            # helper_save 
+            data.save()
+
 
             # History store 
             current_datetime = datetime.now()
@@ -620,6 +674,8 @@ def HelperEditView(request,id):
         'additional_skill':helper_additional_skill,
         'helper_language':helper_language,
         'job_role':HelperJobRoleModel.objects.filter(helper=helper),
+        'locations':location_values,
+        'locality':helper.locality
     }
     return render(request,'helper_edit.html',data)
 
@@ -727,6 +783,25 @@ import sys
 # update the lead 
 @login_required
 def LeadEditView(request,no):
+    # locality's value get in Gspreed 
+    location_values = ''
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+    
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+
+        # Data get dictionary format 
+        location_values = current_sheet.get_all_records()
+    except:
+        # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
+
+    # lead data get 
     data = {}
     try:
         current_datetime = datetime.now()
@@ -751,7 +826,8 @@ def LeadEditView(request,no):
             'addr' : values_list[3],
             'locality':values_list[9],
             'near_by':values_list[10],
-            'availability':values_list[11]
+            'availability':values_list[11],
+            'locations':location_values
         }
         
     
@@ -879,6 +955,25 @@ def LeadDeleteView(request,no):
 # data insert into lead sheet 
 @login_required
 def LeadInsertDataView(request):
+    # locality's value get in Gspreed 
+    location_values = ''
+    try:
+        # configuration json file 
+        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+
+        # open google sheet by help of key
+        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+    
+        # which sheet you want to open! 
+        current_sheet = worksheet.worksheet('Sheet1')
+
+        # Data get dictionary format 
+        location_values = current_sheet.get_all_records()
+    except:
+        # exception handle 
+        messages.error(request,'Something error try again! may be network issue!')
+
+        
     if request.method == 'POST':
         try:
             # configuration json file 
@@ -899,7 +994,7 @@ def LeadInsertDataView(request):
             locality = request.POST['locality']
             near_by = request.POST.get('near_by',False)
             availability = request.POST['availability']
-    
+
             # id generate 
             id = lead_generate_id(len(current_sheet.get_all_records())+2)
 
@@ -948,7 +1043,10 @@ def LeadInsertDataView(request):
             messages.error(request,'Something error try again! may be network issue!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-    return render(request,'lead_add.html')
+    data = {
+        'locations':location_values
+    }
+    return render(request,'lead_add.html',data)
 
 @login_required
 def LeadStatusUpdateView(request,row):

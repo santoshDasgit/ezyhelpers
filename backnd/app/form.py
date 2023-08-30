@@ -6,7 +6,7 @@ class HelperForm(forms.ModelForm):
         model = HelperModel
         fields = ['first_name','middle_name','last_name','primary_phone','secondary_phone',
                   'email_id','dob','street','city','zipcode','state','country','work_experience','availability_status','availability_status_week','additional_comment',
-                  'locality','near_by','id_pdf','call_status','id_type'
+                'id_pdf','id_type','call_status','near_by'
                   
                   ]
         widgets = {
@@ -28,7 +28,7 @@ class HelperForm(forms.ModelForm):
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
             'locality':forms.Select(attrs={'class': 'form-control my-2','rows':'2'}),
-            'near_by':forms.CheckboxInput(attrs={'class': 'mb-4'}),
+            'near_by':forms.CheckboxInput(attrs={'class': 'mb-4 mt-md-5'}),
             'dob':forms.DateInput(attrs={'class': 'form-control my-2','type':'date','rows':'2'}),
             'id_pdf':forms.FileInput(attrs={'class': 'form-control my-2','accept':'.pdf','required':'required','rows':'2'}),
             'id_type':forms.Select(attrs={'class': 'form-control my-2','required':'required','rows':'2'}),
@@ -48,7 +48,7 @@ class HelperForm(forms.ModelForm):
             'country':"Country <b class='text-danger'>*</b>",
             'work_experience':"Working experience <b class='text-danger'>*</b>",
             'availability_status_week':"Availability Status(weekly)<b class='text-danger'>*</b>",
-            'additional_comment':"Additional comment <b class='text-danger'>*</b>",
+            'additional_comment':"Additional comment ",
             'near_by':" <b class='mb-4'>Near by</b>",
             'work_experience':" Work experience <b class='text-danger'>* </b>",
             'dob':" DOB <b class='text-danger'>* </b>",
@@ -56,7 +56,7 @@ class HelperForm(forms.ModelForm):
             'locality':" Locality <b class='text-danger'>* </b>",
             'call_status':" Call status <b class='text-danger'>* </b>",
             'id_type':" <b class='mb-4'>id prove type <b class='text-danger'>*</b></b>",
-            'id_pdf':" <b class='mb-4'>id file upload as pdf <b class='text-danger'>*</b></b>",
+            'id_pdf':" <b class='mb-4'>ID upload (pdf) <b class='text-danger'>*</b></b>",
           
         }
 
@@ -65,8 +65,8 @@ class HelperEditForm(forms.ModelForm):
     class Meta:
         model = HelperModel
         fields = ['first_name','middle_name','last_name','primary_phone','secondary_phone',
-                  'email_id','dob','street','city','zipcode','state','country','work_experience','availability_status','availability_status_week','additional_comment',
-                  'locality','near_by','id_pdf','call_status','id_type'
+                  'email_id','dob','street','city','zipcode','state','country','work_experience','availability_status','availability_status_week',
+                 'id_pdf','id_type','call_status','additional_comment','near_by'
                   
                   ]
         widgets = {
@@ -88,7 +88,7 @@ class HelperEditForm(forms.ModelForm):
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
             'additional_comment':forms.Textarea(attrs={'class': 'form-control my-2','rows':'2'}),
             'locality':forms.Select(attrs={'class': 'form-control my-2','rows':'2'}),
-            'near_by':forms.CheckboxInput(attrs={'class': 'mb-4'}),
+            'near_by':forms.CheckboxInput(attrs={'class': 'mb-4 mt-md-5'}),
             'dob':forms.DateInput(attrs={'class': 'form-control my-2','type':'date','rows':'2'}),
             'id_pdf':forms.FileInput(attrs={'class': 'form-control my-2','accept':'.pdf','rows':'2'}),
             'id_type':forms.Select(attrs={'class': 'form-control my-2','required':'required','rows':'2'}),
@@ -107,7 +107,7 @@ class HelperEditForm(forms.ModelForm):
             'country':"Country <b class='text-danger'>*</b>",
             'work_experience':"Working experience <b class='text-danger'>*</b>",
             'availability_status_week':"Availability Status(weekly)<b class='text-danger'>*</b>",
-            'additional_comment':"Additional comment <b class='text-danger'>*</b>",
+            'additional_comment':"Additional comment ",
             'near_by':" <b class='mb-4'>Near by</b>",
             'work_experience':" Work experience <b class='text-danger'>* </b>",
             'dob':" DOB <b class='text-danger'>* </b>",
@@ -115,7 +115,7 @@ class HelperEditForm(forms.ModelForm):
             'locality':" Locality <b class='text-danger'>* </b>",
             'call_status':" Call status <b class='text-danger'>* </b>",
             'id_type':" <b class='mb-4'>id prove type <b class='text-danger'>*</b></b>",
-            'id_pdf':" <b class='mb-4'>id file upload as pdf <b class='text-danger'>*</b></b>",
+            'id_pdf':" <b class='mb-4'>ID upload (pdf) <b class='text-danger'>*</b></b>",
           
         }
 

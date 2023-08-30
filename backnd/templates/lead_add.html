@@ -38,11 +38,12 @@
     <label for="">Locality</label>
     <select name="locality" id="" class='form-control' required>
         <option value selected>-------------</option>
-        <option value="a">a</option>
-        <option value="b">b</option>
-        <option value="c">c</option>
-        <option value="d">d</option>
+        {% for i in locations %}
+        <option value="{{i.Localities}}">{{i.Localities}}</option>
+        {% endfor %}
     </select>
+        
+        
 
     <label for="">Availability</label>
     <select name="availability" id="" class='form-control' required>

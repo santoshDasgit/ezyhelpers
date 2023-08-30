@@ -26,6 +26,19 @@
             </div>
 
             {% endfor %}
+
+            <!-- location  -->
+            <div class="col-md-4">
+                Locality
+                <b class="text-danger">* </b>
+                <select name="locality" class="form-control my-2" rows="2" required="" id="id_locality">
+                    <option value="" selected="">---------</option>
+                    {% for i in locations %}
+                    <option value="{{i.Localities }}" {% if locality == i.Localities %} selected {% endif %}>{{i.Localities }} </option>
+                    {% endfor %}
+
+                </select>
+            </div>
         </div>
 
         <!--helper  language-->
@@ -45,26 +58,26 @@
                     class="fa-solid fa-plus"></i></button>
         </div>
 
-    
-             <!--helper additional skill-->
-             <div class="helper-job-role">
-                <b>Helper job role : </b> <br>
-                {% for i in job_role %}
-                <label for="" class='bg-danger '>
-                    <input type="text" name='job_role' value="{{i.job}}">
-                </label>
-                {% empty %}
-                <b class='text-danger'>NULL</b>
-                {% endfor %}
-                <div>
-                    <!-- input  -->
-                </div>
-                <button class="btn btn-primary btn-sm helper-job-role-btn" type="button"><i
-                        class="fa-solid fa-plus"></i></button>
+
+        <!--helper additional skill-->
+        <div class="helper-job-role">
+            <b>Helper job role : </b> <br>
+            {% for i in job_role %}
+            <label for="" class='bg-danger '>
+                <input type="text" name='job_role' value="{{i.job}}">
+            </label>
+            {% empty %}
+            <b class='text-danger'>NULL</b>
+            {% endfor %}
+            <div>
+                <!-- input  -->
             </div>
+            <button class="btn btn-primary btn-sm helper-job-role-btn" type="button"><i
+                    class="fa-solid fa-plus"></i></button>
+        </div>
 
 
-             <!--helper additional skill-->
+        <!--helper additional skill-->
         <div class="helper-add-skill">
             <b>Helper additional skill : </b> <br>
             {% for i in additional_skill %}

@@ -10,84 +10,97 @@
     <!--message-->
     {% include "msg.html" %}
 
-   <h3>Helper add form</h3>
-   {% csrf_token %}
+    <h3>Helper add form</h3>
+    {% csrf_token %}
 
-   <div class="row">
-       <!--form object-->
-       {% for i in fm %}
+    <div class="row">
+      <!--form object-->
+      {% for i in fm %}
 
-        <!--if some error!-->
-       {% if i.errors %}
-       <label for="" class='text-danger'>*{{i.errors}}</label>
-       {% endif %}
+      <!--if some error!-->
+      {% if i.errors %}
+      <label for="" class='text-danger'>*{{i.errors}}</label>
+      {% endif %}
 
-       <!--form input & labels-->
-       <div class="col-md-4">
-           {{i.label|safe}}
-           {{i}}
-       </div>
+      <!--form input & labels-->
+      <div class="col-md-4">
+        {{i.label|safe}}
+        {{i}}
+      </div>
 
-       {% endfor %}
-   </div>
-   <h5>Preferred Language <b class='text-danger'>*</b></h5>
-   <input type="checkbox" name="language" value="hindi" class='ml-2' >Hindi
-   <input type="checkbox" name="language" value="english"class='ml-2'>English
-   <input type="checkbox" name="language" value="kanada"class='ml-2'>Kanada
-   <input type="checkbox" name="language" value="telgu"class='ml-2'>Telugu
-   <input type="checkbox" name="language" value="tamil"class='ml-2'>Tamil
-   <input type="checkbox" name="language" value="malayalam"class='ml-2'>Malayalam
-   <br>
-   <label for="">Other</label>
-   <input type="text" name='language'>
+      {% endfor %}
+
+      <!-- location  -->
+      <div class="col-md-4">
+        Locality 
+      <b class="text-danger">* </b>
+        <select name="locality" class="form-control my-2" rows="2" required="" id="id_locality">
+          <option value="" selected="">---------</option>
+            {% for i in locations %}
+                  <option value="{{i.Localities }}">{{i.Localities }}</option>
+            {% endfor %}
+
+        </select>
+      </div>
+    </div>
+    <h5>Preferred Language <b class='text-danger'>*</b></h5>
+    <input type="checkbox" name="language" value="hindi" class='ml-2'>Hindi
+    <input type="checkbox" name="language" value="english" class='ml-2'>English
+    <input type="checkbox" name="language" value="kannada" class='ml-2'>Kannada
+    <input type="checkbox" name="language" value="telgu" class='ml-2'>Telugu
+    <input type="checkbox" name="language" value="tamil" class='ml-2'>Tamil
+    <input type="checkbox" name="language" value="malayalam" class='ml-2'>Malayalam
+    <br>
+    <label for="">Other</label>
+    <input type="text" name='language'>
 
     <!--Job role-->
-   <h5>Job role</h5>
-   <input type="checkbox" name="job_role" value="nanny" class='ml-2'> Nnanny
-   <input type="checkbox" name="job_role" value="housekeeper"class='ml-2'>Housekeeper
-   <input type="checkbox" name="job_role" value="caregiver"class='ml-2'>Caregiver
-   <input type="checkbox" name="job_role" value="personal assistant"class='ml-2'>Personal assistant
-
-   <br>
-   <label for="">Other</label>
-   <input type="text" name='job_role'>
-
-   <!--skill set-->
-   <h5 class='mt-3'>Skill set </h5>
-   <input type="checkbox" name="skill" value="Cooking"class='ml-2'>Cooking
-   <input type="checkbox" name="skill" value="Cleaning"class='ml-2'>Cleaning
-   <input type="checkbox" name="skill" value="Cleaning"class='ml-2'>Cleaning
-   <input type="checkbox" name="skill" value="Elderly Care"class='ml-2'>Elderly Care
-   <input type="checkbox" name="skill" value="Caregiver"class='ml-2'>Caregiver
-   <input type="checkbox" name="skill" value="Chield care"class='ml-2'>Chield care
-   <br>
-   <input type="checkbox" name="skill" value="Pet care"class='ml-2'>Pet care
-   <input type="checkbox" name="skill" value="Gardening"class='ml-2'>Gardening
-   <input type="checkbox" name="skill" value="Nanny"class='ml-2'>Nanny
-   <input type="checkbox" name="skill" value="Housekeeper"class='ml-2'>Housekeeper 
-   <input type="checkbox" name="skill" value="PA"class='ml-2'>PA
-   <br>
-   <label for="">Other</label> 
-   <input type="text" name='skill'>
-   <br>
-
-      <!--Additional skill set-->
-      <h5 class='mt-3'>Additional Skill set </h5>
-      <input type="checkbox" name="ad-skill" value="First Aid"class='ml-2'>First Aid
-      <input type="checkbox" name="ad-skill" value="Pet friendly"class='ml-2'>Pet friendly
-      <input type="checkbox" name="ad-skill" value="CPR"class='ml-2'>CPR
-      <input type="checkbox" name="ad-skill" value="Driving Licence"class='ml-2'>Driving Licence
-      <input type="checkbox" name="ad-skill" value="nursing"class='ml-2'>Nursing
-      <input type="checkbox" name="ad-skill" value="culanary art"class='ml-2'>Culanary art
-   
-      <label for="">Other</label> 
-      <br>
-      <input type="text" name='ad-skill'>
-      <br>
-
-   <button class='submit btn btn-primary my-2'>Submit</button>
-   <a href="{% url 'helper_list' %}" class='btn btn-secondary'>Back</a>
-</form>
+    <h5>Job role</h5>
+    <input type="checkbox" name="job_role" value="nanny" class='ml-2'> Nnanny
+    <input type="checkbox" name="job_role" value="housekeeper" class='ml-2'>Housekeeper
+    <input type="checkbox" name="job_role" value="caregiver" class='ml-2'>Caregiver
 
 
-{% endblock body %}
+    <br>
+    <label for="">Other</label>
+    <input type="text" name='job_role'>
+
+    <!--skill set-->
+    <h5 class='mt-3'>Skill set </h5>
+    <input type="checkbox" name="skill" value="Cooking" class='ml-2'>Cooking
+    <input type="checkbox" name="skill" value="Cleaning" class='ml-2'>Cleaning
+    <input type="checkbox" name="skill" value="Cleaning" class='ml-2'>Cleaning
+    <input type="checkbox" name="skill" value="Elderly Care" class='ml-2'>Elderly Care
+    <input type="checkbox" name="skill" value="Caregiver" class='ml-2'>Caregiver
+    <input type="checkbox" name="skill" value="Child care" class='ml-2'>Child care
+    <br>
+    <input type="checkbox" name="skill" value="Pet care" class='ml-2'>Pet care
+    <input type="checkbox" name="skill" value="Gardening" class='ml-2'>Gardening
+    <input type="checkbox" name="skill" value="Nanny" class='ml-2'>Nanny
+    <input type="checkbox" name="skill" value="Housekeeper" class='ml-2'>Housekeeper
+    <input type="checkbox" name="skill" value="PA" class='ml-2'>Personal assistant
+    <br>
+    <label for="">Other</label>
+    <input type="text" name='skill'>
+    <br>
+
+    <!--Additional skill set-->
+    <h5 class='mt-3'>Additional Skill set </h5>
+    <input type="checkbox" name="ad-skill" value="First Aid" class='ml-2'>First Aid
+    <input type="checkbox" name="ad-skill" value="Pet friendly" class='ml-2'>Pet friendly
+    <input type="checkbox" name="ad-skill" value="CPR" class='ml-2'>CPR
+    <input type="checkbox" name="ad-skill" value="Driving Licence" class='ml-2'>Driving Licence
+    <input type="checkbox" name="ad-skill" value="nursing" class='ml-2'>Nursing
+
+
+    <br>
+    <label for="">Other</label>
+    <input type="text" name='ad-skill'>
+    <br>
+
+    <button class='submit btn btn-primary my-2'>Submit</button>
+    <a href="{% url 'helper_list' %}" class='btn btn-secondary'>Back</a>
+  </form>
+
+
+  {% endblock body %}

@@ -22,10 +22,10 @@
 
     <label for="">Locality</label>
     <select name="locality" id="" class='form-control' required>
-        <option value="a" {% if locality == 'a' %} selected {% endif %}>a</option>
-        <option value="b" {% if locality == 'b' %} selected {% endif %}>b</option>
-        <option value="c" {% if locality == 'c' %} selected {% endif %}>c</option>
-        <option value="d" {% if locality == 'd' %} selected {% endif %}>d</option>
+        <option value selected>-------------</option>
+        {% for i in locations %}
+        <option value="{{i.Localities}}" {% if locality == i.Localities %} selected {% endif %}>{{i.Localities}}</option>
+        {% endfor %}
     </select>
 
     <label for="">Availability</label>
