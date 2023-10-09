@@ -15,3 +15,19 @@ server {
         proxy_pass http://unix:/run/gunicorn.sock;
     }
 }
+
+
+
+
+server {
+    listen 80 default_server;
+    server_name _;
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /staticfiles/ {
+        root  /home/ubuntu/ezyhelpers/backnd;
+    }
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
