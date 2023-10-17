@@ -478,9 +478,9 @@ def ExcelFileHelperFileView(request):
 
                 # if all right then success message 
                 messages.success(request,'file upload successful!')
-            except Exception as e:
+            except:
                 # exception handle 
-                messages.error(request,f'There is an error!  :---> {e}')
+                messages.error(request,'There is an error!')
             # redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
