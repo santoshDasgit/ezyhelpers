@@ -725,7 +725,7 @@ def LeadList(request):
     all_value = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
