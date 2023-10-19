@@ -21,7 +21,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404
-from gspread.exceptions import APIError
+
 
 
 
@@ -735,9 +735,9 @@ def LeadList(request):
 
         # Data get dictionary format 
         all_value = current_sheet.get_all_records()
-    except APIError as e:
+    except:
         # exception handle 
-        messages.error(request,f'Something error try again! may be network issue! {e}')
+        messages.error(request,'Something error try again! may be network issue!')
     
     data = {
         'data':all_value,
