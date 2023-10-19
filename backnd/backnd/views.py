@@ -273,7 +273,7 @@ def HelperAddView(request):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
@@ -524,7 +524,7 @@ def HelperEditView(request,id):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
@@ -752,7 +752,7 @@ def LeadDetailsView(request,no):
     data = {}
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
@@ -788,7 +788,7 @@ def LeadEditView(request,no):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
@@ -808,7 +808,7 @@ def LeadEditView(request,no):
         current_datetime = datetime.now()
 
            # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
@@ -906,7 +906,7 @@ def LeadDeleteView(request,no):
     try:
         current_datetime = datetime.now()
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
@@ -960,7 +960,7 @@ def LeadInsertDataView(request):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
@@ -978,7 +978,7 @@ def LeadInsertDataView(request):
     if request.method == 'POST':
         try:
             # configuration json file 
-            gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+            gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
             # open google sheet by help of key
             worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
@@ -1055,7 +1055,7 @@ def LeadStatusUpdateView(request,row):
     col = 8
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app\\testsample-393218-c2720cf831ca.json")
+        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # open google sheet by help of key
         worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
