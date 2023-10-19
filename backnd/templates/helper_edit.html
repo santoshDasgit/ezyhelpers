@@ -113,21 +113,7 @@
         </div>
 
         <!--helper additional skill-->
-        <div class="helper-add-skill">
-            <b>Helper additional skill : </b> <br>
-            {% for i in additional_skill %}
-            <label for="" class='bg-danger '>
-                <input type="text" name='ad-skill' value="{{i.additional_skill}}">
-            </label>
-            {% empty %}
-            <b class='text-danger'>NULL</b>
-            {% endfor %}
-            <div>
-                <!-- input  -->
-            </div>
-            <button class="btn btn-primary btn-sm helper-ad-skill-btn" type="button"><i
-                    class="fa-solid fa-plus"></i></button>
-        </div>
+    
 
 
         <button type='submit' class='btn btn-primary mt-2'>Save</button>

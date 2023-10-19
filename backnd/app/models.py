@@ -123,8 +123,8 @@ class HelperModel(models.Model):
     first_name = models.CharField(max_length=100,null=False,blank=False)
     middle_name = models.CharField(max_length=100,null=True,blank=True)
     last_name = models.CharField(max_length=100,null=False,blank=False)
-    primary_phone = models.IntegerField(null=False,blank=False)
-    secondary_phone = models.IntegerField(null=True,blank=True)
+    primary_phone = models.CharField(max_length=100,null=False,blank=False,default='')
+    secondary_phone = models.CharField(max_length=100,null=False,blank=False,default='')
     email_id = models.CharField(max_length=100,null=True,blank=True,default='Name@ezyhelpers.com')
     dob = models.DateField()
 
@@ -231,7 +231,7 @@ class HelperHistoryModel(models.Model):
     first_name = models.CharField(max_length=100,null=False,blank=False)
     middle_name = models.CharField(max_length=100,null=True,blank=True)
     last_name = models.CharField(max_length=100,null=False,blank=False)
-    primary_phone = models.IntegerField(null=False,blank=False)
+    primary_phone = models.CharField(max_length=100,null=False,blank=False)
     email_id = models.CharField(max_length=100,null=True,blank=True)
     dob = models.DateField()
 
@@ -249,7 +249,7 @@ class leadHistoryModel(models.Model):
     # personal details
     lead_id = models.CharField(max_length=20,null=True,blank=True)
     name = models.CharField(max_length=100,null=False,blank=False)
-    phone = models.IntegerField(null=False,blank=False)
+    phone = models.CharField(max_length=100,null=False,blank=False)
     email = models.CharField(max_length=100,null=True,blank=True)
 
     # create and update and remove status
