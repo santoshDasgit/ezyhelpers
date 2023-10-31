@@ -47,16 +47,16 @@ class HelperForm(forms.ModelForm):
             'state':"State <b class='text-danger'>*</b>",
             'country':"Country <b class='text-danger'>*</b>",
             'work_experience':"Working experience <b class='text-danger'>*</b>",
-            'availability_status_week':"Availability Status(weekly)<b class='text-danger'>*</b>",
+            'availability_status_week':"Job Role(weekly)<b class='text-danger'>*</b>",
             'additional_comment':"Additional comment ",
             'near_by':" <b class='mb-4'>Near by</b>",
             'work_experience':" Work experience <b class='text-danger'>* </b>",
             'dob':" DOB <b class='text-danger'>* </b>",
-            'availability_status':" Availability status <b class='text-danger'>* </b>",
-            'locality':" Locality <b class='text-danger'>* </b>",
+            'availability_status':" Job Role <b class='text-danger'>* </b>",
+            'locality':" Society <b class='text-danger'>* </b>",
             'call_status':" Call status <b class='text-danger'>* </b>",
-            'id_type':" <b class='mb-4'>id prove type <b class='text-danger'>*</b></b>",
-            'id_pdf':" <b class='mb-4'>ID upload (pdf) <b class='text-danger'>*</b></b>",
+            'id_type':" <b class='mb-4'>ID proof type <b class='text-danger'>*</b></b>",
+            'id_pdf':" <b class='mb-4'>ID upload (pdf)[max 5mb] <b class='text-danger'>*</b></b>",
           
         }
 
@@ -106,16 +106,16 @@ class HelperEditForm(forms.ModelForm):
             'state':"State <b class='text-danger'>*</b>",
             'country':"Country <b class='text-danger'>*</b>",
             'work_experience':"Working experience <b class='text-danger'>*</b>",
-            'availability_status_week':"Availability Status(weekly)<b class='text-danger'>*</b>",
+            'availability_status_week':"Job Role(weekly)<b class='text-danger'>*</b>",
             'additional_comment':"Additional comment ",
             'near_by':" <b class='mb-4'>Near by</b>",
             'work_experience':" Work experience <b class='text-danger'>* </b>",
             'dob':" DOB <b class='text-danger'>* </b>",
-            'availability_status':" Availability status <b class='text-danger'>* </b>",
-            'locality':" Locality <b class='text-danger'>* </b>",
+            'availability_status':" Job Role <b class='text-danger'>* </b>",
+            'locality':" Society <b class='text-danger'>* </b>",
             'call_status':" Call status <b class='text-danger'>* </b>",
-            'id_type':" <b class='mb-4'>id prove type <b class='text-danger'>*</b></b>",
-            'id_pdf':" <b class='mb-4'>ID upload (pdf) <b class='text-danger'>*</b></b>",
+            'id_type':" <b class='mb-4'>ID proof type <b class='text-danger'>*</b></b>",
+            'id_pdf':" <b class='mb-4'>ID upload (pdf)[max 5mb] <b class='text-danger'>*</b></b>",
           
         }
 

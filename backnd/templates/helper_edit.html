@@ -29,7 +29,7 @@
 
             <!-- location  -->
             <div class="col-md-4">
-                Locality
+                Society
                 <b class="text-danger">* </b>
                 <select name="locality" class="form-control my-2" rows="2" required="" id="id_locality">
                     <option value="" selected="">---------</option>
@@ -61,7 +61,7 @@
 
         <!--helper additional skill-->
         <div class="helper-job-role">
-            <b>Helper job role : </b> <br>
+            <b>Helper Job Category : </b> <br>
             {% for i in job_role %}
             <label for="" class='bg-danger '>
                 <input type="text" name='job_role' value="{{i.job}}">
@@ -79,7 +79,7 @@
 
         <!--helper additional skill-->
         <div class="helper-add-skill">
-            <b>Helper additional skill : </b> <br>
+            <b>Helper additional skills : </b> <br>
             {% for i in additional_skill %}
             <label for="" class='bg-danger '>
                 <input type="text" name='ad-skill' value="{{i.additional_skill}}">
@@ -97,7 +97,7 @@
 
         <!--helper skill-->
         <div class="helper-skill">
-            <b>Helper skill : </b> <br>
+            <b>Helper skills : </b> <br>
             {% for i in skill %}
             <label for="" class='bg-danger '>
                 <input type="text" name='skill' value="{{i.skill}}">
