@@ -8,19 +8,19 @@
 <form action="" method="post" class='shadow p-3'>
     {% csrf_token %}
 
-    <label for="">name</label>
+    <label for="">Customer Name</label>
     <input type="text" class="form-control" value="{{name}}" name='name' required>
 
-    <label for="">phone</label>
+    <label for="">Phone</label>
     <input type="text" class="form-control" value={{phone}} name='phone' required>
 
-    <label for="">email</label>
+    <label for="">Email</label>
     <input type="email" class="form-control" value="{{email}}" name='email' required>
 
-    <label for="">address</label>
+    <label for="">Address</label>
     <input type="text" class="form-control" value="{{addr}}" name='addr' required>
 
-    <label for="">Locality</label>
+    <label for="">Society</label>
     <select name="locality" id="" class='form-control' required>
         <option value selected>-------------</option>
         {% for i in locations %}
@@ -28,7 +28,7 @@
         {% endfor %}
     </select>
 
-    <label for="">Availability</label>
+    <label for="">Job Role</label>
     <select name="availability" id="" class='form-control' required>
        
         <option value="live_in" {% if availability == 'live_in' %}selected{% endif %}>Live in</option>
