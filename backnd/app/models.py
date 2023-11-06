@@ -124,7 +124,7 @@ class HelperModel(models.Model):
     middle_name = models.CharField(max_length=100,null=True,blank=True)
     last_name = models.CharField(max_length=100,null=False,blank=False)
     primary_phone = models.CharField(max_length=100,null=False,blank=False,default='')
-    secondary_phone = models.CharField(max_length=100,null=False,blank=False,default='')
+    secondary_phone = models.CharField(max_length=100,null=True,blank=True,default='')
     email_id = models.CharField(max_length=100,null=True,blank=True,default='Name@ezyhelpers.com')
     dob = models.DateField()
 

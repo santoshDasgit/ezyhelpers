@@ -24,29 +24,29 @@
 
 
     <label for="">Customer Name</label>
-    <input type="text" class="form-control"  name='name' required>
-
+    <input type="text" class="form-control"  name='name' id="name" required>
+    <label for="name_error" class='text-danger' id="name_error" style="display: none;">*</label>
     <label for="">Phone</label>
-    <input type="text" class="form-control"  name='phone' required>
-
+    <input type="text" class="form-control"  name='phone' id="phone" required>
+    <label for="phone_error" class='text-danger' id="phone_error" style="display: none;">*</label>
     <label for="">Email</label>
-    <input type="email" class="form-control"  name='email' required>
-
+    <input type="email" class="form-control"  name='email' id="email" required>
+    <label for="email_error" class='text-danger' id="email_error" style="display: none;">*</label>
     <label for="">Address</label>
-    <input type="text" class="form-control"  name='addr' required>
-
+    <input type="text" class="form-control"  name='addr' id="addr" required>
+    <label for="addr_error" class='text-danger' id="addr_error" style="display: none;">*</label>
     <label for="">Society</label>
-    <select name="locality" id="" class='form-control' required>
+    <select name="locality" id="locality" class='form-control' required>
         <option value selected>-------------</option>
         {% for i in locations %}
         <option value="{{i.Localities}}">{{i.Localities}}</option>
         {% endfor %}
     </select>
-        
+    <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label>  
         
 
     <label for="">Job Role</label>
-    <select name="availability" id="" class='form-control' required>
+    <select name="availability" id="availability" class='form-control' required>
         <option value selected>-------------</option>
         <option value="live_in">Live in</option>
         <option value="on_demand">On demand</option>
@@ -54,14 +54,73 @@
         <option value="part_time">Part time</option>
         <option value="misc">Misc</option>
     </select>
-
+    <label for="availability_error" class='text-danger' id="availability_error" style="display: none;">*</label>
+    <br>
     <label for="" class='mt-3'><b>Near by : </b></label>
     <input type="checkbox" name="near_by" id="" class='mt-3'>
 
     <br><br>
 
-    <button type='submit' class='btn btn-primary my-2'>Create</button>
+    <button type='submit' class='btn btn-primary my-2' id="submitBtn">Create</button>
     <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
 </form>
+<script>
+       document.addEventListener('DOMContentLoaded', function() {
+        // Get all form elements you want to attach the onchange event to
+        const formElements = document.querySelectorAll('input, select, textarea');
+
+        // Loop through the form elements and attach the onchange event
+        for (const element of formElements) {
+            element.addEventListener('change', function() {
+                validateForm();
+            });
+        }
+    });
+    document.querySelector('#submitBtn').addEventListener('click', function (event) {
+        if (!validateForm()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+     function validateForm() {
+    var isValid = true;
+
+    function validateField(fieldId, pattern, errorMessageId, errorMessage) {
+        var fieldValue = $(fieldId).val();
+      
+        if ($('#addr').val()) {
+            $('#addr_error').css("display", "none");
+        } else {
+                $('#addr_error').css("display", "block");
+            $('#addr_error').text('Please enter a valid  address');
+            isValid = false;
+            
+          
+        }
+     
+            if (pattern.test(fieldValue)) {
+            $(errorMessageId).css("display", "none");
+        } else {
+                $(errorMessageId).css("display", "block");
+            $(errorMessageId).text(errorMessage);
+            isValid = false;
+            
+          
+        }
+  
+    }  
+
+    // Validate all fields
+    validateField('#name', /^[A-Za-z\s]+$/, '#name_error', 'Please enter a valid name');
+    validateField('#phone', /^[1-9][0-9]{9}$/, '#phone_error', 'Please enter a valid 10-digit primary phone number');
+    validateField('#email', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#email_error', 'Please enter a valid email address');
+    validateField('#locality', /^[A-Za-z0-9\s]+$/, '#locality_error', 'Please select a society');
+    validateField('#availability', /^[A-Za-z0-9._-]+$/, '#availability_error', 'Please select a job role');
+
+    // Add similar validations for other fields here
+
+    return isValid;
+}
+
+</script>
 {% endblock body %}
 
