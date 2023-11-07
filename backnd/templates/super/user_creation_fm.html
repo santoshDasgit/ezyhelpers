@@ -20,14 +20,14 @@
         {% csrf_token %}
 
         <label for="">Email</label>
-        <input type="email" class='form-control' placeholder="abc@gmail.com" name='email' required>
-
+        <input type="email" class='form-control' placeholder="abc@gmail.com" name='email' id="email" required>
+        <label for="email_error" class='text-danger' id="email_error" style="display: none;">*</label>
         <label for="">First name</label>
-        <input type="text" class='form-control' placeholder="abc" name='first_name' required>
-
+        <input type="text" class='form-control' placeholder="abc" name='first_name' id="id_first_name" required>
+        <label for="id_first_name_error" class='text-danger' id="id_first_name_error" style="display: none;">*</label>
         <label for="">Last name</label>
-        <input type="text" class='form-control' placeholder="xyz" name='last_name'>
-
+        <input type="text" class='form-control' placeholder="xyz" name='last_name' id="id_last_name">
+        <label for="id_last_name_error" class='text-danger' id="id_last_name_error" style="display: none;">*</label>
         <label for="">Password</label>
         <input type="password" class='form-control password-inp' placeholder="aA1@password"id="psw" name="psw" pattern="(?=.*[!@#$%^&*])(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"  title="Must contain at least one number and one uppercase and lowercase letter and space are not allow, and at least 8 or more characters"  required>
        
@@ -41,7 +41,7 @@
             <p id="length" class="invalid">Minimum <b>8 characters</b></p>
           </div>
 
-        <button type="submit" class="btn btn-primary my-3">Save</button>
+        <button type="submit" class="btn btn-primary my-3" id="submitBtn">Save</button>
 
        <!-- back button -->
         <a href="{% url 'superuser_user_list' %}" class='btn btn-secondary'>Back</a>
@@ -130,5 +130,52 @@
       }
     }
     </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+     // Get all form elements you want to attach the onchange event to
+     const formElements = document.querySelectorAll('input, select, textarea');
 
+     // Loop through the form elements and attach the onchange event
+     for (const element of formElements) {
+         element.addEventListener('change', function() {
+             validateForm();
+         });
+     }
+ });
+ document.querySelector('#submitBtn').addEventListener('click', function (event) {
+     if (!validateForm()) {
+         event.preventDefault(); // Prevent form submission if validation fails
+     }
+ });
+  function validateForm() {
+ var isValid = true;
+
+ function validateField(fieldId, pattern, errorMessageId, errorMessage) {
+     var fieldValue = $(fieldId).val();
+   
+  
+         if (pattern.test(fieldValue)) {
+         $(errorMessageId).css("display", "none");
+     } else {
+             $(errorMessageId).css("display", "block");
+         $(errorMessageId).text(errorMessage);
+         isValid = false;
+         
+       
+     }
+
+ }  
+
+ // Validate all fields
+ validateField('#id_first_name', /^[A-Za-z]+$/, '#id_first_name_error', 'Please enter a valid first name');
+ validateField('#id_last_name', /^[A-Za-z]+$/, '#id_last_name_error', 'Please enter a valid last name');
+ validateField('#email', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#email_error', 'Please enter a valid email address');
+
+
+ // Add similar validations for other fields here
+
+ return isValid;
+}
+
+</script>
 {% endblock body %}
