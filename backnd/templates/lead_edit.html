@@ -30,10 +30,10 @@
     </select>
     <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label> 
     <label for="">Flat Number</label>
-    <input type="text" class="form-control"  name='flat_num' value="{{flat_number}}" id="flat_num" required>
+    <input type="text" class="form-control"  name='flat_num' value="{{flat_number}}" id="flat_num" >
     <label for="flat_error" class='text-danger' id="flat_error" style="display: none;">*</label>  
     <label for="">Lead Status</label>
-    <select name="LeadStatus" id="LeadStatus" class='form-control' required>
+    <select name="LeadStatus" id="LeadStatus" class='form-control' >
         <option value >-------------</option>
         <option value="Hot" {% if lead_status2 == "Hot" %} selected {% endif %}>Hot</option>
         <option value="Cold" {% if lead_status2 == "Cold" %} selected {% endif %}>Cold</option>
@@ -44,12 +44,12 @@
 <div class="row">
     <div class="col-md-6">
         <label for="">Lead Requirement Date</label>
-        <input type="date" class="form-control"  name='LeadRequirementDate' id="LeadRequirementDate" value="{{lead_req_date|date:'Y-m-d'}}" required>
+        <input type="date" class="form-control"  name='LeadRequirementDate' id="LeadRequirementDate" value="{{lead_req_date|date:'Y-m-d'}}" >
         <label for="LeadRequirementDate_error" class='text-danger' id="LeadRequirementDate_error" style="display: none;">*</label>
     </div>
     <div class="col-md-6">
         <label for="">Lead Placement Date</label>
-        <input type="date" class="form-control"  name='LeadPlacementDate' value="{{lead_placement_date|date:'Y-m-d'}}" id="LeadPlacementDate" required>
+        <input type="date" class="form-control"  name='LeadPlacementDate' value="{{lead_placement_date|date:'Y-m-d'}}" id="LeadPlacementDate" >
         <label for="LeadPlacementDate_error" class='text-danger' id="LeadPlacementDate_error" style="display: none;">*</label> 
     
     </div>
@@ -57,7 +57,7 @@
 </div>
    
     <label for="">Lead Source</label>
-    <input type="text" class="form-control"  name='LeadSource' value="{{lead_source}}" id="LeadSource" required>
+    <input type="text" class="form-control"  name='LeadSource' value="{{lead_source}}" id="LeadSource" >
     <label for="LeadSource_error" class='text-danger' id="LeadSource_error" style="display: none;">*</label> 
 
     <label for="">Job Role</label>

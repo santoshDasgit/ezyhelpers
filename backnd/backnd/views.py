@@ -1170,7 +1170,7 @@ def LeadInsertDataView(request):
             lead_source=request.POST['LeadSource']
             # id generate 
             leads = LeadModel.objects.all()
-            id = lead_generate_id(leads.count()+2)
+            id = lead_generate_id(leads.count()+20)
 
             # near_by field
             if near_by == 'on':
@@ -1246,7 +1246,7 @@ def LeadInsertDataView(request):
             # exception handle
            
             print(f"{type(request.POST['Start_Date'])} {type(request.POST['s_StartDuration'])}")
-            messages.error(request,f'Something error try again! may be network issue! {e}')
+            messages.error(request,f'Something error try again! may be network issue!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     data = {
