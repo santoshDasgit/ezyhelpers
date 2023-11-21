@@ -36,7 +36,7 @@
         <select name="locality" class="form-control my-2" rows="2" required="" id="id_locality">
           <option value="" selected="">---------</option>
             {% for i in locations %}
-                  <option value="{{i.Localities }}">{{i.Localities }}</option>
+                  <option value="{{i.name }}">{{i.name }}</option>
             {% endfor %}
 
         </select>

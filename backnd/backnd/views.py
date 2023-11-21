@@ -21,7 +21,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404
-
+from app.models import LeadModel,Localities
 
 
 
@@ -273,16 +273,17 @@ def HelperAddView(request):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
     
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
 
-        # Data get dictionary format 
-        location_values = current_sheet.get_all_records()
+        # # Data get dictionary format 
+        # location_values = current_sheet.get_all_records()
+        location_values = Localities.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -481,13 +482,116 @@ def ExcelFileHelperFileView(request):
                 messages.success(request,'file upload successful!')
             except Exception as e:
                 # exception handle 
-                messages.error(request,f'There is an error!  :---> {e}')
+                messages.error(request,f'There is an error!')
             # redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
     return render(request,'helper_excel.html')
 
+# excel file through lead create 
+@login_required
+def ExcelFileLeadFileView(request):
+    if request.method == 'POST':
+        data_set = Dataset()
+        myfile = request.FILES['myfile']
 
+        # check excel file or not!
+        if not myfile.name.endswith('xlsx'):
+            messages.error(request,'Excel file only allow!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            try:
+                 # all excel data store in 'excel_data' in form of table 
+                excel_data =data_set.load(myfile.read(),format='xlsx')
+                for i in excel_data:
+                    # row fully empty or not check
+                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='') and (i[2]==None or i[2]=='') and (i[3]==None or i[3]=='') and (i[4]==None or i[4]=='') and (i[7]==None or i[7]=='') and (i[8]==None or i[8]=='') and (i[9]==None or i[9]=='') and (i[10]==None or i[10]=='')and (i[11]==None or i[11]=='')):
+                         pass
+                    else:
+                        leads = LeadModel.objects.all()
+                        id = lead_generate_id(len(leads)+2)
+                        lead_data_all =LeadModel(
+                            lead_id = i[8] or id,
+                            name = i[0] or "not mention",
+                            phone = i[1],
+                            email_id = i[2],
+                            address=i[3],
+                            phone_valid_status=i[4],
+                            agent=i[5] or "",
+                            additional_comment=i[6] or "",
+
+                            availability_status =i[11],
+                            # locality 
+                            locality =i[9],
+                            near_by = i[10],
+                            lead_status = i[7],
+                            flat_number = i[12] or '',
+                            lead_req_date = i[13] or None,
+                            lead_placement_date = i[14] or None,
+                            lead_status2 = i[15] or '',
+                            role_on_demand_start_date = i[16] or None,
+                            role_on_demand_start_from_time = i[17] or None,
+                            role_on_demand_start_to_time = i[18] or None,
+                            role_on_demand_end_date =i[19] or None,
+                            role_on_demand_end_from_time =i[20] or None,
+                            role_on_demand_end_to_time = i[21] or None,
+                            lead_source = i[22] or '',
+                            job_category=i[23] or '',
+                            admin_user = request.user,
+                        )
+                        
+
+                        lead_data_all.save()
+                       
+                       
+
+                # if all right then success message 
+                messages.success(request,'file upload successful!')
+            except Exception as e:
+                # exception handle 
+                messages.error(request,f'There is an error! (Duplicate Entry)')
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+    return render(request,'lead_excel.html')
+
+# excel file through helper create 
+@login_required
+def ExcelFileLocalityFileView(request):
+    if request.method == 'POST':
+        data_set = Dataset()
+        myfile = request.FILES['myfile']
+
+        # check excel file or not!
+        if not myfile.name.endswith('xlsx'):
+            messages.error(request,'Excel file only allow!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            try:
+                 # all excel data store in 'excel_data' in form of table 
+                excel_data =data_set.load(myfile.read(),format='xlsx')
+                for i in excel_data:
+                    # row fully empty or not check
+                    if(i[0]==None or i[0]=='' ):
+                         pass
+                    else:
+                        localities =Localities(
+                            name = i[0]
+                        )
+                        localities.save()
+                # if all right then success message 
+                messages.success(request,'file upload successful!')
+            except Exception as e:
+                # exception handle 
+                messages.error(request,f'There is an error! (Duplicate Entry)')
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+    return render(request,'locality_excel.html')
 # helper delete 
 @login_required
 def HelperDeleteView(request,id):
@@ -524,16 +628,17 @@ def HelperEditView(request,id):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
     
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
 
-        # Data get dictionary format 
-        location_values = current_sheet.get_all_records()
+        # # Data get dictionary format 
+        # location_values = current_sheet.get_all_records()
+        location_values = Localities.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -725,23 +830,24 @@ def LeadList(request):
     all_value = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
     
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
 
-        # Data get dictionary format 
-        all_value = current_sheet.get_all_records()
+        # # Data get dictionary format 
+        # all_value = current_sheet.get_all_records()
+        leads = LeadModel.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
     
     data = {
-        'data':all_value,
-        'length':len(all_value)
+        'data':leads,
+        'length':len(leads)
     }
     return render(request,'lead_list.html',data)   
 
@@ -752,26 +858,27 @@ def LeadDetailsView(request,no):
     data = {}
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
         
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
         
         # all row data
-        row_num = int(no)+1
-        values_list = current_sheet.row_values(row_num)
+        # row_num = int(no)+1
+        # values_list = current_sheet.row_values(row_num)
+        leads = LeadModel.objects.get(id=no)
         data = {
-            'name' : values_list[0],
-            'phone' : values_list[1],
-            'email' : values_list[2],
-            'addr' : values_list[3],
-            'id': values_list[8],
-            'locality':values_list[9],
-            'near_by':values_list[10],
-            'availability':values_list[11]
+            'name' : leads.name,
+            'phone' : leads.phone,
+            'email' : leads.email_id,
+            'addr' : leads.address,
+            'id': leads.lead_id,
+            'locality':leads.locality,
+            'near_by':leads.near_by,
+            'availability':leads.availability_status
         }
     except:
          # exception handle 
@@ -788,16 +895,17 @@ def LeadEditView(request,no):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
     
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
 
-        # Data get dictionary format 
-        location_values = current_sheet.get_all_records()
+        # # Data get dictionary format 
+        # location_values = current_sheet.get_all_records()
+        location_values = Localities.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -808,27 +916,45 @@ def LeadEditView(request,no):
         current_datetime = datetime.now()
 
            # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
         
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
         
-        # all row data
-        row_num = int(no)+1
-        values_list = current_sheet.row_values(row_num)
+        # # all row data
+        # row_num = int(no)+1
+        # values_list = current_sheet.row_values(row_num)
+        leads = LeadModel.objects.get(id=no)
+        job_category = leads.job_category.split(',')
+        excluded_roles = ['nanny', ' housekeeper',' caregiver']
+        included_roles = [role for role in job_category if role not in excluded_roles]
 
         data = {
-            'name' : values_list[0],
-            'phone' : values_list[1],
-            'email' : values_list[2],
-            'addr' : values_list[3],
-            'locality':values_list[9],
-            'near_by':values_list[10],
-            'availability':values_list[11],
-            'locations':location_values
+            'name' : leads.name,
+            'phone' : leads.phone,
+            'email' : leads.email_id,
+            'addr' : leads.address,
+            'locality':leads.locality,
+            'near_by':leads.near_by,
+            'availability':leads.availability_status,
+            'locations':location_values,
+            'flat_number':leads.flat_number, 
+            'lead_req_date':leads.lead_req_date,
+            'lead_placement_date' :leads.lead_placement_date,
+            'lead_status2' :leads.lead_status2,
+            'additional_comment':leads.additional_comment,
+            'job_role' :leads.job_category,
+            'other_roles':', '.join(included_roles),
+            'lead_source':leads.lead_source,
+            'role_on_demand_start_date':leads.role_on_demand_start_date,
+             'role_on_demand_start_from_time':   leads.role_on_demand_start_from_time, 
+            'role_on_demand_start_to_time':  leads.role_on_demand_start_to_time ,
+            'role_on_demand_end_date':    leads.role_on_demand_end_date, 
+            'role_on_demand_end_from_time':   leads.role_on_demand_end_from_time, 
+            'role_on_demand_end_to_time':   leads.role_on_demand_end_to_time 
         }
         
     
@@ -843,24 +969,56 @@ def LeadEditView(request,no):
             locality = request.POST['locality']
             near_by = request.POST.get('near_by',False)
             availability = request.POST['availability']
+            flat_number = request.POST['flat_num']
+            lead_req_date =  request.POST['LeadRequirementDate']
+            lead_placement_date = request.POST['LeadPlacementDate']
+            lead_status = request.POST['LeadStatus']
+            additional_comment=request.POST['AdditionalComment']
+            job_role = ', '.join(request.POST.getlist('job_role'))  
+            lead_source=request.POST['LeadSource']
 
             # near_by set
             if near_by == 'on':
                 near_by = True
 
             # values set/update in sheets 
-            current_sheet.update_cell(row_num, 1, name)
-            current_sheet.update_cell(row_num, 2, phone)
-            current_sheet.update_cell(row_num, 3, email)
-            current_sheet.update_cell(row_num, 4, addr)
-            current_sheet.update_cell(row_num, 10, locality)
-            current_sheet.update_cell(row_num, 11, near_by)
-            current_sheet.update_cell(row_num, 12, availability)
-
+            # current_sheet.update_cell(row_num, 1, name)
+            # current_sheet.update_cell(row_num, 2, phone)
+            # current_sheet.update_cell(row_num, 3, email)
+            # current_sheet.update_cell(row_num, 4, addr)
+            # current_sheet.update_cell(row_num, 10, locality)
+            # current_sheet.update_cell(row_num, 11, near_by)
+            # current_sheet.update_cell(row_num, 12, availability)
+            if LeadModel.objects.get(id =no):
+                    lead_data_all =LeadModel.objects.get(id =no)
+                    lead_data_all.lead_id = leads.lead_id
+                    lead_data_all.name = name
+                    lead_data_all.phone = phone
+                    lead_data_all.email_id = email
+                    lead_data_all.address=addr
+                    lead_data_all.availability_status =availability
+                    lead_data_all.locality =locality
+                    lead_data_all.near_by = near_by
+                    lead_data_all.lead_status = "pending"
+                    lead_data_all.flat_number = flat_number
+                    lead_data_all.lead_req_date = lead_req_date
+                    lead_data_all.lead_placement_date = lead_placement_date
+                    lead_data_all.lead_status2 = lead_status
+                    lead_data_all.lead_source=lead_source
+                    lead_data_all.additional_comment=additional_comment
+                    lead_data_all.job_category=job_role
+                    if request.POST['Start_Date'] != '':
+                        lead_data_all.role_on_demand_start_date =request.POST['Start_Date']
+                        lead_data_all.role_on_demand_start_from_time = request.POST.get('s_StartDuration')
+                        lead_data_all.role_on_demand_start_to_time = request.POST.get('s_EndDuration')
+                        lead_data_all.role_on_demand_end_date =request.POST['End_Date']
+                        lead_data_all.role_on_demand_end_from_time = request.POST.get('e_StartDuration')
+                        lead_data_all.role_on_demand_end_to_time  =request.POST.get('e_EndDuration')
+                    lead_data_all.save()
             # lead_history model 
-            if not leadHistoryModel.objects.filter(Q(lead_id = values_list[8]) & Q(history_status = 'update')).exists():
+            if not leadHistoryModel.objects.filter(Q(lead_id = leads.lead_id) & Q(history_status = 'update')).exists():
                 lead_history = leadHistoryModel(
-                    lead_id = values_list[8],
+                    lead_id = leads.lead_id,
                     name = name,
                     phone = phone,
                     email = email,
@@ -873,9 +1031,9 @@ def LeadEditView(request,no):
                 HistoryModel(lead = lead_history).save()
             
             else:
-                lead_history = leadHistoryModel.objects.filter(Q(lead_id = values_list[8]) & Q(history_status = 'update'))
+                lead_history = leadHistoryModel.objects.filter(Q(lead_id = leads.lead_id) & Q(history_status = 'update'))
                 lead_history.update(
-                     lead_id = values_list[8],
+                     lead_id = leads.lead_id,
                     name = name,
                     phone = phone,
                     email = email,
@@ -883,8 +1041,8 @@ def LeadEditView(request,no):
                     history_status = 'update'
                 )
 
-                HistoryModel.objects.filter(lead = leadHistoryModel.objects.get(Q(lead_id = values_list[8]) & Q(history_status = 'update'))).update(
-                    lead =  leadHistoryModel.objects.get(Q(lead_id = values_list[8]) & Q(history_status = 'update')),
+                HistoryModel.objects.filter(lead = leadHistoryModel.objects.get(Q(lead_id = leads.lead_id) & Q(history_status = 'update'))).update(
+                    lead =  leadHistoryModel.objects.get(Q(lead_id = leads.lead_id) & Q(history_status = 'update')),
                     date = current_datetime.today()
                 )
 
@@ -894,9 +1052,9 @@ def LeadEditView(request,no):
             # redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
      
-    except:
+    except Exception as e:
        
-        messages.error(request,'Something error try again! may be network issue!')
+        messages.error(request,f'Something error try again! may be network issue!')
     return render(request,'lead_edit.html',data)
      
 
@@ -906,24 +1064,31 @@ def LeadDeleteView(request,no):
     try:
         current_datetime = datetime.now()
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
         
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
         
-        # all row data
-        row_num = int(no)+1
+        # # all row data
+        # row_num = int(no)+1
+        leads = LeadModel.objects.get(id=no)
 
         # get data 
-        values_list = current_sheet.row_values(row_num)
+        # values_list = current_sheet.row_values(row_num)
 
-        id = values_list[8]
-        phone = values_list[1]
-        name = values_list[0]
-        email = values_list[2]
+        # id = values_list[8]
+        # phone = values_list[1]
+        # name = values_list[0]
+        # email = values_list[2]
+       
+
+        id = leads.lead_id
+        phone = leads.phone
+        name = leads.name
+        email = leads.email_id
         
         # lead_history model 
         lead_history = leadHistoryModel(
@@ -943,7 +1108,7 @@ def LeadDeleteView(request,no):
         ).save()
 
         # delete the row by help of row num 
-        current_sheet.delete_row(row_num)
+        leads.delete()
 
         # success message 
         messages.success(request,'data remove successful!')
@@ -960,16 +1125,17 @@ def LeadInsertDataView(request):
     location_values = ''
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
     
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
 
-        # Data get dictionary format 
-        location_values = current_sheet.get_all_records()
+        # # Data get dictionary format 
+        # location_values = current_sheet.get_all_records()
+        location_values = Localities.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -978,13 +1144,13 @@ def LeadInsertDataView(request):
     if request.method == 'POST':
         try:
             # configuration json file 
-            gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+            # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-            # open google sheet by help of key
-            worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+            # # open google sheet by help of key
+            # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
             
-            # which sheet you want to open! 
-            current_sheet = worksheet.worksheet('Sheet1')
+            # # which sheet you want to open! 
+            # current_sheet = worksheet.worksheet('Sheet1')
             
 
             # value get from lead_add.html
@@ -995,9 +1161,16 @@ def LeadInsertDataView(request):
             locality = request.POST['locality']
             near_by = request.POST.get('near_by',False)
             availability = request.POST['availability']
-
+            flat_number = request.POST['flat_num']
+            lead_req_date =  request.POST['LeadRequirementDate']
+            lead_placement_date = request.POST['LeadPlacementDate']
+            lead_status = request.POST['LeadStatus']
+            additional_comment=request.POST['AdditionalComment']
+            job_role = ', '.join(request.POST.getlist('job_role')) 
+            lead_source=request.POST['LeadSource']
             # id generate 
-            id = lead_generate_id(len(current_sheet.get_all_records())+2)
+            leads = LeadModel.objects.all()
+            id = lead_generate_id(len(leads)+2)
 
             # near_by field
             if near_by == 'on':
@@ -1005,9 +1178,9 @@ def LeadInsertDataView(request):
 
             # all value in list format 
             lst = [name,phone,email,addr," "," "," ","pending",id,locality,near_by,availability]
-
+            
             # row append in sheet 
-            current_sheet.append_row(lst)
+            # current_sheet.append_row(lst)
 
             # notification 
             lead = id
@@ -1031,6 +1204,36 @@ def LeadInsertDataView(request):
                 history_status = 'create'
             )
             lead_history.save()
+            #main lead model 
+            lead_data_all =LeadModel(
+                lead_id = id,
+                name = name,
+                phone = phone,
+                email_id = email,
+                address=addr,
+                availability_status =availability,
+                # locality 
+                locality =locality,
+                near_by = near_by,
+                lead_status = "pending",
+                admin_user = request.user,
+                flat_number = flat_number,
+                lead_req_date = lead_req_date,
+                lead_placement_date = lead_placement_date,
+                lead_status2 = lead_status,
+                lead_source=lead_source,
+                additional_comment=additional_comment,
+                job_category=job_role)
+            if request.POST['Start_Date'] != '':
+                lead_data_all.role_on_demand_start_date =request.POST['Start_Date']
+                lead_data_all.role_on_demand_start_from_time = request.POST.get('s_StartDuration')
+                lead_data_all.role_on_demand_start_to_time = request.POST.get('s_EndDuration')
+                lead_data_all.role_on_demand_end_date =request.POST['End_Date']
+                lead_data_all.role_on_demand_end_from_time = request.POST.get('e_StartDuration')
+                lead_data_all.role_on_demand_end_to_time  =request.POST.get('e_EndDuration')
+              
+            
+            lead_data_all.save()
 
             # history model 
             HistoryModel(
@@ -1039,9 +1242,11 @@ def LeadInsertDataView(request):
 
             messages.success(request,"Data add successful!")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        except:
-            # exception handle 
-            messages.error(request,'Something error try again! may be network issue!')
+        except Exception as e:
+            # exception handle
+           
+            print(f"{type(request.POST['Start_Date'])} {type(request.POST['s_StartDuration'])}")
+            messages.error(request,f'Something error try again! may be network issue! ')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     data = {
@@ -1051,22 +1256,24 @@ def LeadInsertDataView(request):
 
 @login_required
 def LeadStatusUpdateView(request,row):
-    row = int(row)+1
+    # row = int(row)+1
     col = 8
     try:
         # configuration json file 
-        gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
+        # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
-        # open google sheet by help of key
-        worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
+        # # open google sheet by help of key
+        # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
             
-        # which sheet you want to open! 
-        current_sheet = worksheet.worksheet('Sheet1')
-        
-        lead_status_inp = request.POST['lead_status_inp']
+        # # which sheet you want to open! 
+        # current_sheet = worksheet.worksheet('Sheet1')
+        leads = LeadModel.objects.get(id=row)
+        leads.lead_status = request.POST['lead_status_inp']
+        leads.save()
+        # lead_status_inp = request.POST['lead_status_inp']
 
-        # update status 
-        current_sheet.update_cell(row,col,lead_status_inp)
+        # # update status 
+        # current_sheet.update_cell(row,col,lead_status_inp)
 
         messages.success(request,"Data update successful.!")
     except:

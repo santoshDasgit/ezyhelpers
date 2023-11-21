@@ -20,9 +20,36 @@
 
       <a type='button' href="{% url 'lead_list' %}" class='btn btn-outline-primary mx-2' id="all_data">All</a>
     </form>
-    <a href="{% url 'lead_add' %}" class="btn btn-primary">Add</a>
+    <!-- <select id="filterStatus" class="form-control" onchange="filterTable2()">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="first contact">First contact</option>
+      <option value="follow up">Follow up</option>
+      <option value="failed">Failed</option>
+      <option value="confirmed">Confirmed</option>
+  </select> -->
+    <button class='btn btn-primary' data-toggle="modal" data-target="#exampleModalCenter2">Add</button><br><br> 
+    <a href="{% url 'excel_file_locality_upload' %}" class='btn btn-primary mr-2'>Add Society</a>
   </nav>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLongTitle">Please select</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body justify-content-between w-100">
+      <a href="{% url 'lead_add' %}" class='btn btn-primary mr-2'>Lead</a>
+      <a href="{% url 'excel_file_lead_upload' %}" class='btn btn-primary'>Lead(Excel)</a>
+    </div>
 
+  </div>
+</div>
+</div>
   <!--messages-->
   {% include "msg.html" %}
 
@@ -45,26 +72,26 @@
 
         <tr id="itemList">
           <th scope="row">{{forloop.counter}}</th>
-          <td><a href="{% url 'lead_details' forloop.counter %}">{{i.name}}</a></td>
+          <td><a href="{% url 'lead_details' i.id %}">{{i.name}}</a></td>
           <td>{{i.phone}}</td>
-          <td>{{i.email}}</td>
+          <td>{{i.email_id}}</td>
           <td>{{i.id}}</td>
           <td>
-            <form action="{% url 'lead_status_update' forloop.counter %}" class="lead_status_fm" method="post">
+            <form action="{% url 'lead_status_update' i.id %}" class="lead_status_fm" method="post">
               {% csrf_token %}
             <select name="lead_status_inp"  class='form-control status_inp'>
-              <option value="pending" {% if i.status == 'pending'  %} selected {% endif %}>Pending</option>
-              <option value="first contact" {% if i.status == 'first contact'  %} selected {% endif %}>First contact</option>
-              <option value="follow up" {% if i.status == 'follow up'  %} selected {% endif %}>Follow up</option>
-              <option value="failed" {% if i.status == 'failed'  %} selected {% endif %}>Failed</option>
-              <option value="confirmed" {% if i.status == 'confirmed'  %} selected {% endif %}>Confirmed</option>
+              <option value="pending" {% if i.lead_status == 'pending'  %} selected {% endif %}>Pending</option>
+              <option value="first contact" {% if i.lead_status == 'first contact'  %} selected {% endif %}>First contact</option>
+              <option value="follow up" {% if i.lead_status == 'follow up'  %} selected {% endif %}>Follow up</option>
+              <option value="failed" {% if i.lead_status == 'failed'  %} selected {% endif %}>Failed</option>
+              <option value="confirmed" {% if i.lead_status == 'confirmed'  %} selected {% endif %}>Confirmed</option>
             </select>
           </form>
           </td>
 
           <td>
             <!--edit-->
-            <a href="{% url 'lead_edit' forloop.counter %}" class="btn btn-sm btn-primary"><i
+            <a href="{% url 'lead_edit' i.id %}" class="btn btn-sm btn-primary"><i
                 class="fa-solid fa-pen-to-square"></i></a>
 
             <!--delete-->
@@ -89,7 +116,7 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <a href="{% url 'lead_delete' forloop.counter %}" class="btn btn-danger">Remove</a>
+                    <a href="{% url 'lead_delete' i.id %}" class="btn btn-danger">Remove</a>
 
                   </div>
                 </div>
@@ -107,7 +134,7 @@
 
 <script>
 
-  
+
   // Get the input element, table, and select element
   const filterInput = document.getElementById('filterInput');
   const table = document.getElementById('data-table');
@@ -120,40 +147,70 @@
   // Add event listener to the input and select elements to trigger the filtering
   filterInput.addEventListener('keyup', filterTable);
   filterColumnSelect.addEventListener('change', filterTable);
+  const filterStatusSelect = document.getElementById('filterStatus');
 
-  function filterTable() {
+function filterTable() {
     const filterValue = filterInput.value.toLowerCase();
     const filterColumnIndex = parseInt(filterColumnSelect.value);
 
     const rows = table.getElementsByTagName('tr');
     for (let i = 1; i < rows.length; i++) {
-      const cells = rows[i].getElementsByTagName('td');
-      let rowVisible = false;
+        const cells = rows[i].getElementsByTagName('td');
+        let rowVisible = false;
 
-      for (let j = 0; j < cells.length; j++) {
-        const cellText = cells[j].textContent.toLowerCase();
-        if (filterColumnIndex === 0 || filterColumnIndex === j) {
-          if (cellText.includes(filterValue)) {
-            rowVisible = true;
-            break;
-          }
+        for (let j = 0; j < cells.length; j++) {
+            const cellText = cells[j].textContent.toLowerCase();
+
+            // Filter based on the selected column
+            if (filterColumnIndex === 0 || filterColumnIndex === j) {
+                if (cellText.includes(filterValue)) {
+                    rowVisible = true;
+                    break;
+                }
+            }
+
+            // Filter based on the selected status
+            
         }
-      }
 
-      // Show/hide rows based on the filter value
-      if (rowVisible) {
-        rows[i].style.display = '';
-      } else {
-        rows[i].style.display = 'none';
-      }
+        // Show/hide rows based on the filter values
+        if (rowVisible) {
+            rows[i].style.display = '';
+        } else {
+            rows[i].style.display = 'none';
+        }
     }
-  }
+}
 
+ 
+// status update
+function filterTable2() {
+    const filterStatusValue = filterStatusSelect.value.toLowerCase();
 
-  // status update 
+    const rows = table.getElementsByTagName('tr');
+    for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        let rowVisible = false;
 
+        for (let j = 0; j < cells.length; j++) {
+            const cellText = cells[5].textContent.trim().toLowerCase();
 
-  let lead_status_inp = document.querySelectorAll('.status_inp')
+            // Filter based on the selected status
+            if (j === 5 && cellText === filterStatusValue) { // Assuming the status column is at index 5
+                rowVisible = true;
+                break;
+            }
+        }
+
+        // Show/hide rows based on the filter values
+        if (rowVisible) {
+            rows[i].style.display = '';
+        } else {
+            rows[i].style.display = 'none';
+        }
+    }
+} 
+ let lead_status_inp = document.querySelectorAll('.status_inp')
   let lead_status_fm = document.querySelectorAll('.lead_status_fm')
 
   for (let i = 0; i < lead_status_inp.length; i++) {

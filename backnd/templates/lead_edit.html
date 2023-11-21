@@ -25,12 +25,43 @@
     <select name="locality" id="locality" class='form-control' required>
         <option value selected>-------------</option>
         {% for i in locations %}
-        <option value="{{i.Localities}}" {% if locality == i.Localities %} selected {% endif %}>{{i.Localities}}</option>
+        <option value="{{i.name}}" {% if locality == i.name %} selected {% endif %}>{{i.name}}</option>
         {% endfor %}
     </select>
-    <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label>  
+    <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label> 
+    <label for="">Flat Number</label>
+    <input type="text" class="form-control"  name='flat_num' value="{{flat_number}}" id="flat_num" required>
+    <label for="flat_error" class='text-danger' id="flat_error" style="display: none;">*</label>  
+    <label for="">Lead Status</label>
+    <select name="LeadStatus" id="LeadStatus" class='form-control' required>
+        <option value >-------------</option>
+        <option value="Hot" {% if lead_status2 == "Hot" %} selected {% endif %}>Hot</option>
+        <option value="Cold" {% if lead_status2 == "Cold" %} selected {% endif %}>Cold</option>
+        <option value="Warm" {% if lead_status2 == "Warm" %} selected {% endif %}>Warm</option>
+      
+    </select>
+    <label for="LeadStatus_error" class='text-danger' id="LeadStatus_error" style="display: none;">*</label>
+<div class="row">
+    <div class="col-md-6">
+        <label for="">Lead Requirement Date</label>
+        <input type="date" class="form-control"  name='LeadRequirementDate' id="LeadRequirementDate" value="{{lead_req_date|date:'Y-m-d'}}" required>
+        <label for="LeadRequirementDate_error" class='text-danger' id="LeadRequirementDate_error" style="display: none;">*</label>
+    </div>
+    <div class="col-md-6">
+        <label for="">Lead Placement Date</label>
+        <input type="date" class="form-control"  name='LeadPlacementDate' value="{{lead_placement_date|date:'Y-m-d'}}" id="LeadPlacementDate" required>
+        <label for="LeadPlacementDate_error" class='text-danger' id="LeadPlacementDate_error" style="display: none;">*</label> 
+    
+    </div>
+   
+</div>
+   
+    <label for="">Lead Source</label>
+    <input type="text" class="form-control"  name='LeadSource' value="{{lead_source}}" id="LeadSource" required>
+    <label for="LeadSource_error" class='text-danger' id="LeadSource_error" style="display: none;">*</label> 
+
     <label for="">Job Role</label>
-    <select name="availability" id="availability" class='form-control' required>
+    <select name="availability" id="availability" class='form-control' required onchange="ondemand_dates();">
        
         <option value="live_in" {% if availability == 'live_in' %}selected{% endif %}>Live in</option>
         <option value="on_demand" {% if availability == 'on_demand' %}selected{% endif %} >On demand</option>
@@ -39,6 +70,76 @@
         <option value="misc" {% if availability == 'misc' %}selected{% endif %}>Misc</option>
     </select>
     <label for="availability_error" class='text-danger' id="availability_error" style="display: none;">*</label>
+    <div id="on_demand_dates" {% if availability != 'on_demand' %}style="display: none;"{% endif %}>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="">Start Date</label>
+                <input type="date" class="form-control" value="{{role_on_demand_start_date|date:'Y-m-d'}}" name='Start_Date' id="Start_Date" >
+                <label for="Start_Date_error" class='text-danger' id="Start_Date_error" style="display: none;">*</label> 
+            
+            </div>
+           
+            <div class="col-md-3">
+                <label for="">Start Duration</label>
+            <input type="time" class="form-control" value="{{role_on_demand_start_from_time|time:'H:i'}}" name='s_StartDuration' id="s_StartDuration" >
+            <label for="s_StartDuration_error" class='text-danger' id="s_StartDuration_error" style="display: none;">*</label> 
+            
+            </div>
+            <div class="col-md-3">
+                <label for="">End Duration</label>
+                <input type="time" class="form-control" value="{{role_on_demand_start_to_time|time:'H:i'}}" name='s_EndDuration' id="s_EndDuration" >
+                <label for="s_EndDuration_error" class='text-danger' id="s_EndDuration_error" style="display: none;">*</label> 
+                
+            </div>
+           
+        </div>
+      
+      
+      <div class="row">
+        <div class="col-md-6">
+            <label for="">End Date</label>
+            <input type="date" class="form-control" value="{{role_on_demand_end_date|date:'Y-m-d'}}" name='End_Date' id="End_Date">
+            <label for="End_Date_error" class='text-danger' id="End_Date_error" style="display: none;">*</label> 
+        
+        </div>
+       
+       
+            <div class="col-md-3">
+                <label for="">Start Duration</label>
+            <input type="time" class="form-control" value="{{role_on_demand_end_from_time|time:'H:i'}}" name='e_StartDuration' id="e_StartDuration" >
+            <label for="s_StartDuration_error" class='text-danger' id="s_StartDuration_error" style="display: none;">*</label> 
+            
+            </div>
+            <div class="col-md-3">
+                <label for="">End Duration</label>
+                <input type="time" class="form-control" value="{{role_on_demand_end_to_time|time:'H:i'}}" name='e_EndDuration' id="e_EndDuration" >
+                <label for="e_EndDuration_error" class='text-danger' id="e_EndDuration_error" style="display: none;">*</label> 
+                
+            </div>
+          
+      </div>
+      
+    </div>
+        
+    
+        <label for="">Additional Comment</label>
+        <input type="text" class="form-control" value="{{additional_comment}}"  name='AdditionalComment' id="AdditionalComment" >
+        <label for="AdditionalComment_error" class='text-danger' id="AdditionalComment_error" style="display: none;">*</label>
+        <br>
+        <h5>Job Category</h5>
+    <input type="checkbox" name="job_role" value="nanny" class='ml-2' {% if 'nanny' in job_role %}checked{% endif %}> Nnanny
+    <input type="checkbox" name="job_role" value="housekeeper" class='ml-2' {% if 'housekeeper' in job_role %}checked{% endif %}>Housekeeper
+    <input type="checkbox" name="job_role" value="caregiver" class='ml-2' {% if 'caregiver' in job_role %}checked{% endif %}>Caregiver
+    
+    
+    <br>
+    <label for="">Other</label>
+  
+    <input type="text" name='job_role' value="{{other_roles}}">
+     
+    
+   
+    <br>
     <label for="" class='mt-3'><b>Near by : </b></label>
     <input type="checkbox" {% if near_by == 'TRUE' %} checked {% endif %} name="near_by" id="" class='mt-3'>
 
@@ -103,6 +204,15 @@
 
  return isValid;
 }
-
+function ondemand_dates() {
+    var availability =document.getElementById('availability')
+    var on_demand_dates =document.getElementById('on_demand_dates')
+    if(availability.value=='on_demand'){
+        on_demand_dates.style.display='block';
+    }
+    else{
+        on_demand_dates.style.display='none';
+    }
+}
 </script>
 {% endblock body %}

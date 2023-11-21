@@ -268,3 +268,43 @@ class HistoryModel(models.Model):
 
     def __str__(self) -> str:
         return f'{self.helper} {self.lead}'
+    
+class LeadModel(models.Model): 
+
+    # personal details
+    name = models.CharField(max_length=100,null=False,blank=False)
+    phone = models.CharField(max_length=100,null=False,blank=False,default='')
+    email_id = models.CharField(max_length=100,null=True,blank=True,default='Name@ezyhelpers.com')
+    address = models.TextField(blank=True,null=True)
+    availability_status = models.CharField(max_length=60,choices=AVAILABILITY_STATUS)
+    # locality 
+    locality = models.CharField(max_length=30,choices=LOCALITY)
+    near_by = models.BooleanField(default=False)
+
+    # create and update 
+    admin_user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    create_date = models.DateTimeField(auto_now_add=True,blank=True,null=True)
+    update_date = models.DateTimeField(blank=True,null=True)
+    lead_status = models.CharField(max_length=100,default="")
+    additional_comment = models.TextField(blank=True,null=True)
+    agent = models.TextField(blank=True,null=True)
+    phone_valid_status=models.CharField(max_length=100,blank=True,null=True)
+    lead_id=models.CharField(max_length=20,null=True,blank=True,unique=True)
+    flat_number = models.CharField(max_length=200,null=True,blank=True)
+    lead_req_date = models.DateField(blank=True,null=True)
+    lead_placement_date = models.DateField(blank=True,null=True)
+    lead_status2 = models.CharField(max_length=200,blank=True,null=True)
+    role_on_demand_start_date = models.DateField(blank=True,null=True)
+    role_on_demand_start_from_time = models.TimeField(blank=True,null=True)
+    role_on_demand_start_to_time = models.TimeField(blank=True,null=True)
+    role_on_demand_end_date = models.DateField(blank=True,null=True)
+    role_on_demand_end_from_time = models.TimeField(blank=True,null=True)
+    role_on_demand_end_to_time = models.TimeField(blank=True,null=True)
+    lead_source = models.CharField(max_length=200,blank=True,null=True)
+    job_category= models.CharField(max_length=200,null=True,blank=True)
+
+    def __str__(self) -> str:
+        return self.name
+ 
+class Localities(models.Model):
+    name = models.CharField(max_length=100,null=False,blank=False,unique=True)
