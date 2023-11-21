@@ -1170,7 +1170,7 @@ def LeadInsertDataView(request):
             lead_source=request.POST['LeadSource']
             # id generate 
             leads = LeadModel.objects.all()
-            id = lead_generate_id(len(leads)+2)
+            id = lead_generate_id(leads.count()+2)
 
             # near_by field
             if near_by == 'on':
