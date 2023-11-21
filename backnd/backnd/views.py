@@ -1246,7 +1246,7 @@ def LeadInsertDataView(request):
             # exception handle
            
             print(f"{type(request.POST['Start_Date'])} {type(request.POST['s_StartDuration'])}")
-            messages.error(request,f'Something error try again! may be network issue! ')
+            messages.error(request,f'Something error try again! may be network issue! {e}')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     data = {
