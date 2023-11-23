@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+{% block body %}
+
+<!-- message --> 
+{% include "msg.html" %}
+
+<!--Excel file upload-->
+
+<form  class='border p-3'  method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+   <h6>Skill Name</h6>
+   <input type="text" name='skll_name' value="{{name}}" required>
+   <button type='submit' class='btn btn-info' >Submit</button>
+   
+   <!--back button-->
+   <a href="{% url 'excel_file_skill_upload' %}" class='btn btn-secondary'>Back</a>
+</form>
+
+
+</section>
+{% endblock body %}

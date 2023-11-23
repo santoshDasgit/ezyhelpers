@@ -67,23 +67,21 @@
 
     <!--skill set-->
     <h5 class='mt-3'>Skills</h5>
-    <input type="checkbox" name="skill" value="Cooking" class='ml-2'>Cooking
-    <input type="checkbox" name="skill" value="Cleaning" class='ml-2'>Cleaning
-    <input type="checkbox" name="skill" value="Cleaning" class='ml-2'>Cleaning
-    <input type="checkbox" name="skill" value="Elderly Care" class='ml-2'>Elderly Care
-    <input type="checkbox" name="skill" value="Caregiver" class='ml-2'>Caregiver
-    <input type="checkbox" name="skill" value="Child care" class='ml-2'>Child care
-    <br>
-    <input type="checkbox" name="skill" value="Pet care" class='ml-2'>Pet care
-    <input type="checkbox" name="skill" value="Gardening" class='ml-2'>Gardening
-    <input type="checkbox" name="skill" value="Nanny" class='ml-2'>Nanny
-    <input type="checkbox" name="skill" value="Housekeeper" class='ml-2'>Housekeeper
-    <input type="checkbox" name="skill" value="PA" class='ml-2'>Personal assistant
+    <div style="max-width: 700px;">
+        {% for skills in helpers_skills %}
+        
+            <input type="checkbox" name="skill" value="{{skills.name}}" class='ml-2'>{{skills.name}}
+       
+        
+        {% endfor %}
+        
+   
+    </div>
+   
     <br>
     <label for="">Other</label>
     <input type="text" name='skill'>
     <br>
-
     <!--Additional skill set-->
     <h5 class='mt-3'>Additional Skills</h5>
     <input type="checkbox" name="ad-skill" value="First Aid" class='ml-2'>First Aid

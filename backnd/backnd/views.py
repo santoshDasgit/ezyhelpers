@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail,EmailMultiAlternatives
 from django.conf import settings
+from django.db import IntegrityError
 import random
 from app.form import *
 import hashlib
@@ -21,7 +22,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404
-from app.models import LeadModel,Localities
+from app.models import LeadModel,Localities,Skills
 
 
 
@@ -271,7 +272,9 @@ def HelperAddView(request):
 
     # location value get in Gspreed 
     location_values = ''
+    helpers_skills = ''
     try:
+
         # configuration json file 
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
@@ -284,6 +287,7 @@ def HelperAddView(request):
         # # Data get dictionary format 
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
+        helpers_skills = Skills.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -382,7 +386,8 @@ def HelperAddView(request):
 
     data = {
         'fm':fm,
-        'locations':location_values
+        'locations':location_values,
+        'helpers_skills':helpers_skills
     }
     return render(request,'helper_add.html',data)
 
@@ -510,40 +515,43 @@ def ExcelFileLeadFileView(request):
                     if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='') and (i[2]==None or i[2]=='') and (i[3]==None or i[3]=='') and (i[4]==None or i[4]=='') and (i[7]==None or i[7]=='') and (i[8]==None or i[8]=='') and (i[9]==None or i[9]=='') and (i[10]==None or i[10]=='')and (i[11]==None or i[11]=='')):
                          pass
                     else:
-                        leads = LeadModel.objects.all()
-                        id = lead_generate_id(len(leads)+2)
-                        lead_data_all =LeadModel(
-                            lead_id = i[8] or id,
-                            name = i[0] or "not mention",
-                            phone = i[1],
-                            email_id = i[2],
-                            address=i[3],
-                            phone_valid_status=i[4],
-                            agent=i[5] or "",
-                            additional_comment=i[6] or "",
+                        if LeadModel.objects.filter(lead_id=i[8]).exists():
+                            pass
+                        else:
+                            leads = LeadModel.objects.all()
+                            id = lead_generate_id(len(leads)+2)
+                            lead_data_all =LeadModel(
+                                lead_id = i[8] or id,
+                                name = i[0] or "not mention",
+                                phone = i[1],
+                                email_id = i[2],
+                                address=i[3],
+                                phone_valid_status=i[4],
+                                agent=i[5] or "",
+                                additional_comment=i[6] or "",
 
-                            availability_status =i[11],
-                            # locality 
-                            locality =i[9],
-                            near_by = i[10],
-                            lead_status = i[7],
-                            flat_number = i[12] or '',
-                            lead_req_date = i[13] or None,
-                            lead_placement_date = i[14] or None,
-                            lead_status2 = i[15] or '',
-                            role_on_demand_start_date = i[16] or None,
-                            role_on_demand_start_from_time = i[17] or None,
-                            role_on_demand_start_to_time = i[18] or None,
-                            role_on_demand_end_date =i[19] or None,
-                            role_on_demand_end_from_time =i[20] or None,
-                            role_on_demand_end_to_time = i[21] or None,
-                            lead_source = i[22] or '',
-                            job_category=i[23] or '',
-                            admin_user = request.user,
-                        )
-                        
+                                availability_status =i[11],
+                                # locality 
+                                locality =i[9],
+                                near_by = i[10],
+                                lead_status = i[7],
+                                flat_number = i[12] or '',
+                                lead_req_date = i[13] or None,
+                                lead_placement_date = i[14] or None,
+                                lead_status2 = i[15] or '',
+                                role_on_demand_start_date = i[16] or None,
+                                role_on_demand_start_from_time = i[17] or None,
+                                role_on_demand_start_to_time = i[18] or None,
+                                role_on_demand_end_date =i[19] or None,
+                                role_on_demand_end_from_time =i[20] or None,
+                                role_on_demand_end_to_time = i[21] or None,
+                                lead_source = i[22] or '',
+                                job_category=i[23] or '',
+                                admin_user = request.user,
+                            )
+                            
 
-                        lead_data_all.save()
+                            lead_data_all.save()
                        
                        
 
@@ -551,7 +559,7 @@ def ExcelFileLeadFileView(request):
                 messages.success(request,'file upload successful!')
             except Exception as e:
                 # exception handle 
-                messages.error(request,f'There is an error! (Duplicate Entry)')
+                messages.error(request,f'There is an error! {e}')
             # redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
@@ -560,6 +568,7 @@ def ExcelFileLeadFileView(request):
 # excel file through helper create 
 @login_required
 def ExcelFileLocalityFileView(request):
+    localityall = Localities.objects.all() 
     if request.method == 'POST':
         data_set = Dataset()
         myfile = request.FILES['myfile']
@@ -579,6 +588,8 @@ def ExcelFileLocalityFileView(request):
                     if(i[0]==None or i[0]=='' ):
                          pass
                     else:
+                        if Localities.objects.filter(name=i[0]).exists():
+                            pass
                         localities =Localities(
                             name = i[0]
                         )
@@ -587,11 +598,54 @@ def ExcelFileLocalityFileView(request):
                 messages.success(request,'file upload successful!')
             except Exception as e:
                 # exception handle 
-                messages.error(request,f'There is an error! (Duplicate Entry)')
+                messages.error(request,f'There is an error!')
             # redirect with same page 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
-    return render(request,'locality_excel.html')
+    return render(request,'locality_excel.html',{'localityall':localityall})
+
+@login_required
+def ExcelFileSkillsFileView(request):
+    skillsall = Skills.objects.all() 
+    if request.method == 'POST':
+        data_set = Dataset()
+        myfile = request.FILES['myfile']
+
+        # check excel file or not!
+        if not myfile.name.endswith('xlsx'):
+            messages.error(request,'Excel file only allow!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            try:
+                 # all excel data store in 'excel_data' in form of table 
+                excel_data =data_set.load(myfile.read(),format='xlsx')
+                for i in excel_data:
+                    # row fully empty or not check
+                    if(i[0]==None or i[0]=='' ):
+                         pass
+                    else:
+                        if Skills.objects.filter(name=i[0]).exists():
+                            pass
+                        else:
+                            skills =Skills(
+                                name = i[0]
+                            )
+                            skills.save()
+                # if all right then success message 
+                messages.success(request,'file upload successful!')
+            except IntegrityError as e:
+                messages.error(request,f'Duplicate entries find in your excel file')
+            except Exception as e:
+                # exception handle 
+                print(f'There is an error! ')
+                messages.error(request,f'There is an error!')
+            # redirect with same page 
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+    return render(request,'skills_excel.html',{'skills':skillsall})
+
 # helper delete 
 @login_required
 def HelperDeleteView(request,id):
@@ -840,7 +894,8 @@ def LeadList(request):
 
         # # Data get dictionary format 
         # all_value = current_sheet.get_all_records()
-        leads = LeadModel.objects.all()
+        
+        leads = LeadModel.objects.all().order_by('-create_date')
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -870,7 +925,7 @@ def LeadDetailsView(request,no):
         # row_num = int(no)+1
         # values_list = current_sheet.row_values(row_num)
         leads = LeadModel.objects.get(id=no)
-        data = {
+        data = {    
             'name' : leads.name,
             'phone' : leads.phone,
             'email' : leads.email_id,
@@ -1057,6 +1112,122 @@ def LeadEditView(request,no):
         messages.error(request,f'Something error try again! may be network issue!')
     return render(request,'lead_edit.html',data)
      
+
+@login_required
+def SkillEditView(request,id):
+   
+    data = {}
+    try:
+        current_datetime = datetime.now()
+
+        skillall = Skills.objects.get(id=id)
+   
+        data = {
+            'name' : skillall.name,
+           
+        }
+        
+    
+        # POST
+        if request.method == "POST":
+
+            # all value get by input in lead_edit.html
+            name = request.POST['skll_name']
+         
+
+       
+            if Skills.objects.get(id =id):
+                    skillall.name = name
+                    skillall.save()
+         
+
+            # message to success
+            messages.success(request,'Data updated successful!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+     
+    except Exception as e:
+       
+        messages.error(request,f'Something error try again! may be network issue!')
+    return render(request,'skills_edit.html',data)
+
+@login_required
+def localityEditView(request,id):
+   
+    data = {}
+    try:
+        current_datetime = datetime.now()
+
+        locality = Localities.objects.get(id=id)
+   
+        data = {
+            'name' : locality.name,
+           
+        }
+        
+    
+        # POST
+        if request.method == "POST":
+
+            # all value get by input in lead_edit.html
+            name = request.POST['loc_name']
+         
+
+       
+            if Localities.objects.get(id =id):
+                    locality.name = name
+                    locality.save()
+         
+
+            # message to success
+            messages.success(request,'Data updated successful!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+     
+    except Exception as e:
+       
+        messages.error(request,f'Something error try again! may be network issue!')
+    return render(request,'locality_edit.html',data)
+
+
+
+@login_required
+def SkillDeleteView(request,id):
+    try:
+        current_datetime = datetime.now()
+  
+        skill = Skills.objects.get(id=id)
+
+       
+        # delete the row by help of row num 
+        skill.delete()
+
+        # success message 
+        messages.success(request,'data remove successful!')
+    except:
+         # exception handle 
+        messages.error('Data not to be deleted something error try again!')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def localityDeleteView(request,id):
+    try:
+        current_datetime = datetime.now()
+  
+        locality = Localities.objects.get(id=id)
+
+       
+        # delete the row by help of row num 
+        locality.delete()
+
+        # success message 
+        messages.success(request,'data remove successful!')
+    except:
+         # exception handle 
+        messages.error('Data not to be deleted something error try again!')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 # delete data from sheet 
 @login_required

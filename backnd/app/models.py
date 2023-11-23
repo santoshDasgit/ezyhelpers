@@ -308,3 +308,6 @@ class LeadModel(models.Model):
  
 class Localities(models.Model):
     name = models.CharField(max_length=100,null=False,blank=False,unique=True)
+
+class Skills(models.Model):
+    name = models.CharField(max_length=100,null=False,blank=False,unique=True)

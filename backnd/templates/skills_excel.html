@@ -6,7 +6,7 @@
 
 <!--Excel file upload-->
 
-<form action="{% url 'excel_file_locality_upload' %}" class='border p-3'  method="post" enctype="multipart/form-data">
+<form action="{% url 'excel_file_skill_upload' %}" class='border p-3'  method="post" enctype="multipart/form-data">
   {% csrf_token %}
 
    <h6>Upload excel file</h6>
@@ -17,6 +17,7 @@
    <!--back button-->
    <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
 </form>
+
 <div class="table-div p-3 shadow">
   <table class="table sortable" id="data-table">
     <thead class="thead-dark">
@@ -27,7 +28,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for i in localityall %}
+      {% for i in skills %}
 
       <tr id="itemList">
         <th scope="row">{{forloop.counter}}</th>
@@ -36,7 +37,7 @@
    
         <td>
           <!--edit-->
-          <a href="{% url 'locality_Edit_View' i.id %}" class="btn btn-sm btn-primary"><i
+          <a href="{% url 'Skill_Edit_View' i.id %}" class="btn btn-sm btn-primary"><i
               class="fa-solid fa-pen-to-square"></i></a>
 
           <!--delete-->
@@ -61,7 +62,7 @@
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <a href="{% url 'locality_delete' i.id %}" class="btn btn-danger">Remove</a>
+                  <a href="{% url 'skill_delete' i.id %}" class="btn btn-danger">Remove</a>
 
                 </div>
               </div>
@@ -75,5 +76,6 @@
     </tbody>
   </table>
 </div>
+
 </section>
 {% endblock body %}
