@@ -519,7 +519,7 @@ def ExcelFileLeadFileView(request):
                             pass
                         else:
                             leads = LeadModel.objects.all()
-                            id = lead_generate_id(len(leads)+2)
+                            id = lead_generate_id(len(leads)+20)
                             lead_data_all =LeadModel(
                                 lead_id = i[8] or id,
                                 name = i[0] or "not mention",
