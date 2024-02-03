@@ -33,13 +33,12 @@
       <div class="col-md-4">
         Society 
       <b class="text-danger">* </b>
-        <select name="locality" class="form-control my-2" rows="2" required="" id="id_locality">
-          <option value="" selected="">---------</option>
-            {% for i in locations %}
-                  <option value="{{i.name }}">{{i.name }}</option>
-            {% endfor %}
-
-        </select>
+      <input name="locality"  list="locality" class='form-control' required >
+      <datalist id="locality" >
+          {% for i in locations %}
+          <option value="{{i.name}}" >{{i.name}}</option>
+          {% endfor %}
+      </datalist>
         <label for="id_locality_error" class='text-danger' id="id_locality_error" style="display: none;">*</label>
       </div>
     </div>
@@ -202,7 +201,7 @@
     validateField('#id_availability_status_week',/^[A-Za-z0-9._-]+$/, '#id_availability_status_week_error', 'Please select job role (weekly)');
     validateField('#id_dob',/^\d{4}-\d{2}-\d{2}$/, '#id_dob_error', 'Please select  date of birth');
     validateField('#id_availability_status',  /^[A-Za-z0-9._-]+$/, '#id_availability_status_error', 'Please select job role');
-    validateField('#id_locality', /^[A-Za-z0-9\s]+$/, '#id_locality_error', 'Please select society');
+    validateField('[name="locality"]',/^[A-Za-z0-9\s,(){}[\]]+$/, '#id_locality_error', 'Please select society');
     validateField('#id_call_status', /^[A-Za-z0-9\s]+$/, '#id_call_status_error', 'Please select call status');
     validateField('#id_id_type', /^[A-Za-z0-9\s]+$/, '#id_id_type_error', 'Please select id proof type');
     // Add similar validations for other fields here

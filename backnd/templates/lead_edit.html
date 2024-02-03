@@ -22,12 +22,12 @@
     <label for="addr_error" class='text-danger' id="addr_error" style="display: none;">*</label>
 
     <label for="">Society</label>
-    <select name="locality" id="locality" class='form-control' required>
-        <option value selected>-------------</option>
+    <input name="locality"  list="locality"  class='form-control' required value="{{ locality }}">
+    <datalist id="locality">
         {% for i in locations %}
         <option value="{{i.name}}" {% if locality == i.name %} selected {% endif %}>{{i.name}}</option>
         {% endfor %}
-    </select>
+    </datalist>
     <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label> 
     <label for="">Flat Number</label>
     <input type="text" class="form-control"  name='flat_num' value="{{flat_number}}" id="flat_num" >
@@ -197,7 +197,7 @@
  validateField('#name', /^[A-Za-z\s]+$/, '#name_error', 'Please enter a valid name');
  validateField('#phone', /^[1-9][0-9]{9}$/, '#phone_error', 'Please enter a valid 10-digit primary phone number');
  validateField('#email', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#email_error', 'Please enter a valid email address');
- validateField('#locality', /^[A-Za-z0-9\s]+$/, '#locality_error', 'Please select a society');
+ validateField('[name="locality"]', /^[A-Za-z0-9\s,(){}[\]]+$/, '#locality_error', 'Please select a society');
  validateField('#availability', /^[A-Za-z0-9._-]+$/, '#availability_error', 'Please select a job role');
 
  // Add similar validations for other fields here
