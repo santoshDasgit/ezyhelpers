@@ -461,14 +461,14 @@ def ExcelFileHelperFileView(request):
                 excel_data =data_set.load(myfile.read(),format='xlsx')
                 for i in excel_data:
                     # row fully empty or not check
-                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='') and (i[2]==None or i[2]=='') and (i[3]==None or i[3]=='') ):
+                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='')  and (i[3]==None or i[3]=='') ):
                          pass
                     else:
                         helper = HelperModel(
                             first_name = i[0] or "not mention",
                             last_name = 'NULL',
                             primary_phone = int(i[1] or 0),
-                            email_id = i[2],
+                            email_id = (i[2] or 'NULL'),
                             street = 'NULL STREET',
                             city = i[3],
                             zipcode = 7540065,
@@ -512,7 +512,7 @@ def ExcelFileLeadFileView(request):
                 excel_data =data_set.load(myfile.read(),format='xlsx')
                 for i in excel_data:
                     # row fully empty or not check
-                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='') and (i[2]==None or i[2]=='') and (i[3]==None or i[3]=='') and (i[4]==None or i[4]=='') and (i[7]==None or i[7]=='') and (i[8]==None or i[8]=='') and (i[9]==None or i[9]=='') and (i[10]==None or i[10]=='')and (i[11]==None or i[11]=='')):
+                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='')  and (i[3]==None or i[3]=='') and (i[4]==None or i[4]=='') and (i[7]==None or i[7]=='') and (i[8]==None or i[8]=='') and (i[9]==None or i[9]=='') and (i[10]==None or i[10]=='')and (i[11]==None or i[11]=='')):
                          pass
                     else:
                         if LeadModel.objects.filter(lead_id=i[8]).exists():
@@ -524,7 +524,7 @@ def ExcelFileLeadFileView(request):
                                 lead_id = i[8] or id,
                                 name = i[0] or "not mention",
                                 phone = i[1],
-                                email_id = i[2],
+                                email_id = i[2] or "NULL",
                                 address=i[3],
                                 phone_valid_status=i[4],
                                 agent=i[5] or "",
