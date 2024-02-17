@@ -9,12 +9,12 @@
 <form  class='border p-3'  method="post" enctype="multipart/form-data">
   {% csrf_token %}
 
-   <h6>Society Name</h6>
-   <input type="text" name='loc_name' value="{{name}}" required>
+   <h6>Skill Name</h6>
+   <input type="text" name='skll_name' value="" required>
    <button type='submit' class='btn btn-info' >Submit</button>
    
    <!--back button-->
-   <a href="{% url 'excel_file_locality_upload' %}" class='btn btn-secondary'>Back</a>
+   <a href="{% url 'excel_file_skill_upload' %}" class='btn btn-secondary'>Back</a>
 </form>
 
 

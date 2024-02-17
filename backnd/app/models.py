@@ -311,3 +311,6 @@ class Localities(models.Model):
 
 class Skills(models.Model):
     name = models.CharField(max_length=100,null=False,blank=False,unique=True)
+
+class JobCat(models.Model):
+    name = models.CharField(max_length=100,null=False,blank=False,unique=True)

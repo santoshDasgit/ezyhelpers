@@ -288,6 +288,7 @@ def HelperAddView(request):
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
         helpers_skills = Skills.objects.all()
+        job_cat = JobCat.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -387,7 +388,8 @@ def HelperAddView(request):
     data = {
         'fm':fm,
         'locations':location_values,
-        'helpers_skills':helpers_skills
+        'helpers_skills':helpers_skills,
+        'job_cat':job_cat
     }
     return render(request,'helper_add.html',data)
 
@@ -604,6 +606,51 @@ def ExcelFileLocalityFileView(request):
         
     return render(request,'locality_excel.html',{'localityall':localityall})
 
+
+
+@login_required
+def ExcelFilejob_category_upload(request):
+    job_catsall = JobCat.objects.all() 
+    if request.method == 'POST':
+        data_set = Dataset()
+        myfile = request.FILES['myfile']
+
+        # check excel file or not!
+        if not myfile.name.endswith('xlsx'):
+            messages.error(request,'Excel file only allow!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            try:
+                 # all excel data store in 'excel_data' in form of table 
+                excel_data =data_set.load(myfile.read(),format='xlsx')
+                for i in excel_data:
+                    # row fully empty or not check
+                    if(i[0]==None or i[0]=='' ):
+                         pass
+                    else:
+                        if JobCat.objects.filter(name=i[0]).exists():
+                            pass
+                        else:
+                            job_cat =JobCat(
+                                name = i[0]
+                            )
+                            job_cat.save()
+                # if all right then success message 
+                messages.success(request,'file upload successful!')
+            except IntegrityError as e:
+                messages.error(request,f'Duplicate entries find in your excel file')
+            except Exception as e:
+                # exception handle 
+                print(f'There is an error! ')
+                messages.error(request,f'There is an error!')
+            # redirect with same page 
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+    return render(request,'job_cat_excel.html',{'job_cat':job_catsall})
+
+
 @login_required
 def ExcelFileSkillsFileView(request):
     skillsall = Skills.objects.all() 
@@ -693,6 +740,7 @@ def HelperEditView(request,id):
         # # Data get dictionary format 
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
+        job_cat = JobCat.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -835,7 +883,8 @@ def HelperEditView(request,id):
         'helper_language':helper_language,
         'job_role':HelperJobRoleModel.objects.filter(helper=helper),
         'locations':location_values,
-        'locality':helper.locality
+        'locality':helper.locality,
+        'job_cat':job_cat
     }
     return render(request,'helper_edit.html',data)
 
@@ -961,6 +1010,7 @@ def LeadEditView(request,no):
         # # Data get dictionary format 
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
+        job_cat = JobCat.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -1009,7 +1059,8 @@ def LeadEditView(request,no):
             'role_on_demand_start_to_time':  leads.role_on_demand_start_to_time ,
             'role_on_demand_end_date':    leads.role_on_demand_end_date, 
             'role_on_demand_end_from_time':   leads.role_on_demand_end_from_time, 
-            'role_on_demand_end_to_time':   leads.role_on_demand_end_to_time 
+            'role_on_demand_end_to_time':   leads.role_on_demand_end_to_time,
+            'job_cat':job_cat
         }
         
     
@@ -1111,7 +1162,6 @@ def LeadEditView(request,no):
        
         messages.error(request,f'Something error try again! may be network issue!')
     return render(request,'lead_edit.html',data)
-     
 
 @login_required
 def SkillEditView(request,id):
@@ -1153,6 +1203,123 @@ def SkillEditView(request,id):
     return render(request,'skills_edit.html',data)
 
 @login_required
+def SkilladdView(request):
+   
+    data = {}
+    try:
+        current_datetime = datetime.now()
+
+       
+   
+        data = {
+           
+           
+        }
+        
+    
+        # POST
+        if request.method == "POST":
+
+            # all value get by input in lead_edit.html
+            name = request.POST['skll_name']
+         
+
+       
+            skill = Skills(name=name)
+            skill.save()
+         
+
+            # message to success
+            messages.success(request,'Data updated successful!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+     
+    except Exception as e:
+       
+        messages.error(request,f'Something error try again! may be network issue!')
+    return render(request,'skills_add.html',data)
+
+
+@login_required
+def job_categoryEditView(request,id):
+   
+    data = {}
+    try:
+        current_datetime = datetime.now()
+
+        job_catall = JobCat.objects.get(id=id)
+   
+        data = {
+            'name' : job_catall.name,
+           
+        }
+        
+    
+        # POST
+        if request.method == "POST":
+
+            # all value get by input in lead_edit.html
+            name = request.POST['job_cat_name']
+         
+
+       
+            if JobCat.objects.get(id =id):
+                    job_catall.name = name
+                    job_catall.save()
+         
+
+            # message to success
+            messages.success(request,'Data updated successful!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+     
+    except Exception as e:
+       
+        messages.error(request,f'Something error try again! may be network issue!')
+    return render(request,'job_catall_edit.html',data)
+
+
+@login_required
+def job_categoryaddView(request):
+   
+    data = {}
+    try:
+        current_datetime = datetime.now()
+
+    
+        data = {
+       
+           
+        }
+        
+    
+        # POST
+        if request.method == "POST":
+
+            # all value get by input in lead_edit.html
+            name = request.POST['job_cat_name']
+         
+
+       
+            job_catall = JobCat(name = name)
+            job_catall.save()
+         
+
+            # message to success
+            messages.success(request,'Data updated successful!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+     
+    except Exception as e:
+       
+        messages.error(request,f'Something error try again! may be network issue!')
+    return render(request,'job_catall_add.html',data)
+
+
+@login_required
 def localityEditView(request,id):
    
     data = {}
@@ -1190,6 +1357,66 @@ def localityEditView(request,id):
        
         messages.error(request,f'Something error try again! may be network issue!')
     return render(request,'locality_edit.html',data)
+
+
+@login_required
+def localityaddView(request):
+   
+    data = {}
+    try:
+        current_datetime = datetime.now()
+
+      
+   
+        data = {
+        
+           
+        }
+        
+    
+        # POST
+        if request.method == "POST":
+
+            # all value get by input in lead_edit.html
+            name = request.POST['loc_name']
+         
+
+       
+            locality = Localities(name = name)
+            locality.save()
+         
+
+            # message to success
+            messages.success(request,'Data updated successful!')
+
+            # redirect with same page 
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+     
+    except Exception as e:
+       
+        messages.error(request,f'Something error try again! may be network issue!')
+    return render(request,'locality_add.html',data)
+
+
+
+@login_required
+def job_categoryDeleteView(request,id):
+    try:
+        current_datetime = datetime.now()
+  
+        job_cat = JobCat.objects.get(id=id)
+
+       
+        # delete the row by help of row num 
+        job_cat.delete()
+
+
+        # success message 
+        messages.success(request,'data remove successful!')
+    except:
+         # exception handle 
+        messages.error('Data not to be deleted something error try again!')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 
@@ -1307,6 +1534,7 @@ def LeadInsertDataView(request):
         # # Data get dictionary format 
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
+        job_cat = JobCat.objects.all()
     except:
         # exception handle 
         messages.error(request,'Something error try again! may be network issue!')
@@ -1421,7 +1649,8 @@ def LeadInsertDataView(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     data = {
-        'locations':location_values
+        'locations':location_values,
+        'job_cat':job_cat
     }
     return render(request,'lead_add.html',data)
 
