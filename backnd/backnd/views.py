@@ -1,36 +1,30 @@
-from django.shortcuts import render,redirect,HttpResponse
-from django.http import HttpRequest
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login,logout,authenticate,update_session_auth_hash
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.core.mail import send_mail,EmailMultiAlternatives
-from django.conf import settings
-from django.db import IntegrityError
-import random
-from app.form import *
 import hashlib
-import random
-from app.resources import HelperModelResources
-from tablib import Dataset
-import gspread
-from django.db.models import Q
 from datetime import date
-from django.template.loader import get_template
-from xhtml2pdf import pisa
 from datetime import datetime
-from django.shortcuts import render, get_object_or_404
-from app.models import LeadModel,Localities,Skills
+
+from app.form import *
+from app.models import LeadModel, Localities, Skills
+from app.resources import HelperModelResources
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
+from django.db import IntegrityError
+from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, HttpResponse
+from django.shortcuts import render
+from django.template.loader import get_template
+from tablib import Dataset
+from xhtml2pdf import pisa
 
 
-
-# Home page 
+# Home page
 def HomeView(request):
-
-    if request.user.is_authenticated: # check user login or not
-        # If user superuser 
+    if request.user.is_authenticated:  # check user login or not
+        # If user superuser
         if request.user.is_superuser:
             return redirect("super_user_dashboard")
         else:
@@ -39,112 +33,116 @@ def HomeView(request):
         return redirect('login')
 
 
-# Login page 
+# Login page
 def LoginView(request):
-    # if user not login 
+    # if user not login
     if not request.user.is_authenticated:
         if request.method == "POST":
             username = request.POST["username"].strip()
             password = request.POST["password"]
-            
 
-            # Check user exists or not 
-            if(User.objects.filter(username = username).exists()):
-                user =  authenticate(username = username,password =password)
-                # if user and password is correct 
+            # Check user exists or not
+            if (User.objects.filter(username=username).exists()):
+                user = authenticate(username=username, password=password)
+                # if user and password is correct
                 if user is not None:
-                    login(request ,user)
+                    login(request, user)
                     # messages.success(request,f"Welcome {username}..!")
-                    return redirect("home") # if all are correct redirect to home
+                    # if all are correct redirect to home
+                    return redirect("home")
                 else:
                     # if password invalid
-                    messages.error(request,"Invalid password!")
+                    messages.error(request, "Invalid password!")
             else:
-                # if username does'not exists 
-                messages.error(request,"Invalid email address!")
+                # if username does'not exists
+                messages.error(request, "Invalid email address!")
     else:
         return redirect("home")
-    return render(request,'login.html')
-                
-
+    return render(request, 'login.html')
 
 
 # Logout function
-@login_required 
+@login_required
 def LogoutView(request):
     logout(request)
-    messages.success(request,"Logout success!")
+    messages.success(request, "Logout success!")
     return redirect('/')
 
 
-# profile details 
+# profile details
 @login_required
-def ProfileView(request,id):
-    return render(request,'profile.html')
+def ProfileView(request, id):
+    return render(request, 'profile.html')
+
 
 # email verify from profile update
+
+
 @login_required
-def EmailVerifyProfileView(request,id,url):
+def EmailVerifyProfileView(request, id, url):
     if request.method == "POST":
         email = request.POST.get('email')
-        user = User.objects.get(pk = id)
-        if(User.objects.filter(email = email).exists() and user.email != email):
-            messages.error(request,f"{email} already exists try another email!")
+        user = User.objects.get(pk=id)
+        if (User.objects.filter(email=email).exists() and user.email != email):
+            messages.error(
+                request, f"{email} already exists try another email!")
         else:
-            url =f'http://{url}/profile_update/{id}/{email}'
+            url = f'http://{url}/profile_update/{id}/{email}'
             subject = "user data updated url!!"
             message = f'url link : {url}'
             from_email = settings.EMAIL_HOST_USER
             to = email
-            email_box = EmailMultiAlternatives(subject,message,from_email,[to])
-            email_box.content_subtype='html'
+            email_box = EmailMultiAlternatives(
+                subject, message, from_email, [to])
+            email_box.content_subtype = 'html'
             email_box.send()
-            messages.success(request,'check url on your email to update the data!')
-       
+            messages.success(
+                request, 'check url on your email to update the data!')
 
-    return render(request,"email_validate.html")
-        
-            
+    return render(request, "email_validate.html")
 
-# Profile update 
-def ProfileUpdateView(request,id,email):
-    # if user is not login 
+
+# Profile update
+def ProfileUpdateView(request, id, email):
+    # if user is not login
     if not request.user.is_authenticated:
-        messages.warning(request,'at the time of profile update Login mandatory!')
+        messages.warning(
+            request, 'at the time of profile update Login mandatory!')
         return redirect('login')
-        
 
-    # if id doesn't match redirect to another page 
+    # if id doesn't match redirect to another page
     if request.user.id != int(id):
         return HttpResponse("<h1>Not a valid user to access this page.!</h1>")
-    
-    # post 
+
+    # post
     if request.method == 'POST':
-        # all input value get 
+        # all input value get
         email = email
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
 
-        # user model 
-        user = User.objects.get(id = id)
+        # user model
+        user = User.objects.get(id=id)
 
-        # if same name of email is already exists 
-        if(User.objects.filter(email = email).exists() and user.email != email):
-            
-            messages.error(request,f"{email} already exists try another email!")
+        # if same name of email is already exists
+        if (User.objects.filter(email=email).exists() and user.email != email):
+
+            messages.error(
+                request, f"{email} already exists try another email!")
         else:
-            # try catch from network issue handle 
+            # try catch from network issue handle
             try:
-                # email send Logic 
+                # email send Logic
                 subject = "user data updated!!"
-                message = f'email : <b>{email}</b> <br> first name : <b>{first_name}</b> <br> last name : <b>{last_name}</b>'
+                message = f'email : <b>{
+                email}</b> <br> first name : <b>{first_name}</b> <br> last name : <b>{last_name}</b>'
                 from_email = settings.EMAIL_HOST_USER
                 to = email
-                email_box = EmailMultiAlternatives(subject,message,from_email,[to])
-                email_box.content_subtype='html'
+                email_box = EmailMultiAlternatives(
+                    subject, message, from_email, [to])
+                email_box.content_subtype = 'html'
                 email_box.send()
-        
-            
+
                 # value configurations
                 user.username = email
                 user.email = email
@@ -152,91 +150,96 @@ def ProfileUpdateView(request,id,email):
                 user.last_name = last_name
                 user.save()
 
-                # messages to update 
-                messages.success(request,"Profile update successful!")
+                # messages to update
+                messages.success(request, "Profile update successful!")
             except:
                 messages.error("There is an error please try again!")
 
-            # page redirect with same page 
+            # page redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-    return render(request,'profile_update.html',{'email':email})
+    return render(request, 'profile_update.html', {'email': email})
 
 
 # Function to validate the password
-def password_check(passwd,request):
-     
-    SpecialSym =['$', '@', '#', '%','!','&','*','^']
+def password_check(passwd, request):
+    SpecialSym = ['$', '@', '#', '%', '!', '&', '*', '^']
     val = True
-     
+
     if len(passwd) <= 8:
-        messages.error(request,'length should be at least 8!')
+        messages.error(request, 'length should be at least 8!')
         val = False
-         
+
     if not any(char.isdigit() for char in passwd):
-        messages.error(request,'Password should have at least one numeral!')
+        messages.error(request, 'Password should have at least one numeral!')
         val = False
-         
+
     if not any(char.isupper() for char in passwd):
-        messages.error(request,'Password should have at least one uppercase letter!')
+        messages.error(
+            request, 'Password should have at least one uppercase letter!')
         val = False
-         
+
     if not any(char.islower() for char in passwd):
-        messages.error(request,'Password should have at least one lowercase letter!')
+        messages.error(
+            request, 'Password should have at least one lowercase letter!')
         val = False
-         
+
     if not any(char in SpecialSym for char in passwd):
-        messages.error(request,'Password should have at least one of the symbols $@#!')
+        messages.error(
+            request, 'Password should have at least one of the symbols $@#!')
         val = False
-    if  ' ' in  passwd:
-        messages.error(request,'Space not allow!')
+    if ' ' in passwd:
+        messages.error(request, 'Space not allow!')
         val = False
     if val:
         return val
 
 
-# profile password changed 
+# profile password changed
 @login_required
 def PasswordChangedView(request):
-    # user 
-    user = User.objects.get(username = request.user)
-    
+    # user
+    user = User.objects.get(username=request.user)
+
     if request.method == "POST":
 
-        # all data get from input 
+        # all data get from input
         old_password = request.POST['old_password']
         new_password = request.POST['new_password']
         conform_pass = request.POST['conform_password']
 
-        # password format check 
-        if password_check(new_password,request):
-            # check old password correct or not 
+        # password format check
+        if password_check(new_password, request):
+            # check old password correct or not
             if user.check_password(old_password):
-                # check conform password match 
-                if(new_password == conform_pass):
+                # check conform password match
+                if (new_password == conform_pass):
                     user.set_password(new_password)
                     user.save()
-                    update_session_auth_hash(request,user)
+                    update_session_auth_hash(request, user)
 
-                    # message 
-                    messages.success(request,'password changed successful!')
+                    # message
+                    messages.success(request, 'password changed successful!')
 
-                     # page redirect with same page 
+                    # page redirect with same page
                     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-                    
+
                 else:
-                    messages.error(request,"conform password doesn't match!")
+                    messages.error(request, "conform password doesn't match!")
             else:
-                messages.error(request,'old password is incorrect!')
+                messages.error(request, 'old password is incorrect!')
         else:
             pass
 
-    return render(request,'password_change.html')
+    return render(request, 'password_change.html')
+
 
 # unique id generated Hexadec
+
+
 def generate_id(id):
     # Generate a random number
-    random_num = str(id+1000000000).encode()
+    random_num = str(id + 1000000000).encode()
 
     # Generate a SHA-256 hash of the random number.
     hash_obj = hashlib.sha256(random_num)
@@ -244,184 +247,190 @@ def generate_id(id):
     return hex_digit[:10]
 
 
-
-# Dashboard or home of a superuser 
+# Dashboard or home of a superuser
 @login_required
 def HelperListViews(request):
-
-    helper = HelperModel.objects.filter(phone_valid = False).order_by('-id') # helper model object
+    helper = HelperModel.objects.filter(
+        phone_valid=False).order_by('-id')  # helper model object
 
     # post for data searching propose
     if request.method == 'POST':
-        search = request.POST['search'].strip() # strip for remove space from both of sides
+        # strip for remove space from both of sides
+        search = request.POST['search'].strip()
 
-        # according to input data is filtering 
-        helper = HelperModel.objects.filter(Q(helper_id__icontains = search) | Q(first_name__icontains = search) | Q(email_id__icontains = search) | Q(primary_phone__icontains = search))
-            
+        # according to input data is filtering
+        helper = HelperModel.objects.filter(Q(helper_id__icontains=search) | Q(
+            first_name__icontains=search) | Q(email_id__icontains=search) | Q(primary_phone__icontains=search))
 
-    # all data sent on html file in object format 
+    # all data sent on html file in object format
     data = {
         'helper_list': helper
     }
-    return render(request,"helper_list.html",data)
+    return render(request, "helper_list.html", data)
 
 
 # Helper data inserted
 @login_required
 def HelperAddView(request):
-
-    # location value get in Gspreed 
+    # location value get in Gspreed
     location_values = ''
     helpers_skills = ''
     try:
 
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
-    
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
 
-        # # Data get dictionary format 
+        # # Data get dictionary format
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
         helpers_skills = Skills.objects.all()
         job_cat = JobCat.objects.all()
     except:
-        # exception handle 
-        messages.error(request,'Something error try again! may be network issue!')
-
+        # exception handle
+        messages.error(
+            request, 'Something error try again! may be network issue!')
 
     fm = HelperForm()
     if request.method == "POST":
-        
-        # data input 
+
+        # data input
         language = request.POST.getlist('language')
         additional_skill = request.POST.getlist('ad-skill')
         skill = request.POST.getlist('skill')
         job_role = request.POST.getlist('job_role')
 
-        # language required condition 
+        # language required condition
         if language == ['']:
-            messages.error(request,'* Preferred Language required!')
-        else: 
-            fm = HelperForm(request.POST,request.FILES)
+            messages.error(request, '* Preferred Language required!')
+        else:
+            fm = HelperForm(request.POST, request.FILES)
             if fm.is_valid():
                 # phone number exist or not valid (phone_valid)
 
-                # if secondary phone empty 
-                if fm.instance.secondary_phone != None and HelperModel.objects.filter(Q(primary_phone = fm.instance.primary_phone) | Q(secondary_phone = fm.instance.secondary_phone) | Q(primary_phone = fm.instance.secondary_phone) | Q(secondary_phone = fm.instance.primary_phone)).exists():
+                # if secondary phone empty
+                if fm.instance.secondary_phone != None and HelperModel.objects.filter(
+                        Q(primary_phone=fm.instance.primary_phone) | Q(secondary_phone=fm.instance.secondary_phone) | Q(
+                            primary_phone=fm.instance.secondary_phone) | Q(
+                            secondary_phone=fm.instance.primary_phone)).exists():
                     fm.instance.phone_valid = True
-                    messages.warning(request,'Redundant phone number , please check in dashboard ! ')
+                    messages.warning(
+                        request, 'Redundant phone number , please check in dashboard ! ')
 
-                # if secondary phone not empty 
-                if fm.instance.secondary_phone == None and HelperModel.objects.filter(Q(primary_phone = fm.instance.primary_phone) | Q(secondary_phone = fm.instance.primary_phone)).exists():
+                # if secondary phone not empty
+                if fm.instance.secondary_phone == None and HelperModel.objects.filter(
+                        Q(primary_phone=fm.instance.primary_phone) | Q(
+                            secondary_phone=fm.instance.primary_phone)).exists():
                     fm.instance.phone_valid = True
-                    messages.warning(request,'Redundant phone number , please check in dashboard ! ')
-                    
+                    messages.warning(
+                        request, 'Redundant phone number , please check in dashboard ! ')
 
                 data = fm.save()
-                data.helper_id = generate_id(data.id) # function to create id and convert into Hexa
+                # function to create id and convert into Hexa
+                data.helper_id = generate_id(data.id)
                 data.admin_user = request.user
 
-                # first name and last name in upper case first char 
-                data.first_name = data.first_name[0].upper() + data.first_name[1:]
+                # first name and last name in upper case first char
+                data.first_name = data.first_name[0].upper(
+                ) + data.first_name[1:]
                 data.last_name = data.last_name[0].upper() + data.last_name[1:]
 
-                # locality 
+                # locality
                 data.locality = request.POST['locality']
 
-                # helper_save 
+                # helper_save
                 data.save()
 
-
-                # History store 
+                # History store
                 current_datetime = datetime.now()
                 helper_history = HelperHistoryModel(
-                    helper_id = data.helper_id,
-                    first_name = data.first_name,
-                    middle_name = data.middle_name,
-                    last_name = data.last_name,
-                    primary_phone = data.primary_phone,
-                    email_id = data.email_id,
-                    dob = data.dob,
-                    create_date = current_datetime,
+                    helper_id=data.helper_id,
+                    first_name=data.first_name,
+                    middle_name=data.middle_name,
+                    last_name=data.last_name,
+                    primary_phone=data.primary_phone,
+                    email_id=data.email_id,
+                    dob=data.dob,
+                    create_date=current_datetime,
 
-                    admin_user = request.user,
-                    history_status = 'create'
+                    admin_user=request.user,
+                    history_status='create'
                 )
                 helper_history.save()
                 HistoryModel(
-                    helper = helper_history,
-                    date = current_datetime
+                    helper=helper_history,
+                    date=current_datetime
                 ).save()
-                
-                messages.success(request,'data added successfully!')
-          
-   
-   
+
+                messages.success(request, 'data added successfully!')
 
                 # preferences language inserted
                 for i in language:
-                    if i!='':
-                        HelperPreferredLanguageModel(helper = data,language=i).save()
-                
+                    if i != '':
+                        HelperPreferredLanguageModel(
+                            helper=data, language=i).save()
+
                 # additional_skill inserted
                 for i in additional_skill:
-                    if i !='':
-                        HelperAdditionalSkillSetModel(helper = data,additional_skill=i).save()
+                    if i != '':
+                        HelperAdditionalSkillSetModel(
+                            helper=data, additional_skill=i).save()
 
                 # skill inserted
                 for i in skill:
-                    if i !='':
-                        HelperSkillSetModel(helper = data,skill=i).save()
-                
+                    if i != '':
+                        HelperSkillSetModel(helper=data, skill=i).save()
+
                 # job role
                 for i in job_role:
-                    if i !='':
-                        HelperJobRoleModel(helper = data,job=i).save()
+                    if i != '':
+                        HelperJobRoleModel(helper=data, job=i).save()
             else:
-                messages.error(request,'please enter the valid data!')
+                messages.error(request, 'please enter the valid data!')
 
     data = {
-        'fm':fm,
-        'locations':location_values,
-        'helpers_skills':helpers_skills,
-        'job_cat':job_cat
+        'fm': fm,
+        'locations': location_values,
+        'helpers_skills': helpers_skills,
+        'job_cat': job_cat
     }
-    return render(request,'helper_add.html',data)
-
-                
+    return render(request, 'helper_add.html', data)
 
 
-# helper all details showing 
+# helper all details showing
 @login_required
-def HelperDetailsView(request,id):
-    helper = HelperModel.objects.get(id = id)
+def HelperDetailsView(request, id):
+    helper = HelperModel.objects.get(id=id)
     data = {
-      'helper':helper,
-      'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
-       'skill':HelperSkillSetModel.objects.filter(helper = helper),
-      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper),
-      'job_role':HelperJobRoleModel.objects.filter(helper=helper),
+        'helper': helper,
+        'language': HelperPreferredLanguageModel.objects.filter(helper=helper),
+        'skill': HelperSkillSetModel.objects.filter(helper=helper),
+        'additional_skill': HelperAdditionalSkillSetModel.objects.filter(helper=helper),
+        'job_role': HelperJobRoleModel.objects.filter(helper=helper),
     }
-    return render(request,'helper_view.html',data)
+    return render(request, 'helper_view.html', data)
 
-# Helper all data into pdf 
-def HelperPdfView(request,id):
-    helper = HelperModel.objects.get(id = id)
-    
+
+# Helper all data into pdf
+
+
+def HelperPdfView(request, id):
+    helper = HelperModel.objects.get(id=id)
+
     data = {
-      'helper':helper,
-      'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
-       'skill':HelperSkillSetModel.objects.filter(helper = helper),
-      'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper),
-      'job_role':HelperJobRoleModel.objects.filter(helper=helper),
+        'helper': helper,
+        'language': HelperPreferredLanguageModel.objects.filter(helper=helper),
+        'skill': HelperSkillSetModel.objects.filter(helper=helper),
+        'additional_skill': HelperAdditionalSkillSetModel.objects.filter(helper=helper),
+        'job_role': HelperJobRoleModel.objects.filter(helper=helper),
     }
     template = get_template('helper_pdf.html')
-    context = data # Add any context data you need for the template
+    context = data  # Add any context data you need for the template
     html = template.render(context)
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'filename="{helper}.pdf"'
@@ -429,21 +438,20 @@ def HelperPdfView(request,id):
     if pisa_status.err:
         return HttpResponse('Error while generating PDF', status=500)
     return response
-    
 
 
-# Helper status update logic 
+# Helper status update logic
 @login_required
-def HelperStatusUpdateView(request,id):
+def HelperStatusUpdateView(request, id):
     if request.method == 'POST':
         helper_status_inp = request.POST['helper-status-inp']
-        helper = HelperModel.objects.get(id = id)
+        helper = HelperModel.objects.get(id=id)
         helper.helper_status = helper_status_inp
         helper.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-# excel file through helper create 
+# excel file through helper create TBD
 @login_required
 def ExcelFileHelperFileView(request):
     if request.method == 'POST':
@@ -453,329 +461,488 @@ def ExcelFileHelperFileView(request):
 
         # check excel file or not!
         if not myfile.name.endswith('xlsx'):
-            messages.error(request,'Excel file only allow!')
+            messages.error(request, 'Excel file only allow!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             try:
-                 # all excel data store in 'excel_data' in form of table 
-                excel_data =data_set.load(myfile.read(),format='xlsx')
+                # all excel data store in 'excel_data' in form of table
+                excel_data = data_set.load(myfile.read(), format='xlsx')
                 for i in excel_data:
                     # row fully empty or not check
-                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='')  and (i[3]==None or i[3]=='') ):
-                         pass
+                    if ((i[0] is None or i[0] == '') and (i[1] is None or i[1] == '') and (i[3] is None or i[3] == '')):
+                        pass
                     else:
                         helper = HelperModel(
-                            first_name = i[0] or "not mention",
-                            last_name = 'NULL',
-                            primary_phone = int(i[1] or 0),
-                            email_id = (i[2] or 'NULL'),
-                            street = 'NULL STREET',
-                            city = i[3],
-                            zipcode = 7540065,
-                            state = "NULL STATE",
-                            country = 'NULL COUNTRY',
-                            dob = '2021-2-12'
+                            first_name=i[0] or "not mention",
+                            last_name='NULL',
+                            primary_phone=int(i[1] or 0),
+                            email_id=(i[2] or 'NULL'),
+                            street='NULL STREET',
+                            city=i[3],
+                            zipcode=7540065,
+                            state="NULL STATE",
+                            country='NULL COUNTRY',
+                            dob='2021-2-12'
 
                         )
 
                         helper.save()
-                        helper.helper_id = generate_id(helper.pk) # helper id generate and store it 
+                        # helper id generate and store it
+                        helper.helper_id = generate_id(helper.pk)
                         helper.save()
-                       
 
-                # if all right then success message 
-                messages.success(request,'file upload successful!')
+                # if all right then success message
+                messages.success(request, 'file upload successful!')
             except Exception as e:
-                # exception handle 
-                messages.error(request,f'There is an error!')
-            # redirect with same page 
+                # exception handle
+                messages.error(request, f'There is an error!')
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
-    return render(request,'helper_excel.html')
 
-# excel file through lead create 
+    return render(request, 'helper_excel.html')
+
+
+# excel file through lead create
 @login_required
 def ExcelFileLeadFileView(request):
+    duplicates = []
     if request.method == 'POST':
         data_set = Dataset()
         myfile = request.FILES['myfile']
 
         # check excel file or not!
         if not myfile.name.endswith('xlsx'):
-            messages.error(request,'Excel file only allow!')
+            messages.error(request, 'Excel file only allow!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             try:
-                 # all excel data store in 'excel_data' in form of table 
-                excel_data =data_set.load(myfile.read(),format='xlsx')
+                # all excel data store in 'excel_data' in form of table
+                excel_data = data_set.load(myfile.read(), format='xlsx')
+                containsDuplicate = False
                 for i in excel_data:
                     # row fully empty or not check
-                    if((i[0]==None or i[0]=='') and (i[1]==None or i[1]=='')  and (i[3]==None or i[3]=='') and (i[4]==None or i[4]=='') and (i[7]==None or i[7]=='') and (i[8]==None or i[8]=='') and (i[9]==None or i[9]=='') and (i[10]==None or i[10]=='')and (i[11]==None or i[11]=='')):
-                         pass
+                    if ((i[0] is None or i[0] == '') and (i[1] is None or i[1] == '') and (
+                            i[3] is None or i[3] == '') and (i[4] is None or i[4] == '') and (
+                            i[7] is None or i[7] == '') and (i[8] is None or i[8] == '') and (
+                            i[9] is None or i[9] == '') and (i[10] is None or i[10] == '') and (
+                            i[11] is None or i[11] == '')):
+                        pass
                     else:
-                        if LeadModel.objects.filter(lead_id=i[8]).exists():
+                        if LeadModel.objects.filter(phone=i[1]).exists():
+                            duplicates.append(create_lead(request, i, ''))
+                            containsDuplicate = True
                             pass
                         else:
                             leads = LeadModel.objects.all()
-                            id = lead_generate_id(len(leads)+20)
-                            lead_data_all =LeadModel(
-                                lead_id = i[8] or id,
-                                name = i[0] or "not mention",
-                                phone = i[1],
-                                email_id = i[2] or "NULL",
-                                address=i[3],
-                                phone_valid_status=i[4],
-                                agent=i[5] or "",
-                                additional_comment=i[6] or "",
-
-                                availability_status =i[11],
-                                # locality 
-                                locality =i[9],
-                                near_by = i[10],
-                                lead_status = i[7],
-                                flat_number = i[12] or '',
-                                lead_req_date = i[13] or None,
-                                lead_placement_date = i[14] or None,
-                                lead_status2 = i[15] or '',
-                                role_on_demand_start_date = i[16] or None,
-                                role_on_demand_start_from_time = i[17] or None,
-                                role_on_demand_start_to_time = i[18] or None,
-                                role_on_demand_end_date =i[19] or None,
-                                role_on_demand_end_from_time =i[20] or None,
-                                role_on_demand_end_to_time = i[21] or None,
-                                lead_source = i[22] or '',
-                                job_category=i[23] or '',
-                                admin_user = request.user,
-                            )
-                            
+                            id = lead_generate_id(len(leads) + 20)
+                            lead_data_all = create_lead(request, i, id)
 
                             lead_data_all.save()
-                       
-                       
 
-                # if all right then success message 
-                messages.success(request,'file upload successful!')
+                if containsDuplicate:
+                    data = {
+                        'data': duplicates,
+                        'length': len(duplicates)
+                    }
+                    return render(request, 'lead_excel.html', data)
+
+                # if all right then success message
+                messages.success(request, 'file upload successful!')
             except Exception as e:
-                # exception handle 
-                messages.error(request,f'There is an error! {e}')
-            # redirect with same page 
+                # exception handle
+                messages.error(request, f'There is an error! {e}')
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
-    return render(request,'lead_excel.html')
+    return render(request, 'lead_excel.html', None)
 
-# excel file through helper create 
+
+@login_required
+def ExcelFileLeadFileDuplicateAcceptView(request):
+    if request.method == 'POST':
+        duplicates = request.POST.get('duplicates_leads')
+        duplicates = duplicates[1:-1]
+        leads = duplicates.split('<LeadModel: ')
+        for duplicate in leads:
+            if duplicate != "":
+                lead = get_lead(request, duplicate.split('>')[0])
+                lead_db = LeadModel.objects.get(phone=lead.phone)
+                updated_lead(lead, lead_db)
+        messages.success(request, 'Leads updated successfully!')
+
+    return LeadList(request)
+
+
+def updated_lead(lead_excel, lead_db):
+    if lead_excel.name is not None:
+        lead_db.name = lead_excel.name
+
+    if lead_excel.phone is not None:
+        lead_db.phone = lead_excel.phone
+
+    if lead_excel.email_id is not None:
+        lead_db.email_id = lead_excel.email_id
+
+    if lead_excel.address is not None:
+        lead_db.address = lead_excel.address
+
+    if lead_excel.availability_status is not None:
+        lead_db.availability_status = lead_excel.availability_status
+
+    if lead_excel.locality is not None:
+        lead_db.locality = lead_excel.locality
+
+    if lead_excel.near_by is not None:
+        lead_db.near_by = lead_excel.near_by
+
+    if lead_excel.create_date is not None and lead_excel.create_date != "":
+        lead_db.create_date = lead_excel.create_date
+
+    lead_db.update_date = datetime.now()
+
+    if lead_excel.lead_status is not None:
+        lead_db.lead_status = lead_excel.lead_status
+
+    if lead_excel.additional_comment is not None:
+        lead_db.additional_comment = lead_excel.additional_comment
+
+    if lead_excel.agent is not None:
+        lead_db.agent = lead_excel.agent
+
+    if lead_excel.phone_valid_status is not None:
+        lead_db.phone_valid_status = lead_excel.phone_valid_status
+
+    if lead_excel.lead_id is not None:
+        lead_db.lead_id = lead_excel.lead_id
+
+    if lead_excel.flat_number is not None:
+        lead_db.flat_number = lead_excel.flat_number
+
+    if lead_excel.lead_req_date is not None and lead_excel.lead_req_date != "":
+        lead_db.lead_req_date = lead_excel.lead_req_date
+
+    if lead_excel.lead_placement_date is not None and lead_excel.lead_placement_date != "":
+        lead_db.lead_placement_date = lead_excel.lead_placement_date
+
+    if lead_excel.lead_status2 is not None:
+        lead_db.lead_status2 = lead_excel.lead_status2
+
+    if lead_excel.role_on_demand_start_date is not None and lead_excel.role_on_demand_start_date != "":
+        lead_db.role_on_demand_start_date = lead_excel.role_on_demand_start_date
+
+    if lead_excel.role_on_demand_start_from_time is not None and lead_excel.role_on_demand_start_from_time != "":
+        lead_db.role_on_demand_start_from_time = lead_excel.role_on_demand_start_from_time
+
+    if lead_excel.role_on_demand_start_to_time is not None and lead_excel.role_on_demand_start_to_time != "":
+        lead_db.role_on_demand_start_to_time = lead_excel.role_on_demand_start_to_time
+
+    if lead_excel.role_on_demand_end_date is not None and lead_excel.role_on_demand_end_date != "":
+        lead_db.role_on_demand_end_date = lead_excel.role_on_demand_end_date
+
+    if lead_excel.role_on_demand_end_from_time is not None and lead_excel.role_on_demand_end_from_time != "":
+        lead_db.role_on_demand_end_from_time = lead_excel.role_on_demand_end_from_time
+
+    if lead_excel.role_on_demand_end_to_time is not None and lead_excel.role_on_demand_end_to_time != "":
+        lead_db.role_on_demand_end_to_time = lead_excel.role_on_demand_end_to_time
+
+    if lead_excel.lead_source is not None:
+        lead_db.lead_source = lead_excel.lead_source
+
+    if lead_excel.job_category is not None:
+        lead_db.job_category = lead_excel.lead_source
+
+    lead_db.save()
+
+
+def get_lead(request, lead):
+    fields = lead.split(',')
+    return LeadModel(
+        name=fields[0].split(':')[1] or "not mention",
+        phone=fields[1].split(':')[1],
+        email_id=fields[2].split(':')[1] or "NULL",
+        address=lead.split(',availability_status')[0].split('address:')[1],
+        availability_status=lead.split(',locality')[0].split('availability_status:')[1],
+        locality=lead.split(',near_by')[0].split('locality:')[1],
+        near_by=lead.split(',create_date')[0].split('near_by:')[1],
+        create_date=lead.split(',update_date')[0].split('create_date:')[1],
+        update_date=lead.split(',lead_status')[0].split('update_date:')[1],
+        lead_status=lead.split(',additional_comment')[0].split('lead_status:')[1],
+        additional_comment=lead.split(',agent')[0].split('additional_comment:')[1],
+        agent=lead.split(',phone_valid_status')[0].split('agent:')[1],
+        phone_valid_status=lead.split(',lead_id')[0].split('phone_valid_status:')[1],
+        lead_id=lead.split(',flat_number')[0].split('lead_id:')[1],
+        flat_number=lead.split(',lead_req_date')[0].split('flat_number:')[1],
+        lead_req_date=lead.split(',lead_placement_date')[0].split('lead_req_date:')[1],
+        lead_placement_date=lead.split(',lead_status2')[0].split('lead_placement_date:')[1],
+        lead_status2=lead.split(',role_on_demand_start_date')[0].split('lead_status2:')[1],
+        role_on_demand_start_date=lead.split(',role_on_demand_start_from_time')[0].split('role_on_demand_start_date:')[
+            1],
+        role_on_demand_start_from_time=
+        lead.split(',role_on_demand_start_to_time')[0].split('role_on_demand_start_from_time:')[1],
+        role_on_demand_start_to_time=lead.split(',role_on_demand_end_date')[0].split('role_on_demand_start_to_time:')[
+            1],
+        role_on_demand_end_date=lead.split(',role_on_demand_end_from_time')[0].split('role_on_demand_end_date:')[1],
+        role_on_demand_end_from_time=
+        lead.split(',role_on_demand_end_to_time')[0].split('role_on_demand_end_from_time:')[1],
+        role_on_demand_end_to_time=lead.split(',lead_source')[0].split('role_on_demand_end_to_time:')[1],
+        lead_source=lead.split(',job_category')[0].split('lead_source:')[1],
+        job_category=lead.split(',job_category:')[1],
+        admin_user=request.user,
+    )
+
+
+def create_lead(request, lead, id):
+    return LeadModel(
+        lead_id=lead[8] or id,
+        name=lead[0] or "not mention",
+        phone=lead[1],
+        email_id=lead[2] or "NULL",
+        address=lead[3],
+        phone_valid_status=lead[4],
+        agent=lead[5] or "",
+        additional_comment=lead[6] or "",
+        availability_status=lead[11],
+        # locality
+        locality=lead[9],
+        near_by=lead[10],
+        lead_status=lead[7],
+        flat_number=lead[12] or '',
+        lead_req_date=lead[13] or None,
+        lead_placement_date=lead[14] or None,
+        lead_status2=lead[15] or '',
+        role_on_demand_start_date=lead[16] or None,
+        role_on_demand_start_from_time=lead[17] or None,
+        role_on_demand_start_to_time=lead[18] or None,
+        role_on_demand_end_date=lead[19] or None,
+        role_on_demand_end_from_time=lead[20] or None,
+        role_on_demand_end_to_time=lead[21] or None,
+        lead_source=lead[22] or '',
+        job_category=lead[23] or '',
+        admin_user=request.user,
+    )
+
+
+# excel file through helper create
+
+
 @login_required
 def ExcelFileLocalityFileView(request):
-    localityall = Localities.objects.all() 
+    localityall = Localities.objects.all()
     if request.method == 'POST':
         data_set = Dataset()
         myfile = request.FILES['myfile']
 
         # check excel file or not!
         if not myfile.name.endswith('xlsx'):
-            messages.error(request,'Excel file only allow!')
+            messages.error(request, 'Excel file only allow!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             try:
-                 # all excel data store in 'excel_data' in form of table 
-                excel_data =data_set.load(myfile.read(),format='xlsx')
+                # all excel data store in 'excel_data' in form of table
+                excel_data = data_set.load(myfile.read(), format='xlsx')
                 for i in excel_data:
                     # row fully empty or not check
-                    if(i[0]==None or i[0]=='' ):
-                         pass
+                    if (i[0] == None or i[0] == ''):
+                        pass
                     else:
                         if Localities.objects.filter(name=i[0]).exists():
                             pass
-                        localities =Localities(
-                            name = i[0]
+                        localities = Localities(
+                            name=i[0]
                         )
                         localities.save()
-                # if all right then success message 
-                messages.success(request,'file upload successful!')
+                # if all right then success message
+                messages.success(request, 'file upload successful!')
             except Exception as e:
-                # exception handle 
-                messages.error(request,f'There is an error!')
-            # redirect with same page 
+                # exception handle
+                messages.error(request, f'There is an error!')
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
-    return render(request,'locality_excel.html',{'localityall':localityall})
 
+    return render(request, 'locality_excel.html', {'localityall': localityall})
 
 
 @login_required
 def ExcelFilejob_category_upload(request):
-    job_catsall = JobCat.objects.all() 
+    job_catsall = JobCat.objects.all()
     if request.method == 'POST':
         data_set = Dataset()
         myfile = request.FILES['myfile']
 
         # check excel file or not!
         if not myfile.name.endswith('xlsx'):
-            messages.error(request,'Excel file only allow!')
+            messages.error(request, 'Excel file only allow!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             try:
-                 # all excel data store in 'excel_data' in form of table 
-                excel_data =data_set.load(myfile.read(),format='xlsx')
+                # all excel data store in 'excel_data' in form of table
+                excel_data = data_set.load(myfile.read(), format='xlsx')
                 for i in excel_data:
                     # row fully empty or not check
-                    if(i[0]==None or i[0]=='' ):
-                         pass
+                    if (i[0] == None or i[0] == ''):
+                        pass
                     else:
                         if JobCat.objects.filter(name=i[0]).exists():
                             pass
                         else:
-                            job_cat =JobCat(
-                                name = i[0]
+                            job_cat = JobCat(
+                                name=i[0]
                             )
                             job_cat.save()
-                # if all right then success message 
-                messages.success(request,'file upload successful!')
+                # if all right then success message
+                messages.success(request, 'file upload successful!')
             except IntegrityError as e:
-                messages.error(request,f'Duplicate entries find in your excel file')
+                messages.error(
+                    request, f'Duplicate entries find in your excel file')
             except Exception as e:
-                # exception handle 
+                # exception handle
                 print(f'There is an error! ')
-                messages.error(request,f'There is an error!')
-            # redirect with same page 
+                messages.error(request, f'There is an error!')
+                # redirect with same page
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
-    return render(request,'job_cat_excel.html',{'job_cat':job_catsall})
+
+    return render(request, 'job_cat_excel.html', {'job_cat': job_catsall})
 
 
 @login_required
 def ExcelFileSkillsFileView(request):
-    skillsall = Skills.objects.all() 
+    skillsall = Skills.objects.all()
     if request.method == 'POST':
         data_set = Dataset()
         myfile = request.FILES['myfile']
 
         # check excel file or not!
         if not myfile.name.endswith('xlsx'):
-            messages.error(request,'Excel file only allow!')
+            messages.error(request, 'Excel file only allow!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             try:
-                 # all excel data store in 'excel_data' in form of table 
-                excel_data =data_set.load(myfile.read(),format='xlsx')
+                # all excel data store in 'excel_data' in form of table
+                excel_data = data_set.load(myfile.read(), format='xlsx')
                 for i in excel_data:
                     # row fully empty or not check
-                    if(i[0]==None or i[0]=='' ):
-                         pass
+                    if (i[0] == None or i[0] == ''):
+                        pass
                     else:
                         if Skills.objects.filter(name=i[0]).exists():
                             pass
                         else:
-                            skills =Skills(
-                                name = i[0]
+                            skills = Skills(
+                                name=i[0]
                             )
                             skills.save()
-                # if all right then success message 
-                messages.success(request,'file upload successful!')
+                # if all right then success message
+                messages.success(request, 'file upload successful!')
             except IntegrityError as e:
-                messages.error(request,f'Duplicate entries find in your excel file')
+                messages.error(
+                    request, f'Duplicate entries find in your excel file')
             except Exception as e:
-                # exception handle 
+                # exception handle
                 print(f'There is an error! ')
-                messages.error(request,f'There is an error!')
-            # redirect with same page 
+                messages.error(request, f'There is an error!')
+                # redirect with same page
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
-    return render(request,'skills_excel.html',{'skills':skillsall})
 
-# helper delete 
+    return render(request, 'skills_excel.html', {'skills': skillsall})
+
+
+# helper delete
+
+
 @login_required
-def HelperDeleteView(request,id):
-    data = HelperModel.objects.get(id = id)
+def HelperDeleteView(request, id):
+    data = HelperModel.objects.get(id=id)
 
     current_datetime = datetime.now()
     helper_history = HelperHistoryModel(
-                helper_id = data.helper_id,
-                first_name = data.first_name,
-                middle_name = data.middle_name,
-                last_name = data.last_name,
-                primary_phone = data.primary_phone,
-                email_id = data.email_id,
-                dob = data.dob,
-                create_date = data.create_date,
-                update_date = current_datetime.today(),
-                admin_user = request.user,
-                history_status = 'delete'
-                )
-    
+        helper_id=data.helper_id,
+        first_name=data.first_name,
+        middle_name=data.middle_name,
+        last_name=data.last_name,
+        primary_phone=data.primary_phone,
+        email_id=data.email_id,
+        dob=data.dob,
+        create_date=data.create_date,
+        update_date=current_datetime.today(),
+        admin_user=request.user,
+        history_status='delete'
+    )
+
     helper_history.save()
-    HistoryModel(helper = helper_history , date = current_datetime.today()).save()
+    HistoryModel(helper=helper_history, date=current_datetime.today()).save()
     data.delete()
-    
-    messages.warning(request,"Data remove successfully!")
+
+    messages.warning(request, "Data remove successfully!")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-# helper  update 
+# helper  update
 @login_required
-def HelperEditView(request,id):
-
-    # location value get in Gspreed 
+def HelperEditView(request, id):
+    # location value get in Gspreed
     location_values = ''
     try:
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
-    
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
 
-        # # Data get dictionary format 
+        # # Data get dictionary format
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
         job_cat = JobCat.objects.all()
     except:
-        # exception handle 
-        messages.error(request,'Something error try again! may be network issue!')
-   
-    # all model object get as of our requirement 
-    helper = HelperModel.objects.get(id = id) 
-    helper_skill = HelperSkillSetModel.objects.filter(helper = helper)
-    helper_additional_skill = HelperAdditionalSkillSetModel.objects.filter(helper = helper)
-    helper_language = HelperPreferredLanguageModel.objects.filter(helper = helper)
-    job_role = HelperJobRoleModel.objects.filter(helper = helper)
-    
-    fm = HelperEditForm(instance=helper) # form 
+        # exception handle
+        messages.error(
+            request, 'Something error try again! may be network issue!')
 
-    if request.method == "POST":  
-        # all additional input get 
+    # all model object get as of our requirement
+    helper = HelperModel.objects.get(id=id)
+    helper_skill = HelperSkillSetModel.objects.filter(helper=helper)
+    helper_additional_skill = HelperAdditionalSkillSetModel.objects.filter(
+        helper=helper)
+    helper_language = HelperPreferredLanguageModel.objects.filter(
+        helper=helper)
+    job_role = HelperJobRoleModel.objects.filter(helper=helper)
+
+    fm = HelperEditForm(instance=helper)  # form
+
+    if request.method == "POST":
+        # all additional input get
         skill_inp = request.POST.getlist('skill')
         add_skill_inp = request.POST.getlist('ad-skill')
         language_inp = request.POST.getlist('language')
         job_role_inp = request.POST.getlist('job_role')
         id_pdf = request.FILES.get('id_pdf')
 
-        fm=HelperEditForm(request.POST,request.FILES,instance=helper) # all input value 
-        
-        # language empty or not check 
+        fm = HelperEditForm(request.POST, request.FILES,
+                            instance=helper)  # all input value
+
+        # language empty or not check
         language_inpIsEmpty = False
         for i in language_inp:
-            if i.strip()!="":
-                language_inpIsEmpty  = True
+            if i.strip() != "":
+                language_inpIsEmpty = True
                 break
-        
+
         # if language all are empty under the code not executed
-        if(not language_inpIsEmpty):
-            messages.error(request,"language must mandatory!")
+        if (not language_inpIsEmpty):
+            messages.error(request, "language must mandatory!")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
+
         if fm.is_valid():
 
             # all additional data remove
@@ -783,287 +950,304 @@ def HelperEditView(request,id):
             helper_additional_skill.delete()
             helper_language.delete()
             job_role.delete()
-     
 
-            #  --------update again------- 
+            #  --------update again-------
 
             # skill update
             for i in skill_inp:
-                if i.strip()!="":
-                    HelperSkillSetModel(helper = helper , skill = i.strip()).save()
-            
-            # additional skill update 
+                if i.strip() != "":
+                    HelperSkillSetModel(helper=helper, skill=i.strip()).save()
+
+            # additional skill update
             for i in add_skill_inp:
                 if i.strip() != "":
-                    HelperAdditionalSkillSetModel(helper = helper ,additional_skill = i.strip()).save()
-            
-            # language update 
+                    HelperAdditionalSkillSetModel(
+                        helper=helper, additional_skill=i.strip()).save()
+
+            # language update
             for i in language_inp:
-                if i.strip()!="":
-                    HelperPreferredLanguageModel(helper = helper , language = i.strip()).save()
+                if i.strip() != "":
+                    HelperPreferredLanguageModel(
+                        helper=helper, language=i.strip()).save()
 
-            # language update 
+            # language update
             for i in job_role_inp:
-                if i.strip()!="":
-                    HelperJobRoleModel(helper = helper , job = i.strip()).save()
+                if i.strip() != "":
+                    HelperJobRoleModel(helper=helper, job=i.strip()).save()
 
-            # update_date is updated 
+            # update_date is updated
             fm.instance.update_date = date.today()
 
-            
-            # pdf upload logic 
+            # pdf upload logic
             if (id_pdf is None or id_pdf is "") and (fm.instance.id_pdf is not None or fm.instance.id_pdf != ""):
                 id_pdf = fm.instance.id_pdf
-            
+
             # Helper form save
             data = fm.save()
 
-            # first name and last name in upper case first char 
+            # first name and last name in upper case first char
             data.first_name = data.first_name[0].upper() + data.first_name[1:]
             data.last_name = data.last_name[0].upper() + data.last_name[1:]
             data.locality = request.POST['locality']
-            # helper_save 
+            # helper_save
             data.save()
 
-
-            # History store 
+            # History store
             current_datetime = datetime.now()
-            if not HelperHistoryModel.objects.filter(Q(helper_id = data.helper_id) & Q(history_status = 'update')).exists():
+            if not HelperHistoryModel.objects.filter(Q(helper_id=data.helper_id) & Q(history_status='update')).exists():
                 helper_history = HelperHistoryModel(
-                helper_id = data.helper_id,
-                first_name = data.first_name,
-                middle_name = data.middle_name,
-                last_name = data.last_name,
-                primary_phone = data.primary_phone,
-                email_id = data.email_id,
-                dob = data.dob,
-                create_date = data.create_date,
-                update_date = current_datetime.today(),
-                admin_user = request.user,
-                history_status = 'update'
+                    helper_id=data.helper_id,
+                    first_name=data.first_name,
+                    middle_name=data.middle_name,
+                    last_name=data.last_name,
+                    primary_phone=data.primary_phone,
+                    email_id=data.email_id,
+                    dob=data.dob,
+                    create_date=data.create_date,
+                    update_date=current_datetime.today(),
+                    admin_user=request.user,
+                    history_status='update'
                 )
 
                 helper_history.save()
 
                 HistoryModel(
-                    helper =HelperHistoryModel.objects.get(Q(helper_id = data.helper_id) & Q(history_status = 'update')),
-                    date = current_datetime
+                    helper=HelperHistoryModel.objects.get(
+                        Q(helper_id=data.helper_id) & Q(history_status='update')),
+                    date=current_datetime
                 ).save()
 
-                
-
             else:
-                helper_history = HelperHistoryModel.objects.filter(Q(helper_id = data.helper_id) & Q(history_status = 'update'))
+                helper_history = HelperHistoryModel.objects.filter(
+                    Q(helper_id=data.helper_id) & Q(history_status='update'))
                 helper_history.update(
-                        helper_id = data.helper_id,
-                        first_name = data.first_name,
-                        middle_name = data.middle_name,
-                        last_name = data.last_name,
-                        primary_phone = data.primary_phone,
-                        email_id = data.email_id,
-                        dob = data.dob,
-                        create_date = data.create_date,
-                        update_date = current_datetime.today(),
-                        admin_user = request.user,
-                        history_status = 'update'
+                    helper_id=data.helper_id,
+                    first_name=data.first_name,
+                    middle_name=data.middle_name,
+                    last_name=data.last_name,
+                    primary_phone=data.primary_phone,
+                    email_id=data.email_id,
+                    dob=data.dob,
+                    create_date=data.create_date,
+                    update_date=current_datetime.today(),
+                    admin_user=request.user,
+                    history_status='update'
                 )
-                HistoryModel.objects.filter(helper = HelperHistoryModel.objects.get(Q(helper_id = data.helper_id) & Q(history_status = 'update'))).update(
-                    helper = HelperHistoryModel.objects.get(Q(helper_id = data.helper_id) & Q(history_status = 'update')),
-                    date = current_datetime
+                HistoryModel.objects.filter(helper=HelperHistoryModel.objects.get(
+                    Q(helper_id=data.helper_id) & Q(history_status='update'))).update(
+                    helper=HelperHistoryModel.objects.get(
+                        Q(helper_id=data.helper_id) & Q(history_status='update')),
+                    date=current_datetime
                 )
 
-            messages.success(request,'Data updated successfully!')
+            messages.success(request, 'Data updated successfully!')
         else:
-            messages.error(request,'please enter valid data!')
+            messages.error(request, 'please enter valid data!')
 
     data = {
-        'fm':fm,
+        'fm': fm,
         'skill': helper_skill,
-        'additional_skill':helper_additional_skill,
-        'helper_language':helper_language,
-        'job_role':HelperJobRoleModel.objects.filter(helper=helper),
-        'locations':location_values,
-        'locality':helper.locality,
-        'job_cat':job_cat
+        'additional_skill': helper_additional_skill,
+        'helper_language': helper_language,
+        'job_role': HelperJobRoleModel.objects.filter(helper=helper),
+        'locations': location_values,
+        'locality': helper.locality,
+        'job_cat': job_cat
     }
-    return render(request,'helper_edit.html',data)
+    return render(request, 'helper_edit.html', data)
 
-# helper phone exist or not logic 
-@login_required
-def HelperPhoneNoValidateDetailsView(request,id):
-        helper = HelperModel.objects.get(id = id)
-        data = {
-        'helper':helper,
-        'language':HelperPreferredLanguageModel.objects.filter(helper = helper),
-        'skill':HelperSkillSetModel.objects.filter(helper = helper),
-        'additional_skill':HelperAdditionalSkillSetModel.objects.filter(helper=helper),
-        'job_role':HelperJobRoleModel.objects.filter(helper=helper),
-        }  
-        return render(request,'helper_valid_check.html',data)  
 
-# accept helper 
+# helper phone exist or not logic
+
+
 @login_required
-def HelperPhoneNoValidateAcceptView(request,id):
-    helper = HelperModel.objects.get(id = id)
+def HelperPhoneNoValidateDetailsView(request, id):
+    helper = HelperModel.objects.get(id=id)
+    data = {
+        'helper': helper,
+        'language': HelperPreferredLanguageModel.objects.filter(helper=helper),
+        'skill': HelperSkillSetModel.objects.filter(helper=helper),
+        'additional_skill': HelperAdditionalSkillSetModel.objects.filter(helper=helper),
+        'job_role': HelperJobRoleModel.objects.filter(helper=helper),
+    }
+    return render(request, 'helper_valid_check.html', data)
+
+
+# accept helper
+
+
+@login_required
+def HelperPhoneNoValidateAcceptView(request, id):
+    helper = HelperModel.objects.get(id=id)
     helper.phone_valid = False
     helper.save()
     return redirect('home')
 
-# reject helper 
+
+# reject helper
+
+
 @login_required
-def HelperPhoneNoValidateRejectedView(request,id):
-    helper = HelperModel.objects.get(id = id)
+def HelperPhoneNoValidateRejectedView(request, id):
+    helper = HelperModel.objects.get(id=id)
     helper.delete()
     return redirect('home')
 
 
-# lead random id generate 
+# lead random id generate
 def lead_generate_id(id):
     # Generate a random number
-    random_num = str(id+1000000000).encode()
+    random_num = str(id + 1000000000).encode()
 
     # Generate a SHA-256 hash of the random number.
     hash_obj = hashlib.sha256(random_num)
     hex_digit = hash_obj.hexdigest()
     return hex_digit[:10]
 
-# lead logic on the basics of google sheet 
+
+# lead logic on the basics of google sheet
+
+
 @login_required
 def LeadList(request):
     all_value = ''
     try:
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
-    
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
 
-        # # Data get dictionary format 
+        # # Data get dictionary format
         # all_value = current_sheet.get_all_records()
-        
+
         leads = LeadModel.objects.all().order_by('-create_date')
     except:
-        # exception handle 
-        messages.error(request,'Something error try again! may be network issue!')
-    
+        # exception handle
+        messages.error(
+            request, 'Something error try again! may be network issue!')
+
     data = {
-        'data':leads,
-        'length':len(leads)
+        'data': leads,
+        'length': len(leads)
     }
-    return render(request,'lead_list.html',data)   
+    return render(request, 'lead_list.html', data)
 
 
-# lead details show 
+# lead details show
 @login_required
-def LeadDetailsView(request,no):
+def LeadDetailsView(request, no):
     data = {}
     try:
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
-        
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
-        
+
         # all row data
         # row_num = int(no)+1
         # values_list = current_sheet.row_values(row_num)
         leads = LeadModel.objects.get(id=no)
-        data = {    
-            'name' : leads.name,
-            'phone' : leads.phone,
-            'email' : leads.email_id,
-            'addr' : leads.address,
+        data = {
+            'name': leads.name,
+            'phone': leads.phone,
+            'email': leads.email_id,
+            'addr': leads.address,
             'id': leads.lead_id,
-            'locality':leads.locality,
-            'near_by':leads.near_by,
-            'availability':leads.availability_status
+            'locality': leads.locality,
+            'near_by': leads.near_by,
+            'availability': leads.availability_status
         }
     except:
-         # exception handle 
-        messages.error(request,'Something error try again! may be network issue!')
+        # exception handle
+        messages.error(
+            request, 'Something error try again! may be network issue!')
 
-    return render(request,'lead_details.html',data)  
+    return render(request, 'lead_details.html', data)
 
-import sys
 
-# update the lead 
+# update the lead
+
+
 @login_required
-def LeadEditView(request,no):
-    # locality's value get in Gspreed 
+def LeadEditView(request, no):
+    # locality's value get in Gspreed
     location_values = ''
     try:
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
-    
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
 
-        # # Data get dictionary format 
+        # # Data get dictionary format
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
         job_cat = JobCat.objects.all()
     except:
-        # exception handle 
-        messages.error(request,'Something error try again! may be network issue!')
+        # exception handle
+        messages.error(
+            request, 'Something error try again! may be network issue!')
 
-    # lead data get 
+    # lead data get
     data = {}
     try:
         current_datetime = datetime.now()
 
-           # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
-        
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
-        
+
         # # all row data
         # row_num = int(no)+1
         # values_list = current_sheet.row_values(row_num)
         leads = LeadModel.objects.get(id=no)
         job_category = leads.job_category.split(',')
-        excluded_roles = ['nanny', ' housekeeper',' caregiver']
-        included_roles = [role for role in job_category if role not in excluded_roles]
+        excluded_roles = ['nanny', ' housekeeper', ' caregiver']
+        included_roles = [
+            role for role in job_category if role not in excluded_roles]
 
         data = {
-            'name' : leads.name,
-            'phone' : leads.phone,
-            'email' : leads.email_id,
-            'addr' : leads.address,
-            'locality':leads.locality,
-            'near_by':leads.near_by,
-            'availability':leads.availability_status,
-            'locations':location_values,
-            'flat_number':leads.flat_number, 
-            'lead_req_date':leads.lead_req_date,
-            'lead_placement_date' :leads.lead_placement_date,
-            'lead_status2' :leads.lead_status2,
-            'additional_comment':leads.additional_comment,
-            'job_role' :leads.job_category,
-            'other_roles':', '.join(included_roles),
-            'lead_source':leads.lead_source,
-            'role_on_demand_start_date':leads.role_on_demand_start_date,
-             'role_on_demand_start_from_time':   leads.role_on_demand_start_from_time, 
-            'role_on_demand_start_to_time':  leads.role_on_demand_start_to_time ,
-            'role_on_demand_end_date':    leads.role_on_demand_end_date, 
-            'role_on_demand_end_from_time':   leads.role_on_demand_end_from_time, 
-            'role_on_demand_end_to_time':   leads.role_on_demand_end_to_time,
-            'job_cat':job_cat
+            'name': leads.name,
+            'phone': leads.phone,
+            'email': leads.email_id,
+            'addr': leads.address,
+            'locality': leads.locality,
+            'near_by': leads.near_by,
+            'availability': leads.availability_status,
+            'locations': location_values,
+            'flat_number': leads.flat_number,
+            'lead_req_date': leads.lead_req_date,
+            'lead_placement_date': leads.lead_placement_date,
+            'lead_status2': leads.lead_status2,
+            'additional_comment': leads.additional_comment,
+            'job_role': leads.job_category,
+            'other_roles': ', '.join(included_roles),
+            'lead_source': leads.lead_source,
+            'role_on_demand_start_date': leads.role_on_demand_start_date,
+            'role_on_demand_start_from_time': leads.role_on_demand_start_from_time,
+            'role_on_demand_start_to_time': leads.role_on_demand_start_to_time,
+            'role_on_demand_end_date': leads.role_on_demand_end_date,
+            'role_on_demand_end_from_time': leads.role_on_demand_end_from_time,
+            'role_on_demand_end_to_time': leads.role_on_demand_end_to_time,
+            'job_cat': job_cat
         }
-        
-    
+
         # POST
         if request.method == "POST":
 
@@ -1073,21 +1257,21 @@ def LeadEditView(request,no):
             email = request.POST['email']
             addr = request.POST['addr']
             locality = request.POST['locality']
-            near_by = request.POST.get('near_by',False)
+            near_by = request.POST.get('near_by', False)
             availability = request.POST['availability']
             flat_number = request.POST['flat_num']
-            lead_req_date =  request.POST['LeadRequirementDate']
+            lead_req_date = request.POST['LeadRequirementDate']
             lead_placement_date = request.POST['LeadPlacementDate']
             lead_status = request.POST['LeadStatus']
-            additional_comment=request.POST['AdditionalComment']
-            job_role = ', '.join(request.POST.getlist('job_role'))  
-            lead_source=request.POST['LeadSource']
+            additional_comment = request.POST['AdditionalComment']
+            job_role = ', '.join(request.POST.getlist('job_role'))
+            lead_source = request.POST['LeadSource']
 
             # near_by set
             if near_by == 'on':
                 near_by = True
 
-            # values set/update in sheets 
+            # values set/update in sheets
             # current_sheet.update_cell(row_num, 1, name)
             # current_sheet.update_cell(row_num, 2, phone)
             # current_sheet.update_cell(row_num, 3, email)
@@ -1095,462 +1279,433 @@ def LeadEditView(request,no):
             # current_sheet.update_cell(row_num, 10, locality)
             # current_sheet.update_cell(row_num, 11, near_by)
             # current_sheet.update_cell(row_num, 12, availability)
-            if LeadModel.objects.get(id =no):
-                    lead_data_all =LeadModel.objects.get(id =no)
-                    lead_data_all.lead_id = leads.lead_id
-                    lead_data_all.name = name
-                    lead_data_all.phone = phone
-                    lead_data_all.email_id = email
-                    lead_data_all.address=addr
-                    lead_data_all.availability_status =availability
-                    lead_data_all.locality =locality
-                    lead_data_all.near_by = near_by
-                    lead_data_all.lead_status = "pending"
-                    lead_data_all.flat_number = flat_number
-                    lead_data_all.lead_req_date = lead_req_date
-                    lead_data_all.lead_placement_date = lead_placement_date
-                    lead_data_all.lead_status2 = lead_status
-                    lead_data_all.lead_source=lead_source
-                    lead_data_all.additional_comment=additional_comment
-                    lead_data_all.job_category=job_role
-                    if request.POST['Start_Date'] != '':
-                        lead_data_all.role_on_demand_start_date =request.POST['Start_Date']
-                        lead_data_all.role_on_demand_start_from_time = request.POST.get('s_StartDuration')
-                        lead_data_all.role_on_demand_start_to_time = request.POST.get('s_EndDuration')
-                        lead_data_all.role_on_demand_end_date =request.POST['End_Date']
-                        lead_data_all.role_on_demand_end_from_time = request.POST.get('e_StartDuration')
-                        lead_data_all.role_on_demand_end_to_time  =request.POST.get('e_EndDuration')
-                    lead_data_all.save()
-            # lead_history model 
-            if not leadHistoryModel.objects.filter(Q(lead_id = leads.lead_id) & Q(history_status = 'update')).exists():
+            if LeadModel.objects.get(id=no):
+                lead_data_all = LeadModel.objects.get(id=no)
+                lead_data_all.lead_id = leads.lead_id
+                lead_data_all.name = name
+                lead_data_all.phone = phone
+                lead_data_all.email_id = email
+                lead_data_all.address = addr
+                lead_data_all.availability_status = availability
+                lead_data_all.locality = locality
+                lead_data_all.near_by = near_by
+                lead_data_all.lead_status = "pending"
+                lead_data_all.flat_number = flat_number
+                lead_data_all.lead_req_date = lead_req_date
+                lead_data_all.lead_placement_date = lead_placement_date
+                lead_data_all.lead_status2 = lead_status
+                lead_data_all.lead_source = lead_source
+                lead_data_all.additional_comment = additional_comment
+                lead_data_all.job_category = job_role
+                if request.POST['Start_Date'] != '':
+                    lead_data_all.role_on_demand_start_date = request.POST['Start_Date']
+                    lead_data_all.role_on_demand_start_from_time = request.POST.get(
+                        's_StartDuration')
+                    lead_data_all.role_on_demand_start_to_time = request.POST.get(
+                        's_EndDuration')
+                    lead_data_all.role_on_demand_end_date = request.POST['End_Date']
+                    lead_data_all.role_on_demand_end_from_time = request.POST.get(
+                        'e_StartDuration')
+                    lead_data_all.role_on_demand_end_to_time = request.POST.get(
+                        'e_EndDuration')
+                lead_data_all.save()
+            # lead_history model
+            if not leadHistoryModel.objects.filter(Q(lead_id=leads.lead_id) & Q(history_status='update')).exists():
                 lead_history = leadHistoryModel(
-                    lead_id = leads.lead_id,
-                    name = name,
-                    phone = phone,
-                    email = email,
-                    admin_user = request.user,
-                    history_status = 'update'
+                    lead_id=leads.lead_id,
+                    name=name,
+                    phone=phone,
+                    email=email,
+                    admin_user=request.user,
+                    history_status='update'
                 )
                 lead_history.save()
 
-                # history model 
-                HistoryModel(lead = lead_history).save()
-            
+                # history model
+                HistoryModel(lead=lead_history).save()
+
             else:
-                lead_history = leadHistoryModel.objects.filter(Q(lead_id = leads.lead_id) & Q(history_status = 'update'))
+                lead_history = leadHistoryModel.objects.filter(
+                    Q(lead_id=leads.lead_id) & Q(history_status='update'))
                 lead_history.update(
-                     lead_id = leads.lead_id,
-                    name = name,
-                    phone = phone,
-                    email = email,
-                    admin_user = request.user,
-                    history_status = 'update'
+                    lead_id=leads.lead_id,
+                    name=name,
+                    phone=phone,
+                    email=email,
+                    admin_user=request.user,
+                    history_status='update'
                 )
 
-                HistoryModel.objects.filter(lead = leadHistoryModel.objects.get(Q(lead_id = leads.lead_id) & Q(history_status = 'update'))).update(
-                    lead =  leadHistoryModel.objects.get(Q(lead_id = leads.lead_id) & Q(history_status = 'update')),
-                    date = current_datetime.today()
+                HistoryModel.objects.filter(
+                    lead=leadHistoryModel.objects.get(Q(lead_id=leads.lead_id) & Q(history_status='update'))).update(
+                    lead=leadHistoryModel.objects.get(
+                        Q(lead_id=leads.lead_id) & Q(history_status='update')),
+                    date=current_datetime.today()
                 )
 
             # message to success
-            messages.success(request,'Data updated successful!')
+            messages.success(request, 'Data updated successful!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-     
+
     except Exception as e:
-       
-        messages.error(request,f'Something error try again! may be network issue!')
-    return render(request,'lead_edit.html',data)
+
+        messages.error(
+            request, f'Something error try again! may be network issue!')
+    return render(request, 'lead_edit.html', data)
+
 
 @login_required
-def SkillEditView(request,id):
-   
+def SkillEditView(request, id):
     data = {}
     try:
         current_datetime = datetime.now()
 
         skillall = Skills.objects.get(id=id)
-   
+
         data = {
-            'name' : skillall.name,
-           
+            'name': skillall.name,
+
         }
-        
-    
+
         # POST
         if request.method == "POST":
 
             # all value get by input in lead_edit.html
             name = request.POST['skll_name']
-         
 
-       
-            if Skills.objects.get(id =id):
-                    skillall.name = name
-                    skillall.save()
-         
+            if Skills.objects.get(id=id):
+                skillall.name = name
+                skillall.save()
 
             # message to success
-            messages.success(request,'Data updated successful!')
+            messages.success(request, 'Data updated successful!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-     
+
     except Exception as e:
-       
-        messages.error(request,f'Something error try again! may be network issue!')
-    return render(request,'skills_edit.html',data)
+
+        messages.error(
+            request, f'Something error try again! may be network issue!')
+    return render(request, 'skills_edit.html', data)
+
 
 @login_required
 def SkilladdView(request):
-   
     data = {}
     try:
         current_datetime = datetime.now()
 
-       
-   
         data = {
-           
-           
+
         }
-        
-    
+
         # POST
         if request.method == "POST":
-
             # all value get by input in lead_edit.html
             name = request.POST['skll_name']
-         
 
-       
             skill = Skills(name=name)
             skill.save()
-         
 
             # message to success
-            messages.success(request,'Data updated successful!')
+            messages.success(request, 'Data updated successful!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-     
+
     except Exception as e:
-       
-        messages.error(request,f'Something error try again! may be network issue!')
-    return render(request,'skills_add.html',data)
+
+        messages.error(
+            request, f'Something error try again! may be network issue!')
+    return render(request, 'skills_add.html', data)
 
 
 @login_required
-def job_categoryEditView(request,id):
-   
+def job_categoryEditView(request, id):
     data = {}
     try:
         current_datetime = datetime.now()
 
         job_catall = JobCat.objects.get(id=id)
-   
+
         data = {
-            'name' : job_catall.name,
-           
+            'name': job_catall.name,
+
         }
-        
-    
+
         # POST
         if request.method == "POST":
 
             # all value get by input in lead_edit.html
             name = request.POST['job_cat_name']
-         
 
-       
-            if JobCat.objects.get(id =id):
-                    job_catall.name = name
-                    job_catall.save()
-         
+            if JobCat.objects.get(id=id):
+                job_catall.name = name
+                job_catall.save()
 
             # message to success
-            messages.success(request,'Data updated successful!')
+            messages.success(request, 'Data updated successful!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-     
+
     except Exception as e:
-       
-        messages.error(request,f'Something error try again! may be network issue!')
-    return render(request,'job_catall_edit.html',data)
+
+        messages.error(
+            request, f'Something error try again! may be network issue!')
+    return render(request, 'job_catall_edit.html', data)
 
 
 @login_required
 def job_categoryaddView(request):
-   
     data = {}
     try:
         current_datetime = datetime.now()
 
-    
         data = {
-       
-           
+
         }
-        
-    
+
         # POST
         if request.method == "POST":
-
             # all value get by input in lead_edit.html
             name = request.POST['job_cat_name']
-         
 
-       
-            job_catall = JobCat(name = name)
+            job_catall = JobCat(name=name)
             job_catall.save()
-         
 
             # message to success
-            messages.success(request,'Data updated successful!')
+            messages.success(request, 'Data updated successful!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-     
+
     except Exception as e:
-       
-        messages.error(request,f'Something error try again! may be network issue!')
-    return render(request,'job_catall_add.html',data)
+
+        messages.error(
+            request, f'Something error try again! may be network issue!')
+    return render(request, 'job_catall_add.html', data)
 
 
 @login_required
-def localityEditView(request,id):
-   
+def localityEditView(request, id):
     data = {}
     try:
         current_datetime = datetime.now()
 
         locality = Localities.objects.get(id=id)
-   
+
         data = {
-            'name' : locality.name,
-           
+            'name': locality.name,
+
         }
-        
-    
+
         # POST
         if request.method == "POST":
 
             # all value get by input in lead_edit.html
             name = request.POST['loc_name']
-         
 
-       
-            if Localities.objects.get(id =id):
-                    locality.name = name
-                    locality.save()
-         
+            if Localities.objects.get(id=id):
+                locality.name = name
+                locality.save()
 
             # message to success
-            messages.success(request,'Data updated successful!')
+            messages.success(request, 'Data updated successful!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-     
+
     except Exception as e:
-       
-        messages.error(request,f'Something error try again! may be network issue!')
-    return render(request,'locality_edit.html',data)
+
+        messages.error(
+            request, f'Something error try again! may be network issue!')
+    return render(request, 'locality_edit.html', data)
 
 
 @login_required
 def localityaddView(request):
-   
     data = {}
     try:
         current_datetime = datetime.now()
 
-      
-   
         data = {
-        
-           
+
         }
-        
-    
+
         # POST
         if request.method == "POST":
-
             # all value get by input in lead_edit.html
             name = request.POST['loc_name']
-         
 
-       
-            locality = Localities(name = name)
+            locality = Localities(name=name)
             locality.save()
-         
 
             # message to success
-            messages.success(request,'Data updated successful!')
+            messages.success(request, 'Data updated successful!')
 
-            # redirect with same page 
+            # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-     
-    except Exception as e:
-       
-        messages.error(request,f'Something error try again! may be network issue!')
-    return render(request,'locality_add.html',data)
 
+    except Exception as e:
+
+        messages.error(
+            request, f'Something error try again! may be network issue!')
+    return render(request, 'locality_add.html', data)
 
 
 @login_required
-def job_categoryDeleteView(request,id):
+def job_categoryDeleteView(request, id):
     try:
         current_datetime = datetime.now()
-  
+
         job_cat = JobCat.objects.get(id=id)
 
-       
-        # delete the row by help of row num 
+        # delete the row by help of row num
         job_cat.delete()
 
-
-        # success message 
-        messages.success(request,'data remove successful!')
+        # success message
+        messages.success(request, 'data remove successful!')
     except:
-         # exception handle 
+        # exception handle
         messages.error('Data not to be deleted something error try again!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-
 @login_required
-def SkillDeleteView(request,id):
+def SkillDeleteView(request, id):
     try:
         current_datetime = datetime.now()
-  
+
         skill = Skills.objects.get(id=id)
 
-       
-        # delete the row by help of row num 
+        # delete the row by help of row num
         skill.delete()
 
-        # success message 
-        messages.success(request,'data remove successful!')
+        # success message
+        messages.success(request, 'data remove successful!')
     except:
-         # exception handle 
+        # exception handle
         messages.error('Data not to be deleted something error try again!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
 @login_required
-def localityDeleteView(request,id):
+def localityDeleteView(request, id):
     try:
         current_datetime = datetime.now()
-  
+
         locality = Localities.objects.get(id=id)
 
-       
-        # delete the row by help of row num 
+        # delete the row by help of row num
         locality.delete()
 
-        # success message 
-        messages.success(request,'data remove successful!')
+        # success message
+        messages.success(request, 'data remove successful!')
     except:
-         # exception handle 
+        # exception handle
         messages.error('Data not to be deleted something error try again!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-# delete data from sheet 
+
+# delete data from sheet
+
+
 @login_required
-def LeadDeleteView(request,no):
+def LeadDeleteView(request, no):
     try:
         current_datetime = datetime.now()
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
-        
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
-        
+
         # # all row data
         # row_num = int(no)+1
         leads = LeadModel.objects.get(id=no)
 
-        # get data 
+        # get data
         # values_list = current_sheet.row_values(row_num)
 
         # id = values_list[8]
         # phone = values_list[1]
         # name = values_list[0]
         # email = values_list[2]
-       
 
         id = leads.lead_id
         phone = leads.phone
         name = leads.name
         email = leads.email_id
-        
-        # lead_history model 
+
+        # lead_history model
         lead_history = leadHistoryModel(
-            lead_id = id,
-            name = name,
-            phone = phone,
-            email = email,
-            admin_user = request.user,
-            update_date = current_datetime.today(),
-            history_status = 'delete'
+            lead_id=id,
+            name=name,
+            phone=phone,
+            email=email,
+            admin_user=request.user,
+            update_date=current_datetime.today(),
+            history_status='delete'
         )
         lead_history.save()
 
-        # history 
+        # history
         HistoryModel(
-            lead = lead_history
+            lead=lead_history
         ).save()
 
-        # delete the row by help of row num 
+        # delete the row by help of row num
         leads.delete()
 
-        # success message 
-        messages.success(request,'data remove successful!')
+        # success message
+        messages.success(request, 'data remove successful!')
     except:
-         # exception handle 
+        # exception handle
         messages.error('Data not to be deleted something error try again!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-# data insert into lead sheet 
+# data insert into lead sheet
 @login_required
 def LeadInsertDataView(request):
-    # locality's value get in Gspreed 
+    # locality's value get in Gspreed
     location_values = ''
     try:
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1XvBPqKzz3fl0qWODP6gIYjTI03_17Ul8pqGGe2RSg9c')
-    
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
 
-        # # Data get dictionary format 
+        # # Data get dictionary format
         # location_values = current_sheet.get_all_records()
         location_values = Localities.objects.all()
         job_cat = JobCat.objects.all()
     except:
-        # exception handle 
-        messages.error(request,'Something error try again! may be network issue!')
+        # exception handle
+        messages.error(
+            request, 'Something error try again! may be network issue!')
 
-        
     if request.method == 'POST':
         try:
-            # configuration json file 
+            # configuration json file
             # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
             # # open google sheet by help of key
             # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
-            
-            # # which sheet you want to open! 
+
+            # # which sheet you want to open!
             # current_sheet = worksheet.worksheet('Sheet1')
-            
 
             # value get from lead_add.html
             name = request.POST['name']
@@ -1558,163 +1713,149 @@ def LeadInsertDataView(request):
             email = request.POST['email']
             addr = request.POST['addr']
             locality = request.POST['locality']
-            near_by = request.POST.get('near_by',False)
+            near_by = request.POST.get('near_by', False)
             availability = request.POST['availability']
             flat_number = request.POST['flat_num']
-            lead_req_date =  request.POST['LeadRequirementDate']
+            lead_req_date = request.POST['LeadRequirementDate']
             lead_placement_date = request.POST['LeadPlacementDate']
             lead_status = request.POST['LeadStatus']
-            additional_comment=request.POST['AdditionalComment']
-            job_role = ', '.join(request.POST.getlist('job_role')) 
-            lead_source=request.POST['LeadSource']
-            # id generate 
+            additional_comment = request.POST['AdditionalComment']
+            job_role = ', '.join(request.POST.getlist('job_role'))
+            lead_source = request.POST['LeadSource']
+            # id generate
             leads = LeadModel.objects.all()
-            id = lead_generate_id(leads.count()+20)
+            id = lead_generate_id(leads.count() + 20)
 
             # near_by field
             if near_by == 'on':
                 near_by = True
 
-            # all value in list format 
-            lst = [name,phone,email,addr," "," "," ","pending",id,locality,near_by,availability]
-            
-            # row append in sheet 
+            # all value in list format
+            lst = [name, phone, email, addr, " ", " ", " ",
+                   "pending", id, locality, near_by, availability]
+
+            # row append in sheet
             # current_sheet.append_row(lst)
 
-            # notification 
+            # notification
             lead = id
             employee = request.user
             msg = "pending message"
             status = "pending"
             LeadStatusNotificationModel(
-                lead = lead,
-                employee = employee,
-                status = status,
-                msg = msg
+                lead=lead,
+                employee=employee,
+                status=status,
+                msg=msg
             ).save()
 
-            # lead_history mode  
+            # lead_history mode
             lead_history = leadHistoryModel(
-                lead_id = id,
-                name = name,
-                phone = phone,
-                email = email,
-                admin_user = request.user,
-                history_status = 'create'
+                lead_id=id,
+                name=name,
+                phone=phone,
+                email=email,
+                admin_user=request.user,
+                history_status='create'
             )
             lead_history.save()
-            #main lead model 
-            lead_data_all =LeadModel(
-                lead_id = id,
-                name = name,
-                phone = phone,
-                email_id = email,
+            # main lead model
+            lead_data_all = LeadModel(
+                lead_id=id,
+                name=name,
+                phone=phone,
+                email_id=email,
                 address=addr,
-                availability_status =availability,
-                # locality 
-                locality =locality,
-                near_by = near_by,
-                lead_status = "pending",
-                admin_user = request.user,
-                flat_number = flat_number,
-                lead_req_date = lead_req_date,
-                lead_placement_date = lead_placement_date,
-                lead_status2 = lead_status,
+                availability_status=availability,
+                # locality
+                locality=locality,
+                near_by=near_by,
+                lead_status="pending",
+                admin_user=request.user,
+                flat_number=flat_number,
+                lead_req_date=lead_req_date,
+                lead_placement_date=lead_placement_date,
+                lead_status2=lead_status,
                 lead_source=lead_source,
                 additional_comment=additional_comment,
                 job_category=job_role)
             if request.POST['Start_Date'] != '':
-                lead_data_all.role_on_demand_start_date =request.POST['Start_Date']
-                lead_data_all.role_on_demand_start_from_time = request.POST.get('s_StartDuration')
-                lead_data_all.role_on_demand_start_to_time = request.POST.get('s_EndDuration')
-                lead_data_all.role_on_demand_end_date =request.POST['End_Date']
-                lead_data_all.role_on_demand_end_from_time = request.POST.get('e_StartDuration')
-                lead_data_all.role_on_demand_end_to_time  =request.POST.get('e_EndDuration')
-              
-            
+                lead_data_all.role_on_demand_start_date = request.POST['Start_Date']
+                lead_data_all.role_on_demand_start_from_time = request.POST.get(
+                    's_StartDuration')
+                lead_data_all.role_on_demand_start_to_time = request.POST.get(
+                    's_EndDuration')
+                lead_data_all.role_on_demand_end_date = request.POST['End_Date']
+                lead_data_all.role_on_demand_end_from_time = request.POST.get(
+                    'e_StartDuration')
+                lead_data_all.role_on_demand_end_to_time = request.POST.get(
+                    'e_EndDuration')
+
             lead_data_all.save()
 
-            # history model 
+            # history model
             HistoryModel(
-                lead = lead_history,
+                lead=lead_history,
             ).save()
 
-            messages.success(request,"Data add successful!")
+            messages.success(request, "Data add successful!")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         except Exception as e:
             # exception handle
-           
-            print(f"{type(request.POST['Start_Date'])} {type(request.POST['s_StartDuration'])}")
-            messages.error(request,f'Something error try again! may be network issue!')
+
+            print(f"{type(request.POST['Start_Date'])} {
+            type(request.POST['s_StartDuration'])}")
+            messages.error(
+                request, f'Something error try again! may be network issue!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     data = {
-        'locations':location_values,
-        'job_cat':job_cat
+        'locations': location_values,
+        'job_cat': job_cat
     }
-    return render(request,'lead_add.html',data)
+    return render(request, 'lead_add.html', data)
+
 
 @login_required
-def LeadStatusUpdateView(request,row):
+def LeadStatusUpdateView(request, row):
     # row = int(row)+1
     col = 8
     try:
-        # configuration json file 
+        # configuration json file
         # gc = gspread.service_account(filename = "app/testsample-393218-c2720cf831ca.json")
 
         # # open google sheet by help of key
         # worksheet = gc.open_by_key('1vFDeyQbaSetQRmjq7V7f_Uv9dQ0CJb9cXRp03lK_H0Y')
-            
-        # # which sheet you want to open! 
+
+        # # which sheet you want to open!
         # current_sheet = worksheet.worksheet('Sheet1')
         leads = LeadModel.objects.get(id=row)
         leads.lead_status = request.POST['lead_status_inp']
         leads.save()
         # lead_status_inp = request.POST['lead_status_inp']
 
-        # # update status 
+        # # update status
         # current_sheet.update_cell(row,col,lead_status_inp)
 
-        messages.success(request,"Data update successful.!")
+        messages.success(request, "Data update successful.!")
     except:
-        # exception handle 
-        messages.error(request,'Something error try again! may be network issue!')
+        # exception handle
+        messages.error(
+            request, 'Something error try again! may be network issue!')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    
+
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def HistoryView(request):
     data = {
-        'data':HistoryModel.objects.all().order_by('-date')
+        'data': HistoryModel.objects.all().order_by('-date')
     }
-    return render(request,'history.html',data)
+    return render(request, 'history.html', data)
 
-def HistoryDetailsView(request,id):
+
+def HistoryDetailsView(request, id):
     data = {
-      'data':HistoryModel.objects.get(id = id)
+        'data': HistoryModel.objects.get(id=id)
     }
-    return render(request,"history_details.html",data)
-
-
-
-
-
-
-
-
-
-      
-
-       
-
-       
-
-        
-
-
-
-
-
-
-
+    return render(request, "history_details.html", data)

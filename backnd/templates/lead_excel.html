@@ -1,21 +1,23 @@
 {% extends 'index.html' %}
 {% block body %}
 
-<!-- message --> 
-{% include "msg.html" %}
+    <!-- message -->
+    {% include "msg.html" %}
 
-<!--Excel file upload-->
+    <!--Excel file upload-->
+    <form action="{% url 'excel_file_lead_upload' %}" class='border p-3' method="post" enctype="multipart/form-data">
+        {% csrf_token %}
 
-<form action="{% url 'excel_file_lead_upload' %}" class='border p-3'  method="post" enctype="multipart/form-data">
-  {% csrf_token %}
+        <h6>Upload excel file</h6>
+        <a href="media/random_data_EH.xlsx">Sample Excel <i class="fa fa-download" aria-hidden="true"></i></a><br>
+        <input type="file" name='myfile' required>
+        <button type='submit' class='btn btn-info'>Upload</button>
 
-   <h6>Upload excel file</h6>
-   <a href="media/random_data_EH.xlsx">Sample Excel <i class="fa fa-download" aria-hidden="true"></i></a><br>
-   <input type="file" name='myfile' required>
-   <button type='submit' class='btn btn-info' >Upload</button>
-   
-   <!--back button-->
-   <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
-</form>
-</section>
+        <!--back button-->
+        <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
+    </form>
+
+    {% if data %}
+        {% include "duplicate_leads.html" %}
+    {% endif %}
 {% endblock body %}

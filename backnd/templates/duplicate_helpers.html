@@ -1,0 +1,209 @@
+{% load static %}
+{% block body %}
+    <section class='lead-list'>
+
+        <!--nav-->
+        <nav class="navbar navbar-light bg-light shadow-sm">
+            <form class="form-inline" method="POST">
+                <input type="hidden" name="csrfmiddlewaretoken"
+                       value="0ifKCxlesfEJyMoTGQtrHgYAKcr4g88M60ZMKErZqIz9Q9cqkuotM2McygB8jVHl">
+            </form>
+
+        </nav>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Please select</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body justify-content-between w-100">
+                        <a href="{% url 'lead_add' %}" class='btn btn-primary mr-2'>Lead</a>
+                        <a href="{% url 'excel_file_lead_upload' %}" class='btn btn-primary'>Lead(Excel)</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <form action="{% url 'excel_file_lead_upload_duplicate_accept' %}" id="duplicates" method="post">
+            {% csrf_token %}
+
+            <button class='btn btn-outline-success m-2'>Duplicate Leads <b>{{ length }}</b></button>
+            
+            <input type="text" name="duplicates_leads" value="{{ data }}" style="visibility: hidden">
+            
+            <input type='submit' class='btn btn-info' value="Accept">
+            <a type='button' href="{% url 'lead_list' %}" class='btn btn-outline-primary mx-2' id="discard">Discard</a>
+
+            <div class="table-div p-3 shadow">
+                <table class="table sortable" id="data-table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Name <i class="fa-solid fa-sort"></i></th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Availability Status</th>
+                        <th scope="col">Locality</th>
+                        <th scope="col">Nearby</th>
+                        <th scope="col">Create Date</th>
+                        <th scope="col">Update Date</th>
+                        <th scope="col">Lead Status</th>
+                        <th scope="col">Additional Comment</th>
+                        <th scope="col">Agent</th>
+                        <th scope="col">Phone Valid Status</th>
+                        <th scope="col">Lead ID</th>
+                        <th scope="col">Flat No.</th>
+                        <th scope="col">Requirement Date</th>
+                        <th scope="col">Placement Date</th>
+                        <th scope="col">Lead Status</th>
+                        <th scope="col">Demand Start Date</th>
+                        <th scope="col">Demand Start From Time</th>
+                        <th scope="col">Demand Start To Time</th>
+                        <th scope="col">Demand End Date</th>
+                        <th scope="col">Demand End From Time</th>
+                        <th scope="col">Demand End To Time</th>
+                        <th scope="col">Lead Source</th>
+                        <th scope="col">Job Category</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in data %}
+
+                        <tr id="itemList">
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ i.name }}</td>
+                            <td>{{ i.phone }}</td>
+                            <td>{{ i.email_id }}</td>
+                            <td>{{ i.address }}</td>
+                            <td>{{ i.availability_status }}</td>
+                            <td>{{ i.locality }}</td>
+                            <td>{{ i.near_by }}</td>
+                            <td>{{ i.create_date }}</td>
+                            <td>{{ i.update_date }}</td>
+                            <td>{{ i.lead_status }}</td>
+                            <td>{{ i.additional_comment }}</td>
+                            <td>{{ i.agent }}</td>
+                            <td>{{ i.phone_valid_status }}</td>
+                            <td>{{ i.lead_id }}</td>
+                            <td>{{ i.flat_number }}</td>
+                            <td>{{ i.lead_req_date }}</td>
+                            <td>{{ i.lead_placement_date }}</td>
+                            <td>{{ i.lead_status2 }}</td>
+                            <td>{{ i.role_on_demand_start_date }}</td>
+                            <td>{{ i.role_on_demand_start_from_time }}</td>
+                            <td>{{ i.role_on_demand_start_to_time }}</td>
+                            <td>{{ i.role_on_demand_end_date }}</td>
+                            <td>{{ i.role_on_demand_end_from_time }}</td>
+                            <td>{{ i.role_on_demand_end_to_time }}</td>
+                            <td>{{ i.lead_source }}</td>
+                            <td>{{ i.job_category }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </section>
+
+    <script>
+
+        document.addEventListener('click', function (e) {
+            try {
+                // allows for elements inside TH
+                function findElementRecursive(element, tag) {
+                    return element.nodeName === tag ? element : findElementRecursive(element.parentNode, tag)
+                }
+
+                var descending_th_class = ' dir-d '
+                var ascending_th_class = ' dir-u '
+                var ascending_table_sort_class = 'asc'
+                var regex_dir = / dir-(u|d) /
+                var regex_table = /\bsortable\b/
+                var alt_sort = e.shiftKey || e.altKey
+                var element = findElementRecursive(e.target, 'TH')
+                var tr = findElementRecursive(element, 'TR')
+                var table = findElementRecursive(tr, 'TABLE')
+
+                function reClassify(element, dir) {
+                    element.className = element.className.replace(regex_dir, '') + dir
+                }
+
+                function getValue(element) {
+                    // If you aren't using data-sort and want to make it just the tiniest bit smaller/faster
+                    // comment this line and uncomment the next one
+                    var value =
+                        (alt_sort && element.getAttribute('data-sort-alt')) || element.getAttribute('data-sort') || element.innerText
+                    return value
+                    // return element.innerText
+                }
+
+                if (regex_table.test(table.className)) {
+                    var column_index
+                    var nodes = tr.cells
+
+                    // Reset thead cells and get column index
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i] === element) {
+                            column_index = element.getAttribute('data-sort-col') || i
+                        } else {
+                            reClassify(nodes[i], '')
+                        }
+                    }
+
+                    var dir = descending_th_class
+
+                    // Check if we're sorting ascending or descending
+                    if (
+                        element.className.indexOf(descending_th_class) !== -1 ||
+                        (table.className.indexOf(ascending_table_sort_class) !== -1 &&
+                            element.className.indexOf(ascending_th_class) == -1)
+                    ) {
+                        dir = ascending_th_class
+                    }
+
+                    // Update the `th` class accordingly
+                    reClassify(element, dir)
+
+                    // loop through all tbodies and sort them
+                    for (var i = 0; i < table.tBodies.length; i++) {
+                        const org_tbody = table.tBodies[i]
+
+                        // Get the array rows in an array, so we can sort them...
+                        var rows = [].slice.call(org_tbody.rows, 0)
+
+                        var reverse = dir === ascending_th_class
+
+                        // Sort them using Array.prototype.sort()
+                        rows.sort(function (a, b) {
+                            var x = getValue((reverse ? a : b).cells[column_index])
+                            var y = getValue((reverse ? b : a).cells[column_index])
+                            var bool = x.length && y.length && !isNaN(x - y) ? x - y : x.localeCompare(y)
+                            return bool
+                        })
+
+                        // Make a clone without content
+                        var clone_tbody = org_tbody.cloneNode()
+
+                        // Fill it with the sorted values
+                        while (rows.length) {
+                            clone_tbody.appendChild(rows.splice(0, 1)[0])
+                        }
+
+                        // And finally replace the unsorted table with the sorted one
+                        table.replaceChild(clone_tbody, org_tbody)
+                    }
+                }
+            } catch (error) {
+                // console.log(error)
+            }
+        })
+    </script>
+{% endblock body %}
