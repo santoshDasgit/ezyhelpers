@@ -1,9 +1,12 @@
 import hashlib
+import traceback
+import datetime
+
 from datetime import date
 from datetime import datetime
 
 from app.form import *
-from app.models import LeadModel, Localities, Skills
+from app.models import LeadModel, Localities, Skills, HelperModel
 from app.resources import HelperModelResources
 from django.conf import settings
 from django.contrib import messages
@@ -451,9 +454,113 @@ def HelperStatusUpdateView(request, id):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+def create_helper(request, i):
+    first_name = ''
+    middle_name = ''
+    last_name = ''
+
+    if i[0] is not None or i[1] != '':
+        names = i[0].split(' ')
+        first_name = names[0]
+        if len(names) == 2:
+            last_name = names[1]
+        if len(names) == 3:
+            middle_name = names[1]
+            last_name = names[2]
+
+    return HelperModel(
+        first_name=first_name,
+        middle_name = middle_name,
+        last_name = last_name,
+        primary_phone = int(i[1] or 0),
+        job_role_2 = (i[2] or ''),
+        availability_status = (i[3] or ''), 
+        helper_locality = (i[4] or ''),
+        society = (i[5] or ''),
+        listed_by = (i[6] or ''),
+        language_known = (i[7] or ''),
+        age = i[8],
+        gender = (i[9] or ''),
+        sunday = (i[10] or ''),
+        smartphone = (i[11] or ''),
+        whatsApp = (i[12] or ''),
+        start_time_1 = i[13],
+        end_time_1 = i[14],
+        start_time_2 = i[15],
+        end_time_2 = i[16],
+        start_time_3 = i[17],
+        end_time_3 = i[18],
+        start_time_4 = i[19],
+        end_time_4 = i[20],
+        charges = i[21],
+        preferences = (i[22] or ''),
+        id_proof_status = (i[23] or ''),
+        aadhar_verification = (i[24] or ''),
+        id_pdf = (i[25] or ''),
+        other_id_proof = (i[26] or ''),
+        police_verification = (i[27] or ''),
+        engagement_date = i[28],
+        previous_employer_name = (i[30] or ''),
+        previous_employer_contact = (i[31] or ''),
+        previous_employer_society = (i[32] or ''),
+        rating = i[33],
+        remarks = (i[34] or ''),
+        additional_comment = (i[35] or ''),
+        attempt_2 = (i[36] or '')
+    )
+
+
+def get_helper(request, helper):
+    fields = helper.split(',')
+    return HelperModel(
+        helper_id = fields[0].split(':')[1],
+        first_name = fields[1].split(':')[1],
+        middle_name = fields[2].split(':')[1] or '',
+        last_name = fields[3].split(':')[1] or '',
+        primary_phone = fields[4].split(':')[1],
+        job_role_2 = fields[5].split(':')[1] or '',
+        availability_status = fields[6].split(':')[1] or '',
+        helper_locality = helper.split(',helper_locality:')[1].split(',society:')[0] or '',
+        society = helper.split(',society:')[1].split(',listed_by:')[0] or '',
+        listed_by = helper.split(',listed_by:')[1].split(',language_known:')[0] or '',
+        language_known = helper.split(',language_known:')[1].split(',age:')[0] or '',
+        age = None if helper.split(',age:')[1].split(',gender:')[0] == 'None' else helper.split(',age:')[1].split(',gender:')[0],
+        gender = helper.split(',gender:')[1].split(',sunday:')[0] or '',
+        sunday = helper.split(',sunday:')[1].split(',smartphone:')[0] or '',
+        smartphone = helper.split(',smartphone:')[1].split(',whatsApp:')[0] or '',
+        whatsApp = helper.split(',whatsApp:')[1].split(',start_time_1:')[0] or '',
+        start_time_1 = None if helper.split(',start_time_1:')[1].split(',end_time_1:')[0] == 'None' else helper.split(',start_time_1:')[1].split(',end_time_1:')[0],
+        end_time_1 = None if helper.split(',end_time_1:')[1].split(',start_time_2:')[0] == 'None' else helper.split(',end_time_1:')[1].split(',start_time_2:')[0],
+        start_time_2 = None if helper.split(',start_time_2:')[1].split(',end_time_2:')[0] == 'None' else helper.split(',start_time_2:')[1].split(',end_time_2:')[0],
+        end_time_2 = None if helper.split(',end_time_2:')[1].split(',start_time_3:')[0] == 'None' else helper.split(',end_time_2:')[1].split(',start_time_3:')[0],
+        start_time_3 = None if helper.split(',start_time_3:')[1].split(',end_time_3:')[0] == 'None' else helper.split(',start_time_3:')[1].split(',end_time_3:')[0],
+        end_time_3 = None if helper.split(',end_time_3:')[1].split(',start_time_4:')[0] == 'None' else helper.split(',end_time_3:')[1].split(',start_time_4:')[0],
+        start_time_4 = None if helper.split(',start_time_4:')[1].split(',end_time_4:')[0] == 'None' else helper.split(',start_time_4:')[1].split(',end_time_4:')[0],
+        end_time_4 = None if helper.split(',end_time_4:')[1].split(',charges:')[0] else helper.split(',end_time_4:')[1].split(',charges:')[0],
+        charges = helper.split(',charges:')[1].split(',preferences:')[0] or '',
+        preferences = helper.split(',preferences:')[1].split(',id_proof_status:')[0] or '',
+        id_proof_status = helper.split(',id_proof_status:')[1].split(',aadhar_verification:')[0] or '',
+        aadhar_verification = helper.split(',aadhar_verification:')[1].split(',id_pdf:')[0] or '',
+        id_pdf = helper.split(',id_pdf:')[1].split(',other_id_proof:')[0],
+        other_id_proof = helper.split(',other_id_proof:')[1].split(',police_verification:')[0] or '',
+        police_verification = helper.split(',police_verification:')[1].split(',engagement_date:')[0] or '',
+
+        # YYYY-MM-DD
+        engagement_date = None if helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0] == 'None' else helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0].split(' ')[0],
+        previous_employer_name = helper.split(',previous_employer_name:')[1].split(',previous_employer_contact:')[0] or '',
+        previous_employer_contact = helper.split(',previous_employer_contact:')[1].split(',previous_employer_society:')[0] or '',
+        previous_employer_society = helper.split(',previous_employer_society:')[1].split(',rating:')[0] or '',
+        rating = None if helper.split(',rating:')[1].split(',remarks:')[0] == 'None' else helper.split(',rating:')[1].split(',remarks:')[0],
+        remarks = helper.split(',remarks:')[1].split(',additional_comment:')[0] or '',
+        additional_comment = helper.split(',additional_comment:')[1].split(',attempt_2:')[0] or '',
+        attempt_2 = helper.split(',attempt_2:')[1] or '',
+    )
+
+
 # excel file through helper create TBD
 @login_required
 def ExcelFileHelperFileView(request):
+    duplicates = []
     if request.method == 'POST':
         helper_resources = HelperModelResources()
         data_set = Dataset()
@@ -469,35 +576,35 @@ def ExcelFileHelperFileView(request):
             try:
                 # all excel data store in 'excel_data' in form of table
                 excel_data = data_set.load(myfile.read(), format='xlsx')
+                contains_duplicate = False
                 for i in excel_data:
                     # row fully empty or not check
-                    if ((i[0] is None or i[0] == '') and (i[1] is None or i[1] == '') and (i[3] is None or i[3] == '')):
+                    if (i[0] is None or i[0] == '') and (i[1] is None or i[1] == '') and (i[3] is None or i[3] == ''):
                         pass
                     else:
-                        helper = HelperModel(
-                            first_name=i[0] or "not mention",
-                            last_name='NULL',
-                            primary_phone=int(i[1] or 0),
-                            email_id=(i[2] or 'NULL'),
-                            street='NULL STREET',
-                            city=i[3],
-                            zipcode=7540065,
-                            state="NULL STATE",
-                            country='NULL COUNTRY',
-                            dob='2021-2-12'
+                        if HelperModel.objects.filter(primary_phone=i[1]).exists():
+                            duplicates.append(create_helper(request, i))
+                            contains_duplicate = True
+                            pass
+                        else:
+                            helper = create_helper(request, i)
+                            helper.save()
 
-                        )
-
-                        helper.save()
-                        # helper id generate and store it
-                        helper.helper_id = generate_id(helper.pk)
-                        helper.save()
+                            # helper id generate and store it
+                            helper.helper_id = generate_id(helper.pk)
+                            helper.save()
+                if contains_duplicate:
+                    data = {
+                        'data': duplicates,
+                        'length': len(duplicates)
+                    }
+                    return render(request, 'helper_excel.html', data)
 
                 # if all right then success message
                 messages.success(request, 'file upload successful!')
             except Exception as e:
                 # exception handle
-                messages.error(request, f'There is an error!')
+                messages.error(request, f'Invalid data for ' + str(helper.primary_phone) + ', Error:' + e.__str__())
             # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -522,28 +629,25 @@ def ExcelFileLeadFileView(request):
             try:
                 # all excel data store in 'excel_data' in form of table
                 excel_data = data_set.load(myfile.read(), format='xlsx')
-                containsDuplicate = False
+                contains_duplicate = False
                 for i in excel_data:
                     # row fully empty or not check
-                    if ((i[0] is None or i[0] == '') and (i[1] is None or i[1] == '') and (
-                            i[3] is None or i[3] == '') and (i[4] is None or i[4] == '') and (
-                            i[7] is None or i[7] == '') and (i[8] is None or i[8] == '') and (
-                            i[9] is None or i[9] == '') and (i[10] is None or i[10] == '') and (
-                            i[11] is None or i[11] == '')):
+                    if (i[1] is None or i[1] == ''):
                         pass
                     else:
                         if LeadModel.objects.filter(phone=i[1]).exists():
                             duplicates.append(create_lead(request, i, ''))
-                            containsDuplicate = True
+                            contains_duplicate = True
                             pass
                         else:
                             leads = LeadModel.objects.all()
-                            id = lead_generate_id(len(leads) + 20)
-                            lead_data_all = create_lead(request, i, id)
 
-                            lead_data_all.save()
+                            lead_id = lead_generate_id(len(leads) + 20)
+                            lead = create_lead(request, i, lead_id)
 
-                if containsDuplicate:
+                            lead.save()
+
+                if contains_duplicate:
                     data = {
                         'data': duplicates,
                         'length': len(duplicates)
@@ -555,6 +659,7 @@ def ExcelFileLeadFileView(request):
             except Exception as e:
                 # exception handle
                 messages.error(request, f'There is an error! {e}')
+                print(traceback.format_exc())
             # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'lead_excel.html', None)
@@ -570,162 +675,348 @@ def ExcelFileLeadFileDuplicateAcceptView(request):
             if duplicate != "":
                 lead = get_lead(request, duplicate.split('>')[0])
                 lead_db = LeadModel.objects.get(phone=lead.phone)
-                updated_lead(lead, lead_db)
+                update_lead(lead, lead_db)
         messages.success(request, 'Leads updated successfully!')
-
     return LeadList(request)
 
 
-def updated_lead(lead_excel, lead_db):
-    if lead_excel.name is not None:
-        lead_db.name = lead_excel.name
+def update_lead(lead_excel, lead_db):
+    try:
+        if lead_excel.name is not None and lead_excel.name != "":
+            lead_db.name = lead_excel.name
 
-    if lead_excel.phone is not None:
-        lead_db.phone = lead_excel.phone
+        if lead_excel.email_id is not None and lead_excel.email_id != "":
+            lead_db.email_id = lead_excel.email_id
 
-    if lead_excel.email_id is not None:
-        lead_db.email_id = lead_excel.email_id
+        if lead_excel.availability_status is not None and lead_excel.availability_status != "":
+            lead_db.availability_status = lead_excel.availability_status
 
-    if lead_excel.address is not None:
-        lead_db.address = lead_excel.address
+        if lead_excel.job_category is not None and lead_excel.job_category != "":
+            lead_db.job_category = lead_excel.job_category
 
-    if lead_excel.availability_status is not None:
-        lead_db.availability_status = lead_excel.availability_status
+        if lead_excel.requirement_start_time is not None and lead_excel.requirement_start_time != "":
+            lead_db.requirement_start_time = lead_excel.requirement_start_time
 
-    if lead_excel.locality is not None:
-        lead_db.locality = lead_excel.locality
+        lead_db.update_date = datetime.now()
 
-    if lead_excel.near_by is not None:
-        lead_db.near_by = lead_excel.near_by
+        if lead_excel.requirement_end_time is not None and lead_excel.requirement_end_time != "":
+            lead_db.requirement_end_time = lead_excel.requirement_end_time
 
-    if lead_excel.create_date is not None and lead_excel.create_date != "":
-        lead_db.create_date = lead_excel.create_date
+        if lead_excel.society is not None and lead_excel.society != "":
+            lead_db.society = lead_excel.society
 
-    lead_db.update_date = datetime.now()
+        if lead_excel.flat_number is not None and lead_excel.flat_number != "":
+            lead_db.flat_number = lead_excel.flat_number
 
-    if lead_excel.lead_status is not None:
-        lead_db.lead_status = lead_excel.lead_status
+        if lead_excel.form_fill_status is not None and lead_excel.form_fill_status != '':
+            lead_db.form_fill_status = lead_excel.form_fill_status
 
-    if lead_excel.additional_comment is not None:
-        lead_db.additional_comment = lead_excel.additional_comment
+        if lead_excel.lead_status is not None and lead_excel.lead_status != "":
+            lead_db.lead_status = lead_excel.lead_status
 
-    if lead_excel.agent is not None:
-        lead_db.agent = lead_excel.agent
+        if lead_excel.helper_name is not None and lead_excel.helper_name != '':
+            lead_db.helper_name = lead_excel.helper_name
 
-    if lead_excel.phone_valid_status is not None:
-        lead_db.phone_valid_status = lead_excel.phone_valid_status
+        if lead_excel.actual_status is not None and lead_excel.actual_status != "":
+            lead_db.actual_status = lead_excel.actual_status
 
-    if lead_excel.lead_id is not None:
-        lead_db.lead_id = lead_excel.lead_id
+        if lead_excel.lead_lost_reason is not None and lead_excel.lead_lost_reason != "":
+            lead_db.lead_lost_reason = lead_excel.lead_lost_reason
 
-    if lead_excel.flat_number is not None:
-        lead_db.flat_number = lead_excel.flat_number
+        if lead_excel.lead_placement_date is not None and lead_excel.lead_placement_date != '':
+            lead_db.lead_placement_date = lead_excel.lead_placement_date
 
-    if lead_excel.lead_req_date is not None and lead_excel.lead_req_date != "":
-        lead_db.lead_req_date = lead_excel.lead_req_date
+        if lead_excel.exit_date is not None and lead_excel.exit_date != "":
+            lead_db.exit_date = lead_excel.exit_date
 
-    if lead_excel.lead_placement_date is not None and lead_excel.lead_placement_date != "":
-        lead_db.lead_placement_date = lead_excel.lead_placement_date
+        if lead_excel.identity_type is not None and lead_excel.identity_type != "":
+            lead_db.identity_type = lead_excel.identity_type
 
-    if lead_excel.lead_status2 is not None:
-        lead_db.lead_status2 = lead_excel.lead_status2
+        if lead_excel.identity_status is not None and lead_excel.identity_status != "":
+            lead_db.identity_status = lead_excel.identity_status
 
-    if lead_excel.role_on_demand_start_date is not None and lead_excel.role_on_demand_start_date != "":
-        lead_db.role_on_demand_start_date = lead_excel.role_on_demand_start_date
+        if lead_excel.identity_shared is not None and lead_excel.identity_shared != "":
+            lead_db.identity_shared = lead_excel.identity_shared
 
-    if lead_excel.role_on_demand_start_from_time is not None and lead_excel.role_on_demand_start_from_time != "":
-        lead_db.role_on_demand_start_from_time = lead_excel.role_on_demand_start_from_time
+        if lead_excel.application_form is not None and lead_excel.application_form != "":
+            lead_db.application_form = lead_excel.application_form
 
-    if lead_excel.role_on_demand_start_to_time is not None and lead_excel.role_on_demand_start_to_time != "":
-        lead_db.role_on_demand_start_to_time = lead_excel.role_on_demand_start_to_time
+        if lead_excel.duration is not None and lead_excel.duration != "":
+            lead_db.duration = lead_excel.duration
 
-    if lead_excel.role_on_demand_end_date is not None and lead_excel.role_on_demand_end_date != "":
-        lead_db.role_on_demand_end_date = lead_excel.role_on_demand_end_date
+        if lead_excel.payment_date is not None and lead_excel.payment_date != '':
+            lead_db.payment_date = lead_excel.payment_date
 
-    if lead_excel.role_on_demand_end_from_time is not None and lead_excel.role_on_demand_end_from_time != "":
-        lead_db.role_on_demand_end_from_time = lead_excel.role_on_demand_end_from_time
+        if lead_excel.payment_status is not None and lead_excel.payment_status != '':
+            lead_db.payment_status = lead_excel.payment_status
 
-    if lead_excel.role_on_demand_end_to_time is not None and lead_excel.role_on_demand_end_to_time != "":
-        lead_db.role_on_demand_end_to_time = lead_excel.role_on_demand_end_to_time
+        if lead_excel.payment_mode is not None and lead_excel.payment_mode != "":
+            lead_db.payment_mode = lead_excel.payment_mode
 
-    if lead_excel.lead_source is not None:
-        lead_db.lead_source = lead_excel.lead_source
+        if lead_excel.salary is not None and lead_excel.salary != "":
+            lead_db.salary = lead_excel.salary
 
-    if lead_excel.job_category is not None:
-        lead_db.job_category = lead_excel.lead_source
+        if lead_excel.third_party is not None and lead_excel.third_party != '':
+            lead_db.third_party = lead_excel.third_party
 
-    lead_db.save()
+        if lead_excel.commission is not None and lead_excel.commission != "":
+            lead_db.commission = lead_excel.commission
+
+        if lead_excel.lead_source is not None and lead_excel.lead_source != "":
+            lead_db.lead_source = lead_excel.lead_source
+
+        if lead_excel.sales_person is not None and lead_excel.sales_person != "":
+            lead_db.sales_person = lead_excel.sales_person
+
+        if lead_excel.additional_comment is not None and lead_excel.additional_comment != "":
+            lead_db.additional_comment = lead_excel.additional_comment
+
+        if lead_excel.remarks is not None and lead_excel.remarks != "":
+            lead_db.remarks = lead_excel.remarks
+
+        lead_db.save()
+    except Exception as e:
+        print('Error while updating: ' + str(lead_excel))
+        print(traceback.format_exc())
 
 
 def get_lead(request, lead):
     fields = lead.split(',')
     return LeadModel(
-        name=fields[0].split(':')[1] or "not mention",
-        phone=fields[1].split(':')[1],
-        email_id=fields[2].split(':')[1] or "NULL",
-        address=lead.split(',availability_status')[0].split('address:')[1],
-        availability_status=lead.split(',locality')[0].split('availability_status:')[1],
-        locality=lead.split(',near_by')[0].split('locality:')[1],
-        near_by=lead.split(',create_date')[0].split('near_by:')[1],
-        create_date=lead.split(',update_date')[0].split('create_date:')[1],
-        update_date=lead.split(',lead_status')[0].split('update_date:')[1],
-        lead_status=lead.split(',additional_comment')[0].split('lead_status:')[1],
-        additional_comment=lead.split(',agent')[0].split('additional_comment:')[1],
-        agent=lead.split(',phone_valid_status')[0].split('agent:')[1],
-        phone_valid_status=lead.split(',lead_id')[0].split('phone_valid_status:')[1],
-        lead_id=lead.split(',flat_number')[0].split('lead_id:')[1],
-        flat_number=lead.split(',lead_req_date')[0].split('flat_number:')[1],
-        lead_req_date=lead.split(',lead_placement_date')[0].split('lead_req_date:')[1],
-        lead_placement_date=lead.split(',lead_status2')[0].split('lead_placement_date:')[1],
-        lead_status2=lead.split(',role_on_demand_start_date')[0].split('lead_status2:')[1],
-        role_on_demand_start_date=lead.split(',role_on_demand_start_from_time')[0].split('role_on_demand_start_date:')[
-            1],
-        role_on_demand_start_from_time=
-        lead.split(',role_on_demand_start_to_time')[0].split('role_on_demand_start_from_time:')[1],
-        role_on_demand_start_to_time=lead.split(',role_on_demand_end_date')[0].split('role_on_demand_start_to_time:')[
-            1],
-        role_on_demand_end_date=lead.split(',role_on_demand_end_from_time')[0].split('role_on_demand_end_date:')[1],
-        role_on_demand_end_from_time=
-        lead.split(',role_on_demand_end_to_time')[0].split('role_on_demand_end_from_time:')[1],
-        role_on_demand_end_to_time=lead.split(',lead_source')[0].split('role_on_demand_end_to_time:')[1],
-        lead_source=lead.split(',job_category')[0].split('lead_source:')[1],
-        job_category=lead.split(',job_category:')[1],
+        lead_id = fields[0].split(':')[1],
+        name=fields[1].split(':')[1],
+        phone = fields[2].split(':')[1],
+        email_id = fields[3].split(':')[1],
+        availability_status = lead.split(',availability_status:')[1].split(',job_category:')[0],
+        job_category = lead.split(',job_category:')[1].split(',lead_in_date:')[0],
+
+        # YYYY-MM-DD
+        lead_in_date = None if lead.split(',lead_in_date:')[1].split(',requirement_start_time:')[0] == 'None' else lead.split(',lead_in_date:')[1].split(',requirement_start_time:')[0].split(' ')[0],
+
+        requirement_start_time = None if lead.split(',requirement_start_time:')[1].split(',requirement_end_time:')[0] == 'None' else lead.split(',requirement_start_time:')[1].split(',requirement_end_time:')[0],
+
+        requirement_end_time = None if lead.split(',requirement_end_time:')[1].split(',society:')[0] == 'None' else lead.split(',requirement_end_time:')[1].split(',society:')[0],
+
+        society = lead.split(',society:')[1].split(',flat_number:')[0],
+        flat_number = lead.split(',flat_number:')[1].split(',form_fill_status:')[0],
+        form_fill_status = lead.split(',form_fill_status:')[1].split(',lead_status:')[0],
+        lead_status = lead.split(',lead_status:')[1].split(',helper_name:')[0],
+        helper_name = lead.split(',helper_name:')[1].split(',helper_no:')[0],
+        helper_no = lead.split(',helper_no:')[1].split(',actual_status:')[0],
+        actual_status = lead.split(',actual_status:')[1].split(',lead_lost_reason:')[0],
+        lead_lost_reason = lead.split(',lead_lost_reason:')[1].split(',lead_placement_date:')[0],
+
+        # YYYY-MM-DD
+        lead_placement_date = None if lead.split(',lead_placement_date:')[1].split(',exit_date:')[0] == 'None' else lead.split(',lead_placement_date:')[1].split(',exit_date:')[0].split(' ')[0],
+
+        # YYYY-MM-DD
+        exit_date = None if lead.split(',exit_date:')[1].split(',identity_type:')[0] == 'None' else lead.split(',exit_date:')[1].split(',identity_type:')[0].split(' ')[0],
+
+        identity_type = lead.split(',identity_type:')[1].split(',identity_status:')[0],
+        identity_status = lead.split(',identity_status:')[1].split(',identity_shared:')[0],
+        identity_shared = lead.split(',identity_shared:')[1].split(',application_form:')[0],
+        application_form = lead.split(',application_form:')[1].split(',duration:')[0],
+        duration = lead.split(',duration:')[1].split(',payment_date:')[0],
+
+        # YYYY-MM-DD
+        payment_date = None if lead.split(',payment_date:')[1].split(',payment_status:')[0] == 'None' else lead.split(',payment_date:')[1].split(',payment_status:')[0].split(' ')[0],
+
+        payment_status = lead.split(',payment_status:')[1].split(',payment_mode:')[0],
+        payment_mode = lead.split(',payment_mode:')[1].split(',salary:')[0],
+        salary = lead.split(',salary:')[1].split(',third_party:')[0],
+        third_party = lead.split(',third_party:')[1].split(',commission:')[0],
+        commission = lead.split(',commission:')[1].split(',lead_source:')[0],
+        lead_source = lead.split(',lead_source:')[1].split(',sales_person:')[0],
+        sales_person = lead.split(',sales_person:')[1].split(',additional_comment:')[0],
+        additional_comment = lead.split(',additional_comment:')[1].split(',remarks:')[0],
+        remarks = lead.split(',remarks:')[1],
         admin_user=request.user,
     )
 
 
-def create_lead(request, lead, id):
+def create_lead(request, lead, lead_id):
     return LeadModel(
-        lead_id=lead[8] or id,
-        name=lead[0] or "not mention",
-        phone=lead[1],
-        email_id=lead[2] or "NULL",
-        address=lead[3],
-        phone_valid_status=lead[4],
-        agent=lead[5] or "",
-        additional_comment=lead[6] or "",
-        availability_status=lead[11],
-        # locality
-        locality=lead[9],
-        near_by=lead[10],
-        lead_status=lead[7],
-        flat_number=lead[12] or '',
-        lead_req_date=lead[13] or None,
-        lead_placement_date=lead[14] or None,
-        lead_status2=lead[15] or '',
-        role_on_demand_start_date=lead[16] or None,
-        role_on_demand_start_from_time=lead[17] or None,
-        role_on_demand_start_to_time=lead[18] or None,
-        role_on_demand_end_date=lead[19] or None,
-        role_on_demand_end_from_time=lead[20] or None,
-        role_on_demand_end_to_time=lead[21] or None,
-        lead_source=lead[22] or '',
-        job_category=lead[23] or '',
-        admin_user=request.user,
+        lead_id = lead_id,
+        name = lead[0],
+        phone = lead[1],
+        email_id = lead[2],
+        availability_status = lead[3],
+        job_category = lead[4],
+        lead_in_date = lead[5],
+        requirement_start_time = lead[6],
+        requirement_end_time = lead[7],
+        society = lead[8],
+        flat_number = lead[9],
+        form_fill_status = lead[10],
+        lead_status = lead[11],
+        helper_name = lead[12],
+        helper_no = lead[13],
+        actual_status = lead[14],
+        lead_lost_reason = lead[15],
+        lead_placement_date = lead[16],
+        exit_date = lead[17],
+        identity_type = lead[18],
+        identity_status = lead[19],
+        identity_shared = lead[20],
+        application_form = lead[21],
+        duration = lead[22],
+        payment_date = lead[23],
+        payment_status = lead[24],
+        payment_mode = lead[25],
+        salary = lead[26],
+        third_party = lead[27],
+        commission = lead[28],
+        lead_source = lead[29],
+        sales_person = lead[30],
+        additional_comment = lead[31],
+        remarks = lead[32],
+        admin_user = request.user,
     )
 
 
-# excel file through helper create
+@login_required
+def ExcelFileHelperFileDuplicateAcceptView(request):
+    if request.method == 'POST':
+        duplicates = request.POST.get('duplicates_entries')
+        duplicates = duplicates[1:-1]
+        helpers = duplicates.split('<HelperModel: ')
+        for duplicate in helpers:
+            if duplicate != "":
+                duplicates = duplicates[:-1]
+                helper_excel = get_helper(request, duplicate.split('>')[0])
+                helper_db = HelperModel.objects.get(primary_phone=helper_excel.primary_phone)
+                update_helper(helper_excel, helper_db)
+        messages.success(request, 'Helpers updated successfully!')
+        request.method = 'GET'
+
+    return HelperListViews(request)
+
+
+def update_helper(helper_excel, helper_db):
+    try:
+        if helper_excel.helper_status is not None:
+            helper_db.helper_status = helper_excel.helper_status
+
+        if helper_excel.first_name is not None and helper_excel.last_name != '':
+            helper_db.first_name = helper_excel.first_name
+
+        if helper_excel.middle_name is not None and helper_excel.middle_name != '':
+            helper_db.middle_name = helper_excel.middle_name
+
+        if helper_excel.last_name is not None and helper_excel.last_name != '':
+            helper_db.last_name = helper_excel.last_name
+
+        if helper_excel.primary_phone is not None and helper_excel.primary_phone != "":
+            helper_db.primary_phone = helper_excel.primary_phone
+
+        if helper_excel.job_role_2 is not None and helper_excel.job_role_2 != "":
+            helper_db.job_role_2 = helper_excel.job_role_2
+
+        if helper_excel.availability_status is not None and helper_excel.availability_status != "":
+            helper_db.availability_status = helper_excel.availability_status
+
+        if helper_excel.helper_locality is not None and helper_excel.helper_locality != "":
+            helper_db.helper_locality = helper_excel.helper_locality
+
+        if helper_excel.society is not None and helper_excel.society != "":
+            helper_db.society = helper_excel.society
+
+        if helper_excel.listed_by is not None and helper_excel.listed_by != "":
+            helper_db.listed_by = helper_excel.listed_by
+
+        if helper_excel.language_known is not None and helper_excel.language_known != "":
+            helper_db.language_known = helper_excel.language_known
+
+        if helper_excel.age is not None and helper_excel.age != "":
+            helper_db.age = helper_excel.age
+
+        if helper_excel.gender is not None and helper_excel.gender != "":
+            helper_db.gender = helper_excel.gender
+
+        if helper_excel.sunday is not None and helper_excel.sunday != "":
+            helper_db.sunday = helper_excel.sunday
+
+        if helper_excel.smartphone is not None and helper_excel.smartphone != "":
+            helper_db.smartphone = helper_excel.smartphone
+
+        if helper_excel.whatsApp is not None and helper_excel.whatsApp != "":
+            helper_db.whatsApp = helper_excel.whatsApp
+
+        if helper_excel.start_time_1 is not None and helper_excel.start_time_1 != '':
+            helper_db.start_time_1 = helper_excel.start_time_1
+
+        if helper_excel.end_time_1 is not None and helper_excel.end_time_1 != '':
+            helper_db.end_time_1 = helper_excel.end_time_1
+
+        if helper_excel.start_time_2 is not None and helper_excel.start_time_2 != "":
+            helper_db.start_time_2 = helper_excel.start_time_2
+
+        helper_db.update_date = datetime.now()
+
+        if helper_excel.end_time_2 is not None and helper_excel.end_time_2 != '':
+            helper_db.end_time_2 = helper_excel.end_time_2
+
+        if helper_excel.start_time_3 is not None and helper_excel.start_time_3 != '':
+            helper_db.start_time_3 = helper_excel.start_time_3
+
+        if helper_excel.end_time_3 is not None and helper_excel.end_time_3 != '':
+            helper_db.end_time_3 = helper_excel.end_time_3
+
+        if helper_excel.start_time_4 is not None and helper_excel.start_time_4 != '':
+            helper_db.start_time_4 = helper_excel.start_time_4
+
+        if helper_excel.end_time_4 is not None and helper_excel.end_time_4 != '':
+            helper_db.end_time_4 = helper_excel.end_time_4
+
+        if helper_excel.charges is not None and helper_excel.charges != '':
+            helper_db.charges = helper_excel.charges
+
+        if helper_excel.preferences is not None and helper_excel.preferences != '':
+            helper_db.preferences = helper_excel.preferences
+
+        if helper_excel.id_proof_status is not None and helper_excel.id_proof_status != '':
+            helper_db.id_proof_status = helper_excel.id_proof_status
+
+        if helper_excel.aadhar_verification is not None and helper_excel.aadhar_verification != '':
+            helper_db.aadhar_verification = helper_excel.aadhar_verification
+
+        if helper_excel.id_pdf is not None and helper_excel.id_pdf != '':
+            helper_db.id_pdf = helper_excel.id_pdf
+
+        if helper_excel.other_id_proof is not None and helper_excel.other_id_proof != '':
+            helper_db.other_id_proof = helper_excel.other_id_proof
+
+        if helper_excel.police_verification is not None and helper_excel.police_verification != '':
+            helper_db.police_verification = helper_excel.police_verification
+
+        if helper_excel.engagement_date is not None and helper_excel.engagement_date != '':
+            helper_db.engagement_date = helper_excel.engagement_date
+
+        if helper_excel.previous_employer_name is not None and helper_excel.previous_employer_name != '':
+            helper_db.previous_employer_name = helper_excel.previous_employer_name
+
+        if helper_excel.previous_employer_contact is not None and helper_excel.previous_employer_contact != '':
+            helper_db.previous_employer_contact = helper_excel.previous_employer_contact
+
+        if helper_excel.previous_employer_society is not None and helper_excel.previous_employer_society != '':
+            helper_db.previous_employer_society = helper_excel.previous_employer_society
+
+        if helper_excel.rating is not None and helper_excel.rating != '':
+            helper_db.rating = helper_excel.rating
+
+        if helper_excel.remarks is not None and helper_excel.remarks != '':
+            helper_db.remarks = helper_excel.remarks
+
+        if helper_excel.additional_comment is not None and helper_excel.additional_comment != '':
+            helper_db.additional_comment = helper_excel.additional_comment
+
+        if helper_excel.attempt_2 is not None and helper_excel.attempt_2 != '':
+            helper_db.attempt_2 = helper_excel.attempt_2
+
+        helper_db.save()
+    except Exception as e:
+        print('Error while updating: ' + str(helper_excel))
+        print(traceback.format_exc())
 
 
 @login_required

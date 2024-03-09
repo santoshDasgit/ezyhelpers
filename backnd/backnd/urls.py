@@ -26,6 +26,8 @@ urlpatterns = [
          name='helper_status_update'),
     path('excel_file_helper_upload', ExcelFileHelperFileView,
          name='excel_file_helper_upload'),
+    path('excel_file_helper_upload_duplicate_accept', ExcelFileHelperFileDuplicateAcceptView,
+         name='excel_file_helper_upload_duplicate_accept'),
     path('excel_file_lead_upload', ExcelFileLeadFileView,
          name='excel_file_lead_upload'),
     path('excel_file_lead_upload_duplicate_accept', ExcelFileLeadFileDuplicateAcceptView,

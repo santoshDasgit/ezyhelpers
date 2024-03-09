@@ -65,6 +65,16 @@ LOCALITY = (
 
 )
 
+GENDER = (
+    ('M', 'Male'),
+    ('F', 'Female'),
+)
+
+YES_NO = (
+    ('N', 'No'),
+    ('Y', 'Yes'),
+)
+
 EXPERIENCE = (
     ('0-3 month', '0-3 month'),
     ('3-6 month', '3-6 month'),
@@ -123,29 +133,35 @@ class HelperModel(models.Model):
     first_name = models.CharField(max_length=100, null=False, blank=False)
     middle_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=False, blank=False)
+
+    # Contact Number
     primary_phone = models.CharField(
         max_length=100, null=False, blank=False, default='')
+
     secondary_phone = models.CharField(
         max_length=100, null=True, blank=True, default='')
     email_id = models.CharField(
         max_length=100, null=True, blank=True, default='Name@ezyhelpers.com')
-    dob = models.DateField()
+    dob = models.DateField(null=True, blank=True)
 
     # address
-    street = models.CharField(max_length=100, null=False, blank=False)
-    city = models.CharField(max_length=100, null=False, blank=False)
-    zipcode = models.IntegerField(null=False, blank=False)
+    street = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    zipcode = models.IntegerField(null=True, blank=True)
     state = models.CharField(
-        max_length=100, choices=STATE, null=False, blank=False)
+        max_length=100, choices=STATE, null=True, blank=True)
     country = models.CharField(
-        max_length=100, choices=COUNTRY, null=False, blank=False)
+        max_length=100, choices=COUNTRY, null=True, blank=True)
+
+    # Comments
     additional_comment = models.TextField(blank=True, null=True)
 
     # work
     work_experience = models.CharField(max_length=30, choices=EXPERIENCE)
     availability_status_week = models.CharField(max_length=400)
-    availability_status = models.CharField(
-        max_length=60, choices=AVAILABILITY_STATUS)
+
+    # Helper Type
+    availability_status = models.CharField(max_length=60, choices=AVAILABILITY_STATUS, null=True, blank=True)
 
     # locality
     locality = models.CharField(max_length=30, choices=LOCALITY)
@@ -157,7 +173,7 @@ class HelperModel(models.Model):
     create_date = models.DateField(auto_now_add=True)
     update_date = models.DateField(null=True, blank=True)
 
-    # id proved
+    # ID Proof Copy (Drive Link - Public)
     id_pdf = models.FileField(
         upload_to='pdfs/', validators=[validate_pdf], null=True, blank=True)
     id_type = models.CharField(
@@ -170,8 +186,228 @@ class HelperModel(models.Model):
     # if phone exist it convert to True
     phone_valid = models.BooleanField(default=False)
 
+    # Job Role 2
+    job_role_2 = models.CharField(max_length=100, null=True, blank=True)
+
+    # Helper Address / Locality
+    helper_locality = models.CharField(max_length=60, null=True, blank=True)
+
+    # Currently Working In (Society)
+    society = models.CharField(max_length=60, null=True, blank=True)
+
+    # Listed By
+    listed_by = models.CharField(max_length=60, null=False, blank=False, default='')
+
+    # Language Known
+    language_known = models.CharField(max_length=60, null=True, blank=True)
+
+    # Age
+    age = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    # Gender
+    gender = models.CharField(max_length=30, choices=GENDER, null=True, blank=True)
+
+    # Do you work on Sundays?
+    sunday = models.CharField(max_length=30, choices=YES_NO, null=True, blank=True)
+
+    # Do you have a smartphone?
+    smartphone = models.CharField(max_length=30, choices=YES_NO, null=True, blank=True)
+
+    # Do you use WhatsApp
+    whatsApp = models.CharField(max_length=30, choices=YES_NO, null=True, blank=True)
+
+    # Available Hours Start Time 1
+    start_time_1 = models.TimeField(null=True, blank=True)
+
+    # Available Hours End Time 1
+    end_time_1 = models.TimeField(null=True, blank=True)
+
+    # Available Hours Start Time 2
+    start_time_2 = models.TimeField(null=True, blank=True)
+
+    # Available Hours End Time 2
+    end_time_2 = models.TimeField(null=True, blank=True)
+
+    # Available Hours Start Time 3
+    start_time_3 = models.TimeField(null=True, blank=True)
+
+    # Available Hours End Time 3
+    end_time_3 = models.TimeField(null=True, blank=True)
+
+    # Available Hours Start Time 4
+    start_time_4 = models.TimeField(null=True, blank=True)
+
+    # Available Hours End Time 4
+    end_time_4 = models.TimeField(null=True, blank=True)
+
+    # Charges
+    charges = models.TextField(null=True, blank=True)
+
+    # Preferences
+    preferences = models.CharField(max_length=60, null=True, blank=True)
+
+    # ID Proof Status
+    id_proof_status = models.CharField(max_length=100, null=True, blank=True)
+
+    # Aadhar Verification
+    aadhar_verification = models.CharField(max_length=100, null=True, blank=True)
+
+    # Other ID proof
+    other_id_proof = models.CharField(max_length=100, null=True, blank=True)
+
+    # Police Verification
+    police_verification = models.CharField(max_length=100, null=True, blank=True)
+
+    # Date of 1st engagement
+    engagement_date = models.DateField(auto_now_add=False, null=True, blank=True)
+
+    # Previous Employer Name
+    previous_employer_name = models.CharField(max_length=100, null=True, blank=True)
+
+    # Previous Employer Contact No
+    previous_employer_contact = models.CharField(max_length=100, null=True, blank=True)
+
+    # Previous Employer Society
+    previous_employer_society = models.CharField(max_length=60, null=True, blank=True)
+
+    # Rating
+    rating = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    # Remarks
+    remarks = models.TextField(blank=True, null=True)
+
+    # Attempt 2
+    attempt_2 = models.TextField(blank=True, null=True)
+
     def __str__(self) -> str:
-        return self.first_name
+        serialized = "helper_id:"
+        if self.helper_id is None or self.helper_id == '':
+            serialized += ""
+        else:
+            serialized += self.helper_id
+
+        serialized += ",first_name:" + self.first_name
+        serialized += ",middle_name:"
+        if self.middle_name is None or self.middle_name == '':
+            serialized += ""
+        else:
+            serialized += self.middle_name
+        serialized += ",last_name:" + self.last_name
+
+        # Contact Number
+        serialized += ",primary_phone:" + str(self.primary_phone)
+
+        # Job Role 2
+        serialized += ",job_role_2:" + str(self.job_role_2)
+
+        # Helper Type
+        serialized += ",availability_status:" + str(self.availability_status)
+
+        # Helper Address / Locality
+        serialized += ",helper_locality:" + str(self.helper_locality)
+
+        # Currently Working In (Society)
+        serialized += ",society:" + str(self.society)
+
+        # Listed By
+        serialized += ",listed_by:" + str(self.listed_by)
+
+        # Language Known
+        serialized += ",language_known:" + str(self.language_known)
+
+        # Age
+        serialized += ",age:" + str(self.age)
+
+        # Gender
+        serialized += ",gender:" + str(self.gender)
+
+        # Do you work on Sundays?
+        serialized += ",sunday:" + str(self.sunday)
+
+        # Do you have a smartphone?
+        serialized += ",smartphone:" + str(self.smartphone)
+
+        # Do you use WhatsApp
+        serialized += ",whatsApp:" + str(self.whatsApp)
+
+        # Available Hours Start Time 1
+        serialized += ",start_time_1:" + str(self.start_time_1)
+
+        # Available Hours End Time 1
+        serialized += ",end_time_1:" + str(self.end_time_1)
+
+        # Available Hours Start Time 2
+        serialized += ",start_time_2:" + str(self.start_time_2)
+
+        # Available Hours End Time 2
+        serialized += ",end_time_2:" + str(self.end_time_2)
+
+        # Available Hours Start Time 3
+        serialized += ",start_time_3:" + str(self.start_time_3)
+
+        # Available Hours End Time 3
+        serialized += ",end_time_3:" + str(self.end_time_3)
+
+        # Available Hours Start Time 4
+        serialized += ",start_time_4:" + str(self.start_time_4)
+
+        # Available Hours End Time 4
+        serialized += ",end_time_4:" + str(self.end_time_4)
+
+        # Charges
+        serialized += ",charges:" + str(self.charges)
+
+        # Preferences
+        serialized += ",preferences:" + str(self.preferences)
+
+        # ID Proof Status
+        serialized += ",id_proof_status:" + str(self.id_proof_status)
+
+        # Aadhar Verification
+        serialized += ",aadhar_verification:" + str(self.aadhar_verification)
+
+        # ID Proof Copy (Drive Link - Public)
+        serialized += ",id_pdf:"
+        if self.id_pdf is None or self.id_pdf == '':
+            serialized += ""
+        else:
+            serialized += str(self.id_pdf)
+
+        # Other ID proof
+        serialized += ",other_id_proof:" + str(self.other_id_proof)
+
+        # Police Verification
+        serialized += ",police_verification:" + str(self.police_verification)
+
+        # Date of 1st engagement
+        serialized += ",engagement_date:" + str(self.engagement_date)
+
+        # Previous Employer Name
+        serialized += ",previous_employer_name:" + str(self.previous_employer_name)
+
+        # Previous Employer Contact No
+        serialized += ",previous_employer_contact:" + str(self.previous_employer_contact)
+
+        # Previous Employer Society
+        serialized += ",previous_employer_society:" + str(self.previous_employer_society)
+
+        # Rating
+        serialized += ",rating:" + str(self.rating)
+
+        # Remarks
+        serialized += ",remarks:" + str(self.remarks)
+
+        # Comments
+        serialized += ",additional_comment:"
+        if self.additional_comment is None or self.additional_comment == '':
+            serialized += ""
+        else:
+            serialized += self.additional_comment
+
+        # Attempt 2
+        serialized += ",attempt_2:" + str(self.attempt_2)
+
+        return serialized
 
 
 # skill set
@@ -295,35 +531,124 @@ class HistoryModel(models.Model):
 
 
 class LeadModel(models.Model):
-    # personal details
+    # Owner Name
     name = models.CharField(max_length=100, null=False, blank=False)
-    phone = models.CharField(
-        max_length=100, null=False, blank=False, default='')
+
+    # Contact No
+    phone = models.CharField(max_length=100, null=False, blank=False, default='')
+
+    # Email ID
     email_id = models.CharField(
         max_length=100, null=True, blank=True, default='Name@ezyhelpers.com')
+
+    # Job Role
+    availability_status = models.CharField(max_length=60, choices=AVAILABILITY_STATUS)
+
+    # Type
+    job_category = models.CharField(max_length=200, null=True, blank=True)
+
+    # Lead-in Date
+    lead_in_date = models.DateTimeField(blank=True, null=True)
+
+    # Requirement Start Time
+    requirement_start_time = models.TimeField(blank=True, null=True)
+
+    # Requirement End Time
+    requirement_end_time = models.TimeField(blank=True, null=True)
+
+    # Society
+    society = models.CharField(max_length=200, null=True, blank=True)
+
+    # Flat No
+    flat_number = models.CharField(max_length=200, null=True, blank=True)
+
+    # helper Requirement Form Fill Status
+    form_fill_status = models.CharField(max_length=60, null=True, blank=True)
+
+    # Lead Status
+    lead_status = models.CharField(max_length=100, null=True, blank=True, default='')
+
+    # Helper Name
+    helper_name = models.CharField(max_length=100, null=True, blank=True)
+
+    # Helper Number
+    helper_no = models.CharField(max_length=100, null=True, blank=True)
+
+    # Actual Status
+    actual_status = models.CharField(max_length=100, null=True, blank=True)
+
+    # Lead Lost Reason
+    lead_lost_reason = models.CharField(max_length=100, null=True, blank=True)
+
+    # Date of Placement
+    lead_placement_date = models.DateField(blank=True, null=True)
+
+    # Date of Exit
+    exit_date = models.DateField(blank=True, null=True)
+
+    # ID Proof Type
+    identity_type = models.TextField(blank=True, null=True)
+
+    # ID Proof Status
+    identity_status = models.TextField(blank=True, null=True)
+
+    # ID proof shared with the customer
+    identity_shared = models.CharField(max_length=60, blank=True, null=True)
+
+    # Employer Application Form
+    application_form = models.TextField(blank=True, null=True)
+
+    # Total Duration
+    duration = models.TextField(blank=True, null=True)
+
+    # Payment Date
+    payment_date = models.DateField(blank=True, null=True)
+
+    # Payment Status
+    payment_status = models.CharField(max_length=60, blank=True, null=True)
+
+    # Payment Mode
+    payment_mode = models.CharField(max_length=60, blank=True, null=True)
+
+    # Receivables / Salary
+    salary = models.PositiveIntegerField(blank=True, null=True)
+
+    # Paid - 3rd Party
+    third_party = models.TextField(blank=True, null=True)
+
+    # Ezy Commission
+    commission = models.TextField(blank=True, null=True)
+
+    # Lead Source
+    lead_source = models.CharField(max_length=200, blank=True, null=True)
+
+    # Sales Person
+    sales_person = models.CharField(max_length=100, blank=True, null=True)
+
+    # Comments
+    additional_comment = models.TextField(blank=True, null=True)
+
+    # Remarks
+    remarks = models.TextField(blank=True, null=True)
+
     address = models.TextField(blank=True, null=True)
-    availability_status = models.CharField(
-        max_length=60, choices=AVAILABILITY_STATUS)
+
     # locality
     locality = models.CharField(max_length=30, choices=LOCALITY)
+
     near_by = models.BooleanField(default=False)
 
     # create and update
-    admin_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, blank=True)
-    create_date = models.DateTimeField(
-        auto_now_add=True, blank=True, null=True)
+    admin_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    create_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
     update_date = models.DateTimeField(blank=True, null=True)
-    lead_status = models.CharField(max_length=100, default="")
-    additional_comment = models.TextField(blank=True, null=True)
     agent = models.TextField(blank=True, null=True)
-    phone_valid_status = models.CharField(
-        max_length=100, blank=True, null=True)
+    phone_valid_status = models.CharField(max_length=100, blank=True, null=True)
     lead_id = models.CharField(
         max_length=20, null=True, blank=True, unique=True)
-    flat_number = models.CharField(max_length=200, null=True, blank=True)
     lead_req_date = models.DateField(blank=True, null=True)
-    lead_placement_date = models.DateField(blank=True, null=True)
     lead_status2 = models.CharField(max_length=200, blank=True, null=True)
     role_on_demand_start_date = models.DateField(blank=True, null=True)
     role_on_demand_start_from_time = models.TimeField(blank=True, null=True)
@@ -331,126 +656,180 @@ class LeadModel(models.Model):
     role_on_demand_end_date = models.DateField(blank=True, null=True)
     role_on_demand_end_from_time = models.TimeField(blank=True, null=True)
     role_on_demand_end_to_time = models.TimeField(blank=True, null=True)
-    lead_source = models.CharField(max_length=200, blank=True, null=True)
-    job_category = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
-        serialized = ("name:" + self.name + ",phone:" + str(self.phone) + ",email_id:" + self.email_id
-                      + ",address:" + self.address + ",availability_status:" + str(self.availability_status)
-                      + ",locality:" + self.locality + ",near_by:" + self.near_by.__str__() + ",create_date:")
+        serialized = "lead_id:" + self.lead_id + ",name:" + self.name + ",phone:" + str(self.phone)
 
-        if self.create_date is None:
-            serialized += ""
+        # Email ID
+        if self.email_id is not None:
+            serialized += ',email_id:' + str(self.email_id)
         else:
-            serialized += self.create_date.__str__()
+            serialized += ',email_id:'
 
-        serialized += ",update_date:"
-        if self.update_date is None:
-            serialized += ""
-        else:
-            serialized += self.update_date.__str__()
+        # Job Role
+        serialized += ',availability_status:' + str(self.availability_status)
 
-        serialized += ",lead_status:"
-        if self.lead_status is None:
-            serialized += ""
-        else:
-            serialized += self.lead_status.__str__()
+        # Type
+        serialized += ',job_category:' + str(self.job_category)
 
-        serialized += ",additional_comment:"
-        if self.additional_comment is None:
-            serialized += ""
-        else:
-            serialized += self.additional_comment.__str__()
+        # Lead-in Date
+        serialized += ',lead_in_date:' + str(self.lead_in_date)
 
-        serialized += ",agent:"
-        if self.agent is None:
-            serialized += ""
-        else:
-            serialized += self.agent.__str__()
+        # Requirement Start Time
+        serialized += ',requirement_start_time:' + str(self.requirement_start_time)
 
-        serialized += ",phone_valid_status:"
-        if self.phone_valid_status is None:
-            serialized += ""
-        else:
-            serialized += self.phone_valid_status.__str__()
+        # Requirement End Time
+        serialized += ',requirement_end_time:' + str(self.requirement_end_time)
 
-        serialized += ",lead_id:"
-        if self.lead_id is None:
-            serialized += ""
+        # Society
+        if self.society is not None:
+            serialized += ',society:' + str(self.society)
         else:
-            serialized += self.lead_id.__str__()
+            serialized += ',society:'
 
-        serialized += ",flat_number:"
-        if self.flat_number is None:
-            serialized += ""
+        # Flat No
+        if self.flat_number is not None:
+            serialized += ',flat_number:' + str(self.flat_number)
         else:
-            serialized += self.flat_number.__str__()
+            serialized += ',flat_number:'
 
-        serialized += ",lead_req_date:"
-        if self.lead_req_date is None:
-            serialized += ""
+        # helper Requirement Form Fill Status
+        if self.form_fill_status is not None:
+            serialized += ',form_fill_status:' + str(self.form_fill_status)
         else:
-            serialized += self.lead_req_date.__str__()
+            serialized += ',form_fill_status:'
 
-        serialized += ",lead_placement_date:"
-        if self.lead_placement_date is None:
-            serialized += ""
+        # Lead Status
+        if self.lead_status is not None:
+            serialized += ',lead_status:' + str(self.lead_status)
         else:
-            serialized += self.lead_placement_date.__str__()
+            serialized += ',lead_status:'
 
-        serialized += ",lead_status2:"
-        if self.lead_status2 is None:
-            serialized += ""
+        # Helper Name
+        if self.helper_name is not None:
+            serialized += ',helper_name:' + str(self.helper_name)
         else:
-            serialized += self.lead_status2.__str__()
+            serialized += ',helper_name:'
 
-        serialized += ",role_on_demand_start_date:"
-        if self.role_on_demand_start_date is None:
-            serialized += ""
+        # Helper Number
+        if self.helper_no is not None:
+            serialized += ',helper_no:' + str(self.helper_no)
         else:
-            serialized += self.role_on_demand_start_date.__str__()
+            serialized += ',helper_no:'
 
-        serialized += ",role_on_demand_start_from_time:"
-        if self.role_on_demand_start_from_time is None:
-            serialized += ""
+        # Actual Status
+        if self.actual_status is not None:
+            serialized += ',actual_status:' + str(self.actual_status)
         else:
-            serialized += self.role_on_demand_start_from_time.__str__()
+            serialized += ',actual_status:'
 
-        serialized += ",role_on_demand_start_to_time:"
-        if self.role_on_demand_start_to_time is None:
-            serialized += ""
+        # Lead Lost Reason
+        if self.lead_lost_reason is not None:
+            serialized += ',lead_lost_reason:' + str(self.lead_lost_reason)
         else:
-            serialized += self.role_on_demand_start_to_time.__str__()
+            serialized += ',lead_lost_reason:'
 
-        serialized += ",role_on_demand_end_date:"
-        if self.role_on_demand_end_date is None:
-            serialized += ""
+        # Date of Placement
+        if self.lead_placement_date is not None:
+            serialized += ',lead_placement_date:' + str(self.lead_placement_date)
         else:
-            serialized += self.role_on_demand_end_date.__str__()
+            serialized += ',lead_placement_date:'
 
-        serialized += ",role_on_demand_end_from_time:"
-        if self.role_on_demand_end_from_time is None:
-            serialized += ""
+        # Date of Exit
+        if self.exit_date is not None:
+            serialized += ',exit_date:' + str(self.exit_date)
         else:
-            serialized += self.role_on_demand_end_from_time.__str__()
+            serialized += ',exit_date:'
 
-        serialized += ",role_on_demand_end_to_time:"
-        if self.role_on_demand_end_to_time is None:
-            serialized += ""
+        # ID Proof Type
+        if self.identity_type is not None:
+            serialized += ',identity_type:' + str(self.identity_type)
         else:
-            serialized += self.role_on_demand_end_to_time.__str__()
+            serialized += ',identity_type:'
 
-        serialized += ",lead_source:"
-        if self.lead_source is None:
-            serialized += ""
+        # ID Proof Status
+        if self.identity_status is not None:
+            serialized += ',identity_status:' + str(self.identity_status)
         else:
-            serialized += self.lead_source.__str__()
+            serialized += ',identity_status:'
 
-        serialized += ",job_category:"
-        if self.job_category is None:
-            serialized += ""
+        # ID proof shared with the customer
+        if self.identity_shared is not None:
+            serialized += ',identity_shared:' + str(self.identity_shared)
         else:
-            serialized += self.job_category.__str__()
+            serialized += ',identity_shared:'
+
+        # Employer Application Form
+        if self.application_form is not None:
+            serialized += ',application_form:' + str(self.application_form)
+        else:
+            serialized += ',application_form:'
+
+        # Total Duration
+        if self.duration is not None:
+            serialized += ',duration:' + str(self.duration)
+        else:
+            serialized += ',duration:'
+
+        # Payment Date
+        if self.payment_date is not None:
+            serialized += ',payment_date:' + str(self.payment_date)
+        else:
+            serialized += ',payment_date:'
+
+        # Payment Status
+        if self.payment_status is not None:
+            serialized += ',payment_status:' + str(self.payment_status)
+        else:
+            serialized += ',payment_status:'
+
+        # Payment Mode
+        if self.payment_mode is not None:
+            serialized += ',payment_mode:' + str(self.payment_mode)
+        else:
+            serialized += ',payment_mode:'
+
+        # Receivables / Salary
+        if self.salary is not None:
+            serialized += ',salary:' + str(self.salary)
+        else:
+            serialized += ',salary:'
+
+        # Paid - 3rd Party
+        if self.third_party is not None:
+            serialized += ',third_party:' + str(self.third_party)
+        else:
+            serialized += ',third_party:'
+
+        # Ezy Commission
+        if self.commission is not None:
+            serialized += ',commission:' + str(self.commission)
+        else:
+            serialized += ',commission:'
+
+        # Lead Source
+        if self.lead_source is not None:
+            serialized += ',lead_source:' + str(self.lead_source)
+        else:
+            serialized += ',lead_source:'
+
+        # Sales Person
+        if self.sales_person is not None:
+            serialized += ',sales_person:' + str(self.sales_person)
+        else:
+            serialized += ',sales_person:'
+
+        # Comments
+        if self.additional_comment is not None:
+            serialized += ',additional_comment:' + str(self.additional_comment)
+        else:
+            serialized += ',additional_comment:'
+
+        # Remarks
+        if self.remarks is not None:
+            serialized += ',remarks:' + str(self.remarks)
+        else:
+            serialized += ',remarks:'
 
         return serialized
 

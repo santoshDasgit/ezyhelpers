@@ -1,17 +1,20 @@
 {% load static %}
 {% block body %}
-    <section class='lead-list'>
 
-        <!--nav-->
-        <nav class="navbar navbar-light bg-light shadow-sm">
-            <form class="form-inline" method="POST">
-                <input type="hidden" name="csrfmiddlewaretoken"
-                       value="0ifKCxlesfEJyMoTGQtrHgYAKcr4g88M60ZMKErZqIz9Q9cqkuotM2McygB8jVHl">
-            </form>
+    {% include "msg.html" %}
 
-        </nav>
+    <section class="super_user_dash shadow-sm rounded p-2">
+        <div class='dash-box'>
+            <h1> HELPERS </h1>
+            <p>Dashboard / {{ request.user }}</p>
+        </div>
+    </section>
+
+    <!--helper-->
+    <section class='helper'>
+    
         <!-- Modal -->
-        <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog"
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
              aria-labelledby="exampleModalCenterTitle"
              aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -23,187 +26,174 @@
                         </button>
                     </div>
                     <div class="modal-body justify-content-between w-100">
-                        <a href="{% url 'lead_add' %}" class='btn btn-primary mr-2'>Lead</a>
-                        <a href="{% url 'excel_file_lead_upload' %}" class='btn btn-primary'>Lead(Excel)</a>
+                        <a href="{% url 'helper_add' %}" class='btn btn-primary mr-2'>Helper</a>
+                        <a href="{% url 'excel_file_helper_upload' %}" class='btn btn-primary'>Helper(Excel)</a>
                     </div>
 
                 </div>
             </div>
         </div>
 
-        <form action="{% url 'excel_file_lead_upload_duplicate_accept' %}" id="duplicates" method="post">
+        <form action="{% url 'excel_file_helper_upload_duplicate_accept' %}" id="duplicates" method="post">
             {% csrf_token %}
 
-            <button class='btn btn-outline-success m-2'>Duplicate Leads <b>{{ length }}</b></button>
+            <button class='btn btn-outline-success m-2'>Duplicate Entries <b>{{ length }}</b></button>
             
-            <input type="text" name="duplicates_leads" value="{{ data }}" style="visibility: hidden">
+            <input type="text" name="duplicates_entries" value="{{ data }}" style="visibility: hidden">
             
             <input type='submit' class='btn btn-info' value="Accept">
-            <a type='button' href="{% url 'lead_list' %}" class='btn btn-outline-primary mx-2' id="discard">Discard</a>
-
-            <div class="table-div p-3 shadow">
-                <table class="table sortable" id="data-table">
-                    <thead class="thead-dark">
+            <a type='button' href="{% url 'helper_list' %}" class='btn btn-outline-primary mx-2' id="discard">Discard</a>
+        
+            <!-- Helper list -->
+            <section class='helper_list shadow p-2'>
+                <table class="table" id="myTable">
+                    <thead>
                     <tr>
-                        <th scope="col">No.</th>
-                        <th scope="col">Name <i class="fa-solid fa-sort"></i></th>
-                        <th scope="col">Phone</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Address</th>
-                        <th scope="col">Availability Status</th>
-                        <th scope="col">Locality</th>
-                        <th scope="col">Nearby</th>
-                        <th scope="col">Create Date</th>
-                        <th scope="col">Update Date</th>
-                        <th scope="col">Lead Status</th>
-                        <th scope="col">Additional Comment</th>
-                        <th scope="col">Agent</th>
-                        <th scope="col">Phone Valid Status</th>
-                        <th scope="col">Lead ID</th>
-                        <th scope="col">Flat No.</th>
-                        <th scope="col">Requirement Date</th>
-                        <th scope="col">Placement Date</th>
-                        <th scope="col">Lead Status</th>
-                        <th scope="col">Demand Start Date</th>
-                        <th scope="col">Demand Start From Time</th>
-                        <th scope="col">Demand Start To Time</th>
-                        <th scope="col">Demand End Date</th>
-                        <th scope="col">Demand End From Time</th>
-                        <th scope="col">Demand End To Time</th>
-                        <th scope="col">Lead Source</th>
-                        <th scope="col">Job Category</th>
+                        <th scope="col">Helper Name</th>
+                        <th scope="col">Contact Number</th>
+                        <th scope="col">Job Role 2</th>
+                        <th scope="col">Helper Type</th>
+                        <th scope="col">Helper Address / Locality</th>
+                        <th scope="col">Currently Working In (Society)</th>
+                        <th scope="col">Listed By</th>
+                        <th scope="col">Language Known</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Gender</th>
+                        <th scope="col">Do you work on Sundays?</th>
+                        <th scope="col">Do you have a smartphone?</th>
+                        <th scope="col">Do you use WhatsApp</th>
+                        <th scope="col">Available Hours Start Time 1</th>
+                        <th scope="col">Available Hours End Time 1</th>
+                        <th scope="col">Available Hours Start Time 2</th>
+                        <th scope="col">Available Hours End Time 2</th>
+                        <th scope="col">Available Hours Start Time 3</th>
+                        <th scope="col">Available Hours End Time 3</th>
+                        <th scope="col">Available Hours Start Time 4</th>
+                        <th scope="col">Available Hours End Time 4</th>
+                        <th scope="col">Charges</th>
+                        <th scope="col">Preferences</th>
+                        <th scope="col">ID Proof Status</th>
+                        <th scope="col">Aadhar Verification</th>
+                        <th scope="col">ID Proof Copy (Drive Link - Public)</th>
+                        <th scope="col">Other ID proof</th>
+                        <th scope="col">Police Verification</th>
+                        <th scope="col">Date of 1st engagement</th>
+                        <th scope="col">Previous Employer Name</th>
+                        <th scope="col">Previous Employer Contact No</th>
+                        <th scope="col">Previous Employer Society</th>
+                        <th scope="col">Rating</th>
+                        <th scope="col">Remarks</th>
+                        <th scope="col">Comments</th>
+                        <th scope="col">Attempt 2</th>
                     </tr>
                     </thead>
                     <tbody>
+                    <!--Getting data from helper-->
                     {% for i in data %}
-
-                        <tr id="itemList">
-                            <th scope="row">{{ forloop.counter }}</th>
-                            <td>{{ i.name }}</td>
-                            <td>{{ i.phone }}</td>
-                            <td>{{ i.email_id }}</td>
-                            <td>{{ i.address }}</td>
-                            <td>{{ i.availability_status }}</td>
-                            <td>{{ i.locality }}</td>
-                            <td>{{ i.near_by }}</td>
-                            <td>{{ i.create_date }}</td>
-                            <td>{{ i.update_date }}</td>
-                            <td>{{ i.lead_status }}</td>
-                            <td>{{ i.additional_comment }}</td>
-                            <td>{{ i.agent }}</td>
-                            <td>{{ i.phone_valid_status }}</td>
-                            <td>{{ i.lead_id }}</td>
-                            <td>{{ i.flat_number }}</td>
-                            <td>{{ i.lead_req_date }}</td>
-                            <td>{{ i.lead_placement_date }}</td>
-                            <td>{{ i.lead_status2 }}</td>
-                            <td>{{ i.role_on_demand_start_date }}</td>
-                            <td>{{ i.role_on_demand_start_from_time }}</td>
-                            <td>{{ i.role_on_demand_start_to_time }}</td>
-                            <td>{{ i.role_on_demand_end_date }}</td>
-                            <td>{{ i.role_on_demand_end_from_time }}</td>
-                            <td>{{ i.role_on_demand_end_to_time }}</td>
-                            <td>{{ i.lead_source }}</td>
-                            <td>{{ i.job_category }}</td>
-                        </tr>
+                        {% if not i.phone_valid %}
+                            <tr>
+                                <td class="table_col">{{ i.first_name|capfirst }}</td>
+                                <td class="table_col">{{ i.primary_phone }}</td>
+                                <td class="table_col">{{ i.job_role_2 }}</td>
+                                <td class="table_col">{{ i.availability_status }}</td>
+                                <td class="table_col">{{ i.helper_locality }}</td>
+                                <td class="table_col">{{ i.society }}</td>
+                                <td class="table_col">{{ i.listed_by }}</td>
+                                <td class="table_col">{{ i.language_known }}</td>
+                                <td class="table_col">{{ i.age }}</td>
+                                <td class="table_col">{{ i.gender }}</td>
+                                <td class="table_col">{{ i.sunday }}</td>
+                                <td class="table_col">{{ i.smartphone }}</td>
+                                <td class="table_col">{{ i.whatsApp }}</td>
+                                <td class="table_col">{{ i.start_time_1 }}</td>
+                                <td class="table_col">{{ i.end_time_1 }}</td>
+                                <td class="table_col">{{ i.start_time_2 }}</td>
+                                <td class="table_col">{{ i.end_time_2 }}</td>
+                                <td class="table_col">{{ i.start_time_3 }}</td>
+                                <td class="table_col">{{ i.end_time_3 }}</td>
+                                <td class="table_col">{{ i.start_time_4 }}</td>
+                                <td class="table_col">{{ i.end_time_4 }}</td>
+                                <td class="table_col">{{ i.charges }}</td>
+                                <td class="table_col">{{ i.preferences }}</td>
+                                <td class="table_col">{{ i.id_proof_status }}</td>
+                                <td class="table_col">{{ i.aadhar_verification }}</td>
+                                <td class="table_col">{{ i.id_pdf }}</td>
+                                <td class="table_col">{{ i.other_id_proof }}</td>
+                                <td class="table_col">{{ i.police_verification }}</td>
+                                <td class="table_col">{{ i.engagement_date }}</td>
+                                <td class="table_col">{{ i.previous_employer_name }}</td>
+                                <td class="table_col">{{ i.previous_employer_contact }}</td>
+                                <td class="table_col">{{ i.previous_employer_society }}</td>
+                                <td class="table_col">{{ i.rating }}</td>
+                                <td class="table_col">{{ i.remarks }}</td>
+                                <td class="table_col">{{ i.additional_comment }}</td>
+                                <td class="table_col">{{ i.attempt_2 }}</td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                     </tbody>
                 </table>
-            </div>
+            </section>
         </form>
     </section>
 
     <script>
 
-        document.addEventListener('click', function (e) {
-            try {
-                // allows for elements inside TH
-                function findElementRecursive(element, tag) {
-                    return element.nodeName === tag ? element : findElementRecursive(element.parentNode, tag)
-                }
+        // if status change autosubmit 
+        let helper_status_inp = document.querySelectorAll('.helper-status-inp')
+        let helper_status_fm = document.querySelectorAll('.helper-status-fm')
 
-                var descending_th_class = ' dir-d '
-                var ascending_th_class = ' dir-u '
-                var ascending_table_sort_class = 'asc'
-                var regex_dir = / dir-(u|d) /
-                var regex_table = /\bsortable\b/
-                var alt_sort = e.shiftKey || e.altKey
-                var element = findElementRecursive(e.target, 'TH')
-                var tr = findElementRecursive(element, 'TR')
-                var table = findElementRecursive(tr, 'TABLE')
-
-                function reClassify(element, dir) {
-                    element.className = element.className.replace(regex_dir, '') + dir
-                }
-
-                function getValue(element) {
-                    // If you aren't using data-sort and want to make it just the tiniest bit smaller/faster
-                    // comment this line and uncomment the next one
-                    var value =
-                        (alt_sort && element.getAttribute('data-sort-alt')) || element.getAttribute('data-sort') || element.innerText
-                    return value
-                    // return element.innerText
-                }
-
-                if (regex_table.test(table.className)) {
-                    var column_index
-                    var nodes = tr.cells
-
-                    // Reset thead cells and get column index
-                    for (var i = 0; i < nodes.length; i++) {
-                        if (nodes[i] === element) {
-                            column_index = element.getAttribute('data-sort-col') || i
-                        } else {
-                            reClassify(nodes[i], '')
-                        }
-                    }
-
-                    var dir = descending_th_class
-
-                    // Check if we're sorting ascending or descending
-                    if (
-                        element.className.indexOf(descending_th_class) !== -1 ||
-                        (table.className.indexOf(ascending_table_sort_class) !== -1 &&
-                            element.className.indexOf(ascending_th_class) == -1)
-                    ) {
-                        dir = ascending_th_class
-                    }
-
-                    // Update the `th` class accordingly
-                    reClassify(element, dir)
-
-                    // loop through all tbodies and sort them
-                    for (var i = 0; i < table.tBodies.length; i++) {
-                        const org_tbody = table.tBodies[i]
-
-                        // Get the array rows in an array, so we can sort them...
-                        var rows = [].slice.call(org_tbody.rows, 0)
-
-                        var reverse = dir === ascending_th_class
-
-                        // Sort them using Array.prototype.sort()
-                        rows.sort(function (a, b) {
-                            var x = getValue((reverse ? a : b).cells[column_index])
-                            var y = getValue((reverse ? b : a).cells[column_index])
-                            var bool = x.length && y.length && !isNaN(x - y) ? x - y : x.localeCompare(y)
-                            return bool
-                        })
-
-                        // Make a clone without content
-                        var clone_tbody = org_tbody.cloneNode()
-
-                        // Fill it with the sorted values
-                        while (rows.length) {
-                            clone_tbody.appendChild(rows.splice(0, 1)[0])
-                        }
-
-                        // And finally replace the unsorted table with the sorted one
-                        table.replaceChild(clone_tbody, org_tbody)
-                    }
-                }
-            } catch (error) {
-                // console.log(error)
+        for (let i = 0; i < helper_status_inp.length; i++) {
+            helper_status_inp[i].onchange = function () {
+                helper_status_fm[i].submit()
             }
-        })
+        }
+
+
+        // sorting column logic 
+        var currentColumn = -1;
+        var sortOrder = 1;
+
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("myTable");
+            switching = true;
+
+            if (columnIndex === currentColumn) {
+                sortOrder *= -1; // Change the sort order if the same column is clicked
+            } else {
+                currentColumn = columnIndex;
+                sortOrder = 1; // Reset sort order if a different column is clicked
+            }
+
+            while (switching) {
+                switching = false;
+                rows = table.getElementsByTagName("tr");
+
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+
+                    x = rows[i].getElementsByClassName("table_col")[columnIndex];
+                    y = rows[i + 1].getElementsByClassName("table_col")[columnIndex];
+
+                    if (sortOrder === 1) {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
     </script>
 {% endblock body %}

@@ -1,36 +1,6 @@
 {% load static %}
 {% block body %}
     <section class='lead-list'>
-
-        <!--nav-->
-        <nav class="navbar navbar-light bg-light shadow-sm">
-            <form class="form-inline" method="POST">
-                <input type="hidden" name="csrfmiddlewaretoken"
-                       value="0ifKCxlesfEJyMoTGQtrHgYAKcr4g88M60ZMKErZqIz9Q9cqkuotM2McygB8jVHl">
-            </form>
-
-        </nav>
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog"
-             aria-labelledby="exampleModalCenterTitle"
-             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Please select</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body justify-content-between w-100">
-                        <a href="{% url 'lead_add' %}" class='btn btn-primary mr-2'>Lead</a>
-                        <a href="{% url 'excel_file_lead_upload' %}" class='btn btn-primary'>Lead(Excel)</a>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
         <form action="{% url 'excel_file_lead_upload_duplicate_accept' %}" id="duplicates" method="post">
             {% csrf_token %}
 
@@ -46,32 +16,38 @@
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col">No.</th>
-                        <th scope="col">Name <i class="fa-solid fa-sort"></i></th>
-                        <th scope="col">Phone</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Address</th>
-                        <th scope="col">Availability Status</th>
-                        <th scope="col">Locality</th>
-                        <th scope="col">Nearby</th>
-                        <th scope="col">Create Date</th>
-                        <th scope="col">Update Date</th>
+                        <th scope="col">Owner Name</th>
+                        <th scope="col">Contact No</th>
+                        <th scope="col">Email ID</th>
+                        <th scope="col">Job Role</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Lead-in Date</th>
+                        <th scope="col">Requirement Start Time</th>
+                        <th scope="col">Requirement End Time</th>
+                        <th scope="col">Society</th>
+                        <th scope="col">Flat No</th>
+                        <th scope="col">Helper Requirement Form Fill Status</th>
                         <th scope="col">Lead Status</th>
-                        <th scope="col">Additional Comment</th>
-                        <th scope="col">Agent</th>
-                        <th scope="col">Phone Valid Status</th>
-                        <th scope="col">Lead ID</th>
-                        <th scope="col">Flat No.</th>
-                        <th scope="col">Requirement Date</th>
-                        <th scope="col">Placement Date</th>
-                        <th scope="col">Lead Status</th>
-                        <th scope="col">Demand Start Date</th>
-                        <th scope="col">Demand Start From Time</th>
-                        <th scope="col">Demand Start To Time</th>
-                        <th scope="col">Demand End Date</th>
-                        <th scope="col">Demand End From Time</th>
-                        <th scope="col">Demand End To Time</th>
+                        <th scope="col">Helper Name</th>
+                        <th scope="col">Actual Status</th>
+                        <th scope="col">Lead Lost Reason</th>
+                        <th scope="col">Date of Placement</th>
+                        <th scope="col">Date of Exit</th>
+                        <th scope="col">ID Proof Type</th>
+                        <th scope="col">ID Proof Status</th>
+                        <th scope="col">ID proof shared with Customer</th>
+                        <th scope="col">Employer Application Form</th>
+                        <th scope="col">Total Duration</th>
+                        <th scope="col">Payment Date</th>
+                        <th scope="col">Payment Status</th>
+                        <th scope="col">Payment Mode</th>
+                        <th scope="col">Receivables / Salary</th>
+                        <th scope="col">Paid - 3rd Party</th>
+                        <th scope="col">Ezy Commission</th>
                         <th scope="col">Lead Source</th>
-                        <th scope="col">Job Category</th>
+                        <th scope="col">Sales Person</th>
+                        <th scope="col">Comments</th>
+                        <th scope="col">Remarks</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -82,29 +58,35 @@
                             <td>{{ i.name }}</td>
                             <td>{{ i.phone }}</td>
                             <td>{{ i.email_id }}</td>
-                            <td>{{ i.address }}</td>
                             <td>{{ i.availability_status }}</td>
-                            <td>{{ i.locality }}</td>
-                            <td>{{ i.near_by }}</td>
-                            <td>{{ i.create_date }}</td>
-                            <td>{{ i.update_date }}</td>
-                            <td>{{ i.lead_status }}</td>
-                            <td>{{ i.additional_comment }}</td>
-                            <td>{{ i.agent }}</td>
-                            <td>{{ i.phone_valid_status }}</td>
-                            <td>{{ i.lead_id }}</td>
-                            <td>{{ i.flat_number }}</td>
-                            <td>{{ i.lead_req_date }}</td>
-                            <td>{{ i.lead_placement_date }}</td>
-                            <td>{{ i.lead_status2 }}</td>
-                            <td>{{ i.role_on_demand_start_date }}</td>
-                            <td>{{ i.role_on_demand_start_from_time }}</td>
-                            <td>{{ i.role_on_demand_start_to_time }}</td>
-                            <td>{{ i.role_on_demand_end_date }}</td>
-                            <td>{{ i.role_on_demand_end_from_time }}</td>
-                            <td>{{ i.role_on_demand_end_to_time }}</td>
-                            <td>{{ i.lead_source }}</td>
                             <td>{{ i.job_category }}</td>
+                            <td>{{ i.lead_in_date }}</td>
+                            <td>{{ i.requirement_start_time }}</td>
+                            <td>{{ i.requirement_end_time }}</td>
+                            <td>{{ i.society }}</td>
+                            <td>{{ i.flat_number }}</td>
+                            <td>{{ i.form_fill_status }}</td>
+                            <td>{{ i.lead_status }}</td>
+                            <td>{{ i.helper_name }}</td>
+                            <td>{{ i.actual_status }}</td>
+                            <td>{{ i.lead_lost_reason }}</td>
+                            <td>{{ i.lead_placement_date }}</td>
+                            <td>{{ i.exit_date }}</td>
+                            <td>{{ i.identity_type }}</td>
+                            <td>{{ i.identity_status }}</td>
+                            <td>{{ i.identity_shared }}</td>
+                            <td>{{ i.application_form }}</td>
+                            <td>{{ i.duration }}</td>
+                            <td>{{ i.payment_date }}</td>
+                            <td>{{ i.payment_status }}</td>
+                            <td>{{ i.payment_mode }}</td>
+                            <td>{{ i.salary }}</td>
+                            <td>{{ i.third_party }}</td>
+                            <td>{{ i.commission }}</td>
+                            <td>{{ i.lead_source }}</td>
+                            <td>{{ i.sales_person }}</td>
+                            <td>{{ i.additional_comment }}</td>
+                            <td>{{ i.remarks }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
