@@ -137,8 +137,7 @@ def ProfileUpdateView(request, id, email):
             try:
                 # email send Logic
                 subject = "user data updated!!"
-                message = f'email : <b>{
-                email}</b> <br> first name : <b>{first_name}</b> <br> last name : <b>{last_name}</b>'
+                message = f'email : <b>{email}</b> <br> first name : <b>{first_name}</b> <br> last name : <b>{last_name}</b>'
                 from_email = settings.EMAIL_HOST_USER
                 to = email
                 email_box = EmailMultiAlternatives(
