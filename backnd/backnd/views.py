@@ -2093,8 +2093,7 @@ def LeadInsertDataView(request):
         except Exception as e:
             # exception handle
 
-            print(f"{type(request.POST['Start_Date'])} {
-            type(request.POST['s_StartDuration'])}")
+            print(f"{type(request.POST['Start_Date'])} {type(request.POST['s_StartDuration'])}")
             messages.error(
                 request, f'Something error try again! may be network issue!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
