@@ -575,12 +575,9 @@ def get_helper(request, helper):
         police_verification=helper.split(',police_verification:')[1].split(',engagement_date:')[0] or '',
 
         # YYYY-MM-DD
-        engagement_date=None if helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0] == 'None' else
-        helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0].split(' ')[0],
-        previous_employer_name=helper.split(',previous_employer_name:')[1].split(',previous_employer_contact:')[
-                                   0] or '',
-        previous_employer_contact=helper.split(',previous_employer_contact:')[1].split(',previous_employer_society:')[
-                                      0] or '',
+        engagement_date=None if helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0] == 'None' else helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0].split(' ')[0],
+        previous_employer_name=helper.split(',previous_employer_name:')[1].split(',previous_employer_contact:')[0] or '',
+        previous_employer_contact=helper.split(',previous_employer_contact:')[1].split(',previous_employer_society:')[0] or '',
         previous_employer_society=helper.split(',previous_employer_society:')[1].split(',rating:')[0] or '',
         rating=None if helper.split(',rating:')[1].split(',remarks:')[0] == 'None' else
         helper.split(',rating:')[1].split(',remarks:')[0],
@@ -872,8 +869,7 @@ def get_lead(request, lead):
         duration=lead.split(',duration:')[1].split(',payment_date:')[0],
 
         # YYYY-MM-DD
-        payment_date=None if lead.split(',payment_date:')[1].split(',payment_status:')[0] == 'None' else
-        lead.split(',payment_date:')[1].split(',payment_status:')[0].split(' ')[0],
+        payment_date=None if lead.split(',payment_date:')[1].split(',payment_status:')[0] == 'None' else lead.split(',payment_date:')[1].split(',payment_status:')[0].split(' ')[0],
 
         payment_status=lead.split(',payment_status:')[1].split(',payment_mode:')[0],
         payment_mode=lead.split(',payment_mode:')[1].split(',salary:')[0],
