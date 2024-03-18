@@ -1,6 +1,7 @@
 import hashlib
 import traceback
 import datetime
+import re
 
 from datetime import date
 from datetime import datetime
@@ -467,92 +468,122 @@ def create_helper(request, i):
             middle_name = names[1]
             last_name = names[2]
 
+    primary_phone = get_mobile_number(str(i[1]))
+    if primary_phone is None:
+        raise Exception('Invalid phone number')
+
     return HelperModel(
         first_name=first_name,
-        middle_name = middle_name,
-        last_name = last_name,
-        primary_phone = int(i[1] or 0),
-        job_role_2 = (i[2] or ''),
-        availability_status = (i[3] or ''), 
-        helper_locality = (i[4] or ''),
-        society = (i[5] or ''),
-        listed_by = (i[6] or ''),
-        language_known = (i[7] or ''),
-        age = i[8],
-        gender = (i[9] or ''),
-        sunday = (i[10] or ''),
-        smartphone = (i[11] or ''),
-        whatsApp = (i[12] or ''),
-        start_time_1 = i[13],
-        end_time_1 = i[14],
-        start_time_2 = i[15],
-        end_time_2 = i[16],
-        start_time_3 = i[17],
-        end_time_3 = i[18],
-        start_time_4 = i[19],
-        end_time_4 = i[20],
-        charges = i[21],
-        preferences = (i[22] or ''),
-        id_proof_status = (i[23] or ''),
-        aadhar_verification = (i[24] or ''),
-        id_pdf = (i[25] or ''),
-        other_id_proof = (i[26] or ''),
-        police_verification = (i[27] or ''),
-        engagement_date = i[28],
-        previous_employer_name = (i[30] or ''),
-        previous_employer_contact = (i[31] or ''),
-        previous_employer_society = (i[32] or ''),
-        rating = i[33],
-        remarks = (i[34] or ''),
-        additional_comment = (i[35] or ''),
-        attempt_2 = (i[36] or '')
+        middle_name=middle_name,
+        last_name=last_name,
+        primary_phone=primary_phone,
+        job_role_2=(i[2] or ''),
+        availability_status=(i[3] or ''),
+        helper_locality=(i[4] or ''),
+        society=(i[5] or ''),
+        listed_by=(i[6] or ''),
+        language_known=(i[7] or ''),
+        age=i[8],
+        gender=(i[9] or ''),
+        sunday=(i[10] or ''),
+        smartphone=(i[11] or ''),
+        whatsApp=(i[12] or ''),
+        start_time_1=i[13],
+        end_time_1=i[14],
+        start_time_2=i[15],
+        end_time_2=i[16],
+        start_time_3=i[17],
+        end_time_3=i[18],
+        start_time_4=i[19],
+        end_time_4=i[20],
+        charges=i[21],
+        preferences=(i[22] or ''),
+        id_proof_status=(i[23] or ''),
+        aadhar_verification=(i[24] or ''),
+        id_pdf=(i[25] or ''),
+        other_id_proof=(i[26] or ''),
+        police_verification=(i[27] or ''),
+        engagement_date=i[28],
+        previous_employer_name=(i[30] or ''),
+        previous_employer_contact=(i[31] or ''),
+        previous_employer_society=(i[32] or ''),
+        rating=i[33],
+        remarks=(i[34] or ''),
+        additional_comment=(i[35] or ''),
+        attempt_2=(i[36] or '')
     )
+
+
+def get_mobile_number(phone):
+    if len(phone) != 10:
+        return None
+
+    number = re.search("(\+91)?(-)?\s*?(91)?\s*?(\d{3})-?\s*?(\d{3})-?\s*?(\d{4})", phone)
+    if number is not None:
+        return number.group()
+    else:
+        return None
 
 
 def get_helper(request, helper):
     fields = helper.split(',')
+
+    primary_phone = get_mobile_number(fields[4].split(':')[1])
+    if primary_phone is None:
+        raise Exception('Invalid phone number')
+
     return HelperModel(
-        helper_id = fields[0].split(':')[1],
-        first_name = fields[1].split(':')[1],
-        middle_name = fields[2].split(':')[1] or '',
-        last_name = fields[3].split(':')[1] or '',
-        primary_phone = fields[4].split(':')[1],
-        job_role_2 = fields[5].split(':')[1] or '',
-        availability_status = fields[6].split(':')[1] or '',
-        helper_locality = helper.split(',helper_locality:')[1].split(',society:')[0] or '',
-        society = helper.split(',society:')[1].split(',listed_by:')[0] or '',
-        listed_by = helper.split(',listed_by:')[1].split(',language_known:')[0] or '',
-        language_known = helper.split(',language_known:')[1].split(',age:')[0] or '',
-        age = None if helper.split(',age:')[1].split(',gender:')[0] == 'None' else helper.split(',age:')[1].split(',gender:')[0],
-        gender = helper.split(',gender:')[1].split(',sunday:')[0] or '',
-        sunday = helper.split(',sunday:')[1].split(',smartphone:')[0] or '',
-        smartphone = helper.split(',smartphone:')[1].split(',whatsApp:')[0] or '',
-        whatsApp = helper.split(',whatsApp:')[1].split(',start_time_1:')[0] or '',
-        start_time_1 = None if helper.split(',start_time_1:')[1].split(',end_time_1:')[0] == 'None' else helper.split(',start_time_1:')[1].split(',end_time_1:')[0],
-        end_time_1 = None if helper.split(',end_time_1:')[1].split(',start_time_2:')[0] == 'None' else helper.split(',end_time_1:')[1].split(',start_time_2:')[0],
-        start_time_2 = None if helper.split(',start_time_2:')[1].split(',end_time_2:')[0] == 'None' else helper.split(',start_time_2:')[1].split(',end_time_2:')[0],
-        end_time_2 = None if helper.split(',end_time_2:')[1].split(',start_time_3:')[0] == 'None' else helper.split(',end_time_2:')[1].split(',start_time_3:')[0],
-        start_time_3 = None if helper.split(',start_time_3:')[1].split(',end_time_3:')[0] == 'None' else helper.split(',start_time_3:')[1].split(',end_time_3:')[0],
-        end_time_3 = None if helper.split(',end_time_3:')[1].split(',start_time_4:')[0] == 'None' else helper.split(',end_time_3:')[1].split(',start_time_4:')[0],
-        start_time_4 = None if helper.split(',start_time_4:')[1].split(',end_time_4:')[0] == 'None' else helper.split(',start_time_4:')[1].split(',end_time_4:')[0],
-        end_time_4 = None if helper.split(',end_time_4:')[1].split(',charges:')[0] else helper.split(',end_time_4:')[1].split(',charges:')[0],
-        charges = helper.split(',charges:')[1].split(',preferences:')[0] or '',
-        preferences = helper.split(',preferences:')[1].split(',id_proof_status:')[0] or '',
-        id_proof_status = helper.split(',id_proof_status:')[1].split(',aadhar_verification:')[0] or '',
-        aadhar_verification = helper.split(',aadhar_verification:')[1].split(',id_pdf:')[0] or '',
-        id_pdf = helper.split(',id_pdf:')[1].split(',other_id_proof:')[0],
-        other_id_proof = helper.split(',other_id_proof:')[1].split(',police_verification:')[0] or '',
-        police_verification = helper.split(',police_verification:')[1].split(',engagement_date:')[0] or '',
+        helper_id=fields[0].split(':')[1],
+        first_name=fields[1].split(':')[1],
+        middle_name=fields[2].split(':')[1] or '',
+        last_name=fields[3].split(':')[1] or '',
+        primary_phone=primary_phone,
+        job_role_2=fields[5].split(':')[1] or '',
+        availability_status=fields[6].split(':')[1] or '',
+        helper_locality=helper.split(',helper_locality:')[1].split(',society:')[0] or '',
+        society=helper.split(',society:')[1].split(',listed_by:')[0] or '',
+        listed_by=helper.split(',listed_by:')[1].split(',language_known:')[0] or '',
+        language_known=helper.split(',language_known:')[1].split(',age:')[0] or '',
+        age=None if helper.split(',age:')[1].split(',gender:')[0] == 'None' else
+        helper.split(',age:')[1].split(',gender:')[0],
+        gender=helper.split(',gender:')[1].split(',sunday:')[0] or '',
+        sunday=helper.split(',sunday:')[1].split(',smartphone:')[0] or '',
+        smartphone=helper.split(',smartphone:')[1].split(',whatsApp:')[0] or '',
+        whatsApp=helper.split(',whatsApp:')[1].split(',start_time_1:')[0] or '',
+        start_time_1=None if helper.split(',start_time_1:')[1].split(',end_time_1:')[0] == 'None' else
+        helper.split(',start_time_1:')[1].split(',end_time_1:')[0],
+        end_time_1=None if helper.split(',end_time_1:')[1].split(',start_time_2:')[0] == 'None' else
+        helper.split(',end_time_1:')[1].split(',start_time_2:')[0],
+        start_time_2=None if helper.split(',start_time_2:')[1].split(',end_time_2:')[0] == 'None' else
+        helper.split(',start_time_2:')[1].split(',end_time_2:')[0],
+        end_time_2=None if helper.split(',end_time_2:')[1].split(',start_time_3:')[0] == 'None' else
+        helper.split(',end_time_2:')[1].split(',start_time_3:')[0],
+        start_time_3=None if helper.split(',start_time_3:')[1].split(',end_time_3:')[0] == 'None' else
+        helper.split(',start_time_3:')[1].split(',end_time_3:')[0],
+        end_time_3=None if helper.split(',end_time_3:')[1].split(',start_time_4:')[0] == 'None' else
+        helper.split(',end_time_3:')[1].split(',start_time_4:')[0],
+        start_time_4=None if helper.split(',start_time_4:')[1].split(',end_time_4:')[0] == 'None' else
+        helper.split(',start_time_4:')[1].split(',end_time_4:')[0],
+        end_time_4=None if helper.split(',end_time_4:')[1].split(',charges:')[0] else
+        helper.split(',end_time_4:')[1].split(',charges:')[0],
+        charges=helper.split(',charges:')[1].split(',preferences:')[0] or '',
+        preferences=helper.split(',preferences:')[1].split(',id_proof_status:')[0] or '',
+        id_proof_status=helper.split(',id_proof_status:')[1].split(',aadhar_verification:')[0] or '',
+        aadhar_verification=helper.split(',aadhar_verification:')[1].split(',id_pdf:')[0] or '',
+        id_pdf=helper.split(',id_pdf:')[1].split(',other_id_proof:')[0],
+        other_id_proof=helper.split(',other_id_proof:')[1].split(',police_verification:')[0] or '',
+        police_verification=helper.split(',police_verification:')[1].split(',engagement_date:')[0] or '',
 
         # YYYY-MM-DD
-        engagement_date = None if helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0] == 'None' else helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0].split(' ')[0],
-        previous_employer_name = helper.split(',previous_employer_name:')[1].split(',previous_employer_contact:')[0] or '',
-        previous_employer_contact = helper.split(',previous_employer_contact:')[1].split(',previous_employer_society:')[0] or '',
-        previous_employer_society = helper.split(',previous_employer_society:')[1].split(',rating:')[0] or '',
-        rating = None if helper.split(',rating:')[1].split(',remarks:')[0] == 'None' else helper.split(',rating:')[1].split(',remarks:')[0],
-        remarks = helper.split(',remarks:')[1].split(',additional_comment:')[0] or '',
-        additional_comment = helper.split(',additional_comment:')[1].split(',attempt_2:')[0] or '',
-        attempt_2 = helper.split(',attempt_2:')[1] or '',
+        engagement_date=None if helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0] == 'None' else helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0].split(' ')[0],
+        previous_employer_name=helper.split(',previous_employer_name:')[1].split(',previous_employer_contact:')[0] or '',
+        previous_employer_contact=helper.split(',previous_employer_contact:')[1].split(',previous_employer_society:')[0] or '',
+        previous_employer_society=helper.split(',previous_employer_society:')[1].split(',rating:')[0] or '',
+        rating=None if helper.split(',rating:')[1].split(',remarks:')[0] == 'None' else
+        helper.split(',rating:')[1].split(',remarks:')[0],
+        remarks=helper.split(',remarks:')[1].split(',additional_comment:')[0] or '',
+        additional_comment=helper.split(',additional_comment:')[1].split(',attempt_2:')[0] or '',
+        attempt_2=helper.split(',attempt_2:')[1] or '',
     )
 
 
@@ -581,7 +612,11 @@ def ExcelFileHelperFileView(request):
                     if (i[0] is None or i[0] == '') and (i[1] is None or i[1] == '') and (i[3] is None or i[3] == ''):
                         pass
                     else:
-                        if HelperModel.objects.filter(primary_phone=i[1]).exists():
+                        primary_phone = get_mobile_number(str(i[1]))
+                        if primary_phone is None:
+                            raise Exception('Invalid phone number')
+
+                        if HelperModel.objects.filter(primary_phone = primary_phone).exists():
                             duplicates.append(create_helper(request, i))
                             contains_duplicate = True
                             pass
@@ -603,7 +638,8 @@ def ExcelFileHelperFileView(request):
                 messages.success(request, 'file upload successful!')
             except Exception as e:
                 # exception handle
-                messages.error(request, f'Invalid data for ' + str(helper.primary_phone) + ', Error:' + e.__str__())
+                messages.error(request, f'Invalid data in ' + str(i) + ', Error:' + e.__str__())
+                print(traceback.format_exc())
             # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -634,7 +670,11 @@ def ExcelFileLeadFileView(request):
                     if (i[1] is None or i[1] == ''):
                         pass
                     else:
-                        if LeadModel.objects.filter(phone=i[1]).exists():
+                        primary_phone = get_mobile_number(str(i[1]))
+                        if primary_phone is None:
+                            raise Exception('Invalid phone number')
+
+                        if LeadModel.objects.filter(phone=primary_phone).exists():
                             duplicates.append(create_lead(request, i, ''))
                             contains_duplicate = True
                             pass
@@ -657,7 +697,7 @@ def ExcelFileLeadFileView(request):
                 messages.success(request, 'file upload successful!')
             except Exception as e:
                 # exception handle
-                messages.error(request, f'There is an error! {e}')
+                messages.error(request, f'Invalid data in ' + str(i) + ', Error:' + e.__str__())
                 print(traceback.format_exc())
             # redirect with same page
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -781,95 +821,110 @@ def update_lead(lead_excel, lead_db):
 
 def get_lead(request, lead):
     fields = lead.split(',')
+
+    primary_phone = get_mobile_number(fields[2].split(':')[1])
+    if primary_phone is None:
+        raise Exception('Invalid phone number')
+
     return LeadModel(
-        lead_id = fields[0].split(':')[1],
+        lead_id=fields[0].split(':')[1],
         name=fields[1].split(':')[1],
-        phone = fields[2].split(':')[1],
-        email_id = fields[3].split(':')[1],
-        availability_status = lead.split(',availability_status:')[1].split(',job_category:')[0],
-        job_category = lead.split(',job_category:')[1].split(',lead_in_date:')[0],
+        phone=primary_phone,
+        email_id=fields[3].split(':')[1],
+        availability_status=lead.split(',availability_status:')[1].split(',job_category:')[0],
+        job_category=lead.split(',job_category:')[1].split(',lead_in_date:')[0],
 
         # YYYY-MM-DD
-        lead_in_date = None if lead.split(',lead_in_date:')[1].split(',requirement_start_time:')[0] == 'None' else lead.split(',lead_in_date:')[1].split(',requirement_start_time:')[0].split(' ')[0],
+        lead_in_date=None if lead.split(',lead_in_date:')[1].split(',requirement_start_time:')[0] == 'None' else
+        lead.split(',lead_in_date:')[1].split(',requirement_start_time:')[0].split(' ')[0],
 
-        requirement_start_time = None if lead.split(',requirement_start_time:')[1].split(',requirement_end_time:')[0] == 'None' else lead.split(',requirement_start_time:')[1].split(',requirement_end_time:')[0],
+        requirement_start_time=None if lead.split(',requirement_start_time:')[1].split(',requirement_end_time:')[
+                                           0] == 'None' else
+        lead.split(',requirement_start_time:')[1].split(',requirement_end_time:')[0],
 
-        requirement_end_time = None if lead.split(',requirement_end_time:')[1].split(',society:')[0] == 'None' else lead.split(',requirement_end_time:')[1].split(',society:')[0],
+        requirement_end_time=None if lead.split(',requirement_end_time:')[1].split(',society:')[0] == 'None' else
+        lead.split(',requirement_end_time:')[1].split(',society:')[0],
 
-        society = lead.split(',society:')[1].split(',flat_number:')[0],
-        flat_number = lead.split(',flat_number:')[1].split(',form_fill_status:')[0],
-        form_fill_status = lead.split(',form_fill_status:')[1].split(',lead_status:')[0],
-        lead_status = lead.split(',lead_status:')[1].split(',helper_name:')[0],
-        helper_name = lead.split(',helper_name:')[1].split(',helper_no:')[0],
-        helper_no = lead.split(',helper_no:')[1].split(',actual_status:')[0],
-        actual_status = lead.split(',actual_status:')[1].split(',lead_lost_reason:')[0],
-        lead_lost_reason = lead.split(',lead_lost_reason:')[1].split(',lead_placement_date:')[0],
-
-        # YYYY-MM-DD
-        lead_placement_date = None if lead.split(',lead_placement_date:')[1].split(',exit_date:')[0] == 'None' else lead.split(',lead_placement_date:')[1].split(',exit_date:')[0].split(' ')[0],
-
-        # YYYY-MM-DD
-        exit_date = None if lead.split(',exit_date:')[1].split(',identity_type:')[0] == 'None' else lead.split(',exit_date:')[1].split(',identity_type:')[0].split(' ')[0],
-
-        identity_type = lead.split(',identity_type:')[1].split(',identity_status:')[0],
-        identity_status = lead.split(',identity_status:')[1].split(',identity_shared:')[0],
-        identity_shared = lead.split(',identity_shared:')[1].split(',application_form:')[0],
-        application_form = lead.split(',application_form:')[1].split(',duration:')[0],
-        duration = lead.split(',duration:')[1].split(',payment_date:')[0],
+        society=lead.split(',society:')[1].split(',flat_number:')[0],
+        flat_number=lead.split(',flat_number:')[1].split(',form_fill_status:')[0],
+        form_fill_status=lead.split(',form_fill_status:')[1].split(',lead_status:')[0],
+        lead_status=lead.split(',lead_status:')[1].split(',helper_name:')[0],
+        helper_name=lead.split(',helper_name:')[1].split(',helper_no:')[0],
+        helper_no=lead.split(',helper_no:')[1].split(',actual_status:')[0],
+        actual_status=lead.split(',actual_status:')[1].split(',lead_lost_reason:')[0],
+        lead_lost_reason=lead.split(',lead_lost_reason:')[1].split(',lead_placement_date:')[0],
 
         # YYYY-MM-DD
-        payment_date = None if lead.split(',payment_date:')[1].split(',payment_status:')[0] == 'None' else lead.split(',payment_date:')[1].split(',payment_status:')[0].split(' ')[0],
+        lead_placement_date=None if lead.split(',lead_placement_date:')[1].split(',exit_date:')[0] == 'None' else
+        lead.split(',lead_placement_date:')[1].split(',exit_date:')[0].split(' ')[0],
 
-        payment_status = lead.split(',payment_status:')[1].split(',payment_mode:')[0],
-        payment_mode = lead.split(',payment_mode:')[1].split(',salary:')[0],
-        salary = lead.split(',salary:')[1].split(',third_party:')[0],
-        third_party = lead.split(',third_party:')[1].split(',commission:')[0],
-        commission = lead.split(',commission:')[1].split(',lead_source:')[0],
-        lead_source = lead.split(',lead_source:')[1].split(',sales_person:')[0],
-        sales_person = lead.split(',sales_person:')[1].split(',additional_comment:')[0],
-        additional_comment = lead.split(',additional_comment:')[1].split(',remarks:')[0],
-        remarks = lead.split(',remarks:')[1],
+        # YYYY-MM-DD
+        exit_date=None if lead.split(',exit_date:')[1].split(',identity_type:')[0] == 'None' else
+        lead.split(',exit_date:')[1].split(',identity_type:')[0].split(' ')[0],
+
+        identity_type=lead.split(',identity_type:')[1].split(',identity_status:')[0],
+        identity_status=lead.split(',identity_status:')[1].split(',identity_shared:')[0],
+        identity_shared=lead.split(',identity_shared:')[1].split(',application_form:')[0],
+        application_form=lead.split(',application_form:')[1].split(',duration:')[0],
+        duration=lead.split(',duration:')[1].split(',payment_date:')[0],
+
+        # YYYY-MM-DD
+        payment_date=None if lead.split(',payment_date:')[1].split(',payment_status:')[0] == 'None' else lead.split(',payment_date:')[1].split(',payment_status:')[0].split(' ')[0],
+
+        payment_status=lead.split(',payment_status:')[1].split(',payment_mode:')[0],
+        payment_mode=lead.split(',payment_mode:')[1].split(',salary:')[0],
+        salary=lead.split(',salary:')[1].split(',third_party:')[0],
+        third_party=lead.split(',third_party:')[1].split(',commission:')[0],
+        commission=lead.split(',commission:')[1].split(',lead_source:')[0],
+        lead_source=lead.split(',lead_source:')[1].split(',sales_person:')[0],
+        sales_person=lead.split(',sales_person:')[1].split(',additional_comment:')[0],
+        additional_comment=lead.split(',additional_comment:')[1].split(',remarks:')[0],
+        remarks=lead.split(',remarks:')[1],
         admin_user=request.user,
     )
 
 
 def create_lead(request, lead, lead_id):
+    primary_phone = get_mobile_number(str(lead[1]))
+    if primary_phone is None:
+        raise Exception('Invalid phone number')
+
     return LeadModel(
-        lead_id = lead_id,
-        name = lead[0],
-        phone = lead[1],
-        email_id = lead[2],
-        availability_status = lead[3],
-        job_category = lead[4],
-        lead_in_date = lead[5],
-        requirement_start_time = lead[6],
-        requirement_end_time = lead[7],
-        society = lead[8],
-        flat_number = lead[9],
-        form_fill_status = lead[10],
-        lead_status = lead[11],
-        helper_name = lead[12],
-        helper_no = lead[13],
-        actual_status = lead[14],
-        lead_lost_reason = lead[15],
-        lead_placement_date = lead[16],
-        exit_date = lead[17],
-        identity_type = lead[18],
-        identity_status = lead[19],
-        identity_shared = lead[20],
-        application_form = lead[21],
-        duration = lead[22],
-        payment_date = lead[23],
-        payment_status = lead[24],
-        payment_mode = lead[25],
-        salary = lead[26],
-        third_party = lead[27],
-        commission = lead[28],
-        lead_source = lead[29],
-        sales_person = lead[30],
-        additional_comment = lead[31],
-        remarks = lead[32],
-        admin_user = request.user,
+        lead_id=lead_id,
+        name=lead[0],
+        phone=primary_phone,
+        email_id=lead[2],
+        availability_status=lead[3],
+        job_category=lead[4],
+        lead_in_date=lead[5],
+        requirement_start_time=lead[6],
+        requirement_end_time=lead[7],
+        society=lead[8],
+        flat_number=lead[9],
+        form_fill_status=lead[10],
+        lead_status=lead[11],
+        helper_name=lead[12],
+        helper_no=lead[13],
+        actual_status=lead[14],
+        lead_lost_reason=lead[15],
+        lead_placement_date=lead[16],
+        exit_date=lead[17],
+        identity_type=lead[18],
+        identity_status=lead[19],
+        identity_shared=lead[20],
+        application_form=lead[21],
+        duration=lead[22],
+        payment_date=lead[23],
+        payment_status=lead[24],
+        payment_mode=lead[25],
+        salary=lead[26],
+        third_party=lead[27],
+        commission=lead[28],
+        lead_source=lead[29],
+        sales_person=lead[30],
+        additional_comment=lead[31],
+        remarks=lead[32],
+        admin_user=request.user,
     )
 
 
