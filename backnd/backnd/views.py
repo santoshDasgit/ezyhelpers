@@ -1,6 +1,5 @@
 import hashlib
 import traceback
-import datetime
 import re
 
 from datetime import date
@@ -259,11 +258,12 @@ def HelperListViews(request):
     # post for data searching propose
     if request.method == 'POST':
         # strip for remove space from both of sides
-        search = request.POST['search'].strip()
+        if request.POST.get('search', None) is not None:
+            search = request.POST['search'].strip()
 
-        # according to input data is filtering
-        helper = HelperModel.objects.filter(Q(helper_id__icontains=search) | Q(
-            first_name__icontains=search) | Q(email_id__icontains=search) | Q(primary_phone__icontains=search))
+            # according to input data is filtering
+            helper = HelperModel.objects.filter(Q(helper_id__icontains=search) | Q(
+                first_name__icontains=search) | Q(email_id__icontains=search) | Q(primary_phone__icontains=search))
 
     # all data sent on html file in object format
     data = {
@@ -393,6 +393,8 @@ def HelperAddView(request):
                 for i in job_role:
                     if i != '':
                         HelperJobRoleModel(helper=data, job=i).save()
+
+                return HelperListViews(request)
             else:
                 messages.error(request, 'please enter the valid data!')
 
@@ -1227,7 +1229,7 @@ def HelperDeleteView(request, id):
     data.delete()
 
     messages.warning(request, "Data remove successfully!")
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    return HelperListViews(request)
 
 
 # helper  update
@@ -2011,6 +2013,7 @@ def LeadDeleteView(request, no):
 
         # success message
         messages.success(request, 'data remove successful!')
+        return LeadList(request)
     except:
         # exception handle
         messages.error('Data not to be deleted something error try again!')
@@ -2039,8 +2042,12 @@ def LeadInsertDataView(request):
     except:
         # exception handle
         messages.error(
-            request, 'Something error try again! may be network issue!')
+            request, 'Some error try again! may be network issue!')
 
+    data = {
+        'locations': location_values,
+        'job_cat': job_cat
+    }
     if request.method == 'POST':
         try:
             # configuration json file
@@ -2061,8 +2068,26 @@ def LeadInsertDataView(request):
             near_by = request.POST.get('near_by', False)
             availability = request.POST['availability']
             flat_number = request.POST['flat_num']
-            lead_req_date = request.POST['LeadRequirementDate']
-            lead_placement_date = request.POST['LeadPlacementDate']
+            if request.POST['LeadRequirementDate'] != '':
+                try:
+                    lead_req_date = datetime.date.fromisoformat(request.POST['LeadRequirementDate'])
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, LeadRequirementDate.')
+                    print('LeadRequirementDate: Invalid date format!' + e.__str__())
+                    lead_req_date = None
+            else:
+                lead_req_date = None
+
+            if request.POST['LeadPlacementDate'] != '':
+                try:
+                    lead_placement_date = datetime.date.fromisoformat(request.POST['LeadPlacementDate'])
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, LeadPlacementDate.')
+                    print('LeadPlacementDate: Invalid date format!' + e.__str__())
+                    lead_placement_date = None
+            else:
+                lead_placement_date = None
+
             lead_status = request.POST['LeadStatus']
             additional_comment = request.POST['AdditionalComment']
             job_role = ', '.join(request.POST.getlist('job_role'))
@@ -2125,17 +2150,48 @@ def LeadInsertDataView(request):
                 additional_comment=additional_comment,
                 job_category=job_role)
             if request.POST['Start_Date'] != '':
-                lead_data_all.role_on_demand_start_date = request.POST['Start_Date']
-                lead_data_all.role_on_demand_start_from_time = request.POST.get(
-                    's_StartDuration')
-                lead_data_all.role_on_demand_start_to_time = request.POST.get(
-                    's_EndDuration')
-                lead_data_all.role_on_demand_end_date = request.POST['End_Date']
-                lead_data_all.role_on_demand_end_from_time = request.POST.get(
-                    'e_StartDuration')
-                lead_data_all.role_on_demand_end_to_time = request.POST.get(
-                    'e_EndDuration')
+                try:
+                    lead_data_all.role_on_demand_start_date = datetime.date.fromisoformat(request.POST['Start_Date'])
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, Start_Date.')
+                    print('Start_Date: Invalid data, ' + request.POST['Start_Date'])
+                    lead_data_all.role_on_demand_start_date = None
 
+                try:
+                    lead_data_all.role_on_demand_start_from_time = datetime.time.fromisoformat(request.POST.get('s_StartDuration'))
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, s_StartDuration.')
+                    print('s_StartDuration: Invalid data, ' + request.POST['s_StartDuration'])
+                    lead_data_all.role_on_demand_start_from_time = None
+
+                try:
+                    lead_data_all.role_on_demand_start_to_time = datetime.time.fromisoformat(request.POST.get('s_EndDuration'))
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, s_StartDuration.')
+                    print('s_EndDuration: Invalid data, ' + request.POST['s_EndDuration'])
+                    lead_data_all.role_on_demand_start_to_time = None
+
+                try:
+                    lead_data_all.role_on_demand_end_date = datetime.date.fromisoformat(request.POST['End_Date'])
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, End_Date.')
+                    print('End_Date: Invalid data, ' + request.POST['End_Date'])
+                    lead_data_all.role_on_demand_end_date = None
+
+                try:
+                    lead_data_all.role_on_demand_end_from_time = datetime.time.fromisoformat(request.POST.get('e_StartDuration'))
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, e_StartDuration.')
+                    print('e_StartDuration: Invalid data, ' + request.POST['e_StartDuration'])
+                    lead_data_all.role_on_demand_end_from_time = None
+
+                try:
+                    lead_data_all.role_on_demand_end_to_time = datetime.time.fromisoformat(request.POST.get('e_EndDuration'))
+                except Exception as e:
+                    messages.warning(request, 'Ignored invalid data for, e_EndDuration.')
+                    print('e_EndDuration: Invalid data, ' + request.POST['e_EndDuration'])
+                    lead_data_all.role_on_demand_end_to_time = None
+            print('Saving: ' + str(lead_data_all))
             lead_data_all.save()
 
             # history model
@@ -2144,19 +2200,15 @@ def LeadInsertDataView(request):
             ).save()
 
             messages.success(request, "Data add successful!")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            return LeadList(request)
         except Exception as e:
-            # exception handle
+            messages.error(request, f'Invalid Lead. Error:' + e.__str__())
+            print(traceback.format_exc())
+            data = {
+                'lead': lead_data_all
+            }
+            return render(request, 'lead_add.html', data)
 
-            print(f"{type(request.POST['Start_Date'])} {type(request.POST['s_StartDuration'])}")
-            messages.error(
-                request, f'Something error try again! may be network issue!')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-    data = {
-        'locations': location_values,
-        'job_cat': job_cat
-    }
     return render(request, 'lead_add.html', data)
 
 
