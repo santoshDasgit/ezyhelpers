@@ -2,233 +2,292 @@
 
 {% block body %}
 
-<!--messages-->
-{% include "msg.html" %}
+    <!--messages-->
+    {% include "msg.html" %}
 
-<!--basic info-->
+    <!--basic info-->
 
 
-<section class="super_user_dash shadow-sm rounded p-2">
-    <div class='dash-box'>
-        {% if request.user.is_superuser %}
-        <h1> LEAD ADD </h1>
+    <section class="super_user_dash shadow-sm rounded p-2">
+        <div class='dash-box'>
+            {% if request.user.is_superuser %}
+                <h1> LEAD ADD </h1>
+            {% else %}
+                <h1> LEAD ADD </h1>
+            {% endif %}
+            <p>Lead / Lead add</p>
+        </div>
+    </section>
+
+    <form action="" method="post" class='shadow p-3'>
+        {% csrf_token %}
+    
+        <label for="">Customer Name</label>
+        {% if lead %}
+            <input type="text" class="form-control" name='name' id="name" value="{{ lead.name }}" required>
         {% else %}
-        <h1> LEAD ADD </h1>
+            <input type="text" class="form-control" name='name' id="name" required>
         {% endif %}
-        <p>Lead / Lead add</p>
-     </div>
-</section>
+        <label for="name_error" class='text-danger' id="name_error" style="display: none;">*</label>
+        <label for="">Phone</label>
+    
+        {% if lead %}
+            <input type="text" class="form-control" name='phone' id="phone" value="{{ lead.phone }}" required>
+        {% else %}
+            <input type="text" class="form-control" name='phone' id="phone" required>
+        {% endif %}
+        <label for="phone_error" class='text-danger' id="phone_error" style="display: none;">*</label>
+        <label for="">Email</label>
+        
+        {% if lead %}
+            <input type="email" class="form-control" name='email' id="email" value="{{ lead.email_id }}">
+        {% else %}
+            <input type="email" class="form-control" name='email' id="email">
+        {% endif %}
+        <!-- <label for="email_error" class='text-danger' id="email_error" style="display: none;">*</label> -->
+        <label for="">Address</label>
+    
+        {% if lead %}
+            <input type="text" class="form-control" name='addr' id="addr" value="{{ lead.address }}" required>
+        {% else %}
+            <input type="text" class="form-control" name='addr' id="addr" required>
+        {% endif %}
+        <label for="addr_error" class='text-danger' id="addr_error" style="display: none;">*</label>
+        <label for="">Society</label>
+        {% if lead %}
+            <input name="locality" list="locality" class='form-control' value="{{ lead.locality }}" required>
+        {% else %}
+            <input name="locality" list="locality" class='form-control' required>
+        {% endif %}
+        <datalist id="locality">
+            {% for i in locations %}
+                <option value="{{ i.name }}">{{ i.name }}</option>
+            {% endfor %}
+        </datalist>
 
-<form action="" method="post" class='shadow p-3'>
-    {% csrf_token %}
+        <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label>
+        <label for="">Flat Number</label>
+    
+        {% if lead %}
+            <input type="text" class="form-control" name='flat_num' id="flat_num" value="{{ lead.flat_number }}" >
+        {% else %}
+            <input type="text" class="form-control" name='flat_num' id="flat_num">
+        {% endif %}
+        <label for="flat_error" class='text-danger' id="flat_error" style="display: none;">*</label>
+        <label for="">Lead Status</label>
+        <select name="LeadStatus" id="LeadStatus" class='form-control'>
+            <option value selected>-------------</option>
+            <option value="Hot">Hot</option>
+            <option value="Cold">Cold</option>
+            <option value="Warm">Warm</option>
+        </select>
+        <label for="LeadStatus_error" class='text-danger' id="LeadStatus_error" style="display: none;">*</label>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="">Lead Requirement Date</label>
+                {% if lead %}
+                    <input type="date" class="form-control" name='LeadRequirementDate' id="LeadRequirementDate" value="{{ lead.lead_req_date }}">
+                {% else %}
+                    <input type="date" class="form-control" name='LeadRequirementDate' id="LeadRequirementDate">
+                {% endif %}
+                <label for="LeadRequirementDate_error" class='text-danger' id="LeadRequirementDate_error"
+                       style="display: none;">*</label>
+            </div>
+            <div class="col-md-6">
+                <label for="">Lead Placement Date</label>
+                {% if lead %}
+                    <input type="date" class="form-control" name='LeadPlacementDate' id="LeadPlacementDate" value="{{ lead.lead_placement_date }}">
+                {% else %}
+                    <input type="date" class="form-control" name='LeadPlacementDate' id="LeadPlacementDate">
+                {% endif %}
+                <label for="LeadPlacementDate_error" class='text-danger' id="LeadPlacementDate_error"
+                       style="display: none;">*</label>
+            </div>
+        </div>
 
+        <label for="">Lead Source</label>
+        {% if lead %}
+            <input type="text" class="form-control" name='LeadSource' id="LeadSource" value="{{ lead.lead_source }}">
+        {% else %}
+            <input type="text" class="form-control" name='LeadSource' id="LeadSource">
+        {% endif %}
+        <label for="LeadSource_error" class='text-danger' id="LeadSource_error" style="display: none;">*</label>
 
-    <label for="">Customer Name</label>
-    <input type="text" class="form-control"  name='name' id="name" required>
-    <label for="name_error" class='text-danger' id="name_error" style="display: none;">*</label>
-    <label for="">Phone</label>
-    <input type="text" class="form-control"  name='phone' id="phone" required>
-    <label for="phone_error" class='text-danger' id="phone_error" style="display: none;">*</label>
-    <label for="">Email</label>
-    <input type="email" class="form-control"  name='email' id="email" >
-    <!-- <label for="email_error" class='text-danger' id="email_error" style="display: none;">*</label> -->
-    <label for="">Address</label>
-    <input type="text" class="form-control"  name='addr' id="addr" required>
-    <label for="addr_error" class='text-danger' id="addr_error" style="display: none;">*</label>
-    <label for="">Society</label>
-    <input name="locality"  list="locality" class='form-control' required >
-    <datalist id="locality" >
-        {% for i in locations %}
-        <option value="{{i.name}}" >{{i.name}}</option>
+        <label for="">Job Role</label>
+        <select name="availability" id="availability" class='form-control' required onchange="ondemand_dates();">
+            <option value selected>-------------</option>
+            <option value="live_in">Live in</option>
+            <option value="on_demand">On demand</option>
+            <option value="full_time">Full time</option>
+            <option value="part_time">Part time</option>
+            <option value="misc">Misc</option>
+        </select>
+        <label for="availability_error" class='text-danger' id="availability_error" style="display: none;">*</label>
+        <div id="on_demand_dates" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="">Start Date</label>
+                    {% if lead %}
+                        <input type="date" class="form-control" name='Start_Date' id="Start_Date" value="{{ lead.role_on_demand_start_date }}">
+                    {% else %}
+                        <input type="date" class="form-control" name='Start_Date' id="Start_Date">
+                    {% endif %}
+                    <label for="Start_Date_error" class='text-danger' id="Start_Date_error"
+                           style="display: none;">*</label>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="">Start Duration</label>
+                    {% if lead %}
+                    <input type="time" class="form-control" name='s_StartDuration' id="s_StartDuration" value="{{ lead.role_on_demand_start_from_time }}">
+                    {% else %}
+                        <input type="time" class="form-control" name='s_StartDuration' id="s_StartDuration">
+                    {% endif %}
+                    <label for="s_StartDuration_error" class='text-danger' id="s_StartDuration_error"
+                           style="display: none;">*</label>
+                </div>
+                <div class="col-md-3">
+                    <label for="">End Duration</label>
+                    {% if lead %}
+                        <input type="time" class="form-control" name='s_EndDuration' id="s_EndDuration" value="{{ lead.role_on_demand_start_to_time }}">
+                    {% else %}
+                        <input type="time" class="form-control" name='s_EndDuration' id="s_EndDuration">
+                    {% endif %}
+                    <label for="s_EndDuration_error" class='text-danger' id="s_EndDuration_error"
+                           style="display: none;">*</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="">End Date</label>
+                    {% if lead %}
+                        <input type="date" class="form-control" name='End_Date' id="End_Date" value="{{ lead.role_on_demand_end_date }}">
+                    {% else %}
+                        <input type="date" class="form-control" name='End_Date' id="End_Date">
+                    {% endif %}
+                    <label for="End_Date_error" class='text-danger' id="End_Date_error" style="display: none;">*</label>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="">Start Duration</label>
+                    {% if lead %}
+                        <input type="time" class="form-control" name='e_StartDuration' id="e_StartDuration" value="{{ lead.role_on_demand_end_from_time }}">
+                    {% else %}
+                        <input type="time" class="form-control" name='e_StartDuration' id="e_StartDuration">
+                    {% endif %}
+                    <label for="s_StartDuration_error" class='text-danger' id="s_StartDuration_error"
+                           style="display: none;">*</label>
+                </div>
+                <div class="col-md-3">
+                    <label for="">End Duration</label>
+                    {% if lead %}
+                        <input type="time" class="form-control" name='e_EndDuration' id="e_EndDuration" value="{{ lead.role_on_demand_end_to_time }}">
+                    {% else %}
+                        <input type="time" class="form-control" name='e_EndDuration' id="e_EndDuration">
+                    {% endif %}
+                    <label for="e_EndDuration_error" class='text-danger' id="e_EndDuration_error"
+                           style="display: none;">*</label>
+                </div>
+            </div>
+        </div>
+    
+        <label for="">Additional Comment</label>
+        {% if lead %}
+            <input type="text" class="form-control" name='AdditionalComment' id="AdditionalComment" value="{{ lead.additional_comment }}">
+        {% else %}
+            <input type="text" class="form-control" name='AdditionalComment' id="AdditionalComment">
+        {% endif %}
+        <label for="AdditionalComment_error" class='text-danger' id="AdditionalComment_error"
+               style="display: none;">*</label>
+        <br>
+        <h5>Job Category</h5>
+        {% for jb in job_cat %}
+            <input type="checkbox" name="job_role" value="{{ jb.name }}" class='ml-2'> {{ jb.name }}
         {% endfor %}
-    </datalist>
-  
-    <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label>  
-    <label for="">Flat Number</label>
-    <input type="text" class="form-control"  name='flat_num' id="flat_num" >
-    <label for="flat_error" class='text-danger' id="flat_error" style="display: none;">*</label>  
-    <label for="">Lead Status</label>
-    <select name="LeadStatus" id="LeadStatus" class='form-control' >
-        <option value selected>-------------</option>
-        <option value="Hot">Hot</option>
-        <option value="Cold">Cold</option>
-        <option value="Warm">Warm</option>
-      
-    </select>
-    <label for="LeadStatus_error" class='text-danger' id="LeadStatus_error" style="display: none;">*</label>
-<div class="row">
-    <div class="col-md-6">
-        <label for="">Lead Requirement Date</label>
-        <input type="date" class="form-control"  name='LeadRequirementDate' id="LeadRequirementDate" >
-        <label for="LeadRequirementDate_error" class='text-danger' id="LeadRequirementDate_error" style="display: none;">*</label>
-    </div>
-    <div class="col-md-6">
-        <label for="">Lead Placement Date</label>
-        <input type="date" class="form-control"  name='LeadPlacementDate' id="LeadPlacementDate" >
-        <label for="LeadPlacementDate_error" class='text-danger' id="LeadPlacementDate_error" style="display: none;">*</label> 
-    
-    </div>
-   
-</div>
-   
-    <label for="">Lead Source</label>
-    <input type="text" class="form-control"  name='LeadSource' id="LeadSource" >
-    <label for="LeadSource_error" class='text-danger' id="LeadSource_error" style="display: none;">*</label> 
 
-   
-    <label for="">Job Role</label>
-    <select name="availability" id="availability" class='form-control' required onchange="ondemand_dates();">
-        <option value selected>-------------</option>
-        <option value="live_in">Live in</option>
-        <option value="on_demand">On demand</option>
-        <option value="full_time">Full time</option>
-        <option value="part_time">Part time</option>
-        <option value="misc">Misc</option>
-    </select>
-    <label for="availability_error" class='text-danger' id="availability_error" style="display: none;">*</label>
-<div id="on_demand_dates" style="display: none;">
-    <div class="row">
-        <div class="col-md-6">
-            <label for="">Start Date</label>
-            <input type="date" class="form-control"  name='Start_Date' id="Start_Date" >
-            <label for="Start_Date_error" class='text-danger' id="Start_Date_error" style="display: none;">*</label> 
-        
-        </div>
-       
-        <div class="col-md-3">
-            <label for="">Start Duration</label>
-        <input type="time" class="form-control"  name='s_StartDuration' id="s_StartDuration" >
-        <label for="s_StartDuration_error" class='text-danger' id="s_StartDuration_error" style="display: none;">*</label> 
-        
-        </div>
-        <div class="col-md-3">
-            <label for="">End Duration</label>
-            <input type="time" class="form-control"  name='s_EndDuration' id="s_EndDuration" >
-            <label for="s_EndDuration_error" class='text-danger' id="s_EndDuration_error" style="display: none;">*</label> 
-            
-        </div>
-       
-    </div>
-  
-  
-  <div class="row">
-    <div class="col-md-6">
-        <label for="">End Date</label>
-        <input type="date" class="form-control"  name='End_Date' id="End_Date">
-        <label for="End_Date_error" class='text-danger' id="End_Date_error" style="display: none;">*</label> 
-    
-    </div>
-   
-   
-        <div class="col-md-3">
-            <label for="">Start Duration</label>
-        <input type="time" class="form-control"  name='e_StartDuration' id="e_StartDuration" >
-        <label for="s_StartDuration_error" class='text-danger' id="s_StartDuration_error" style="display: none;">*</label> 
-        
-        </div>
-        <div class="col-md-3">
-            <label for="">End Duration</label>
-            <input type="time" class="form-control"  name='e_EndDuration' id="e_EndDuration" >
-            <label for="e_EndDuration_error" class='text-danger' id="e_EndDuration_error" style="display: none;">*</label> 
-            
-        </div>
-      
-  </div>
-  
-</div>
-    
+        <br>
+        <label for="">Other</label>
+        <input type="text" name='job_role'>
+        <br>
+        <label for="" class='mt-3'><b>Near by : </b></label>
+        <input type="checkbox" name="near_by" id="" class='mt-3'>
 
-    <label for="">Additional Comment</label>
-    <input type="text" class="form-control"  name='AdditionalComment' id="AdditionalComment" >
-    <label for="AdditionalComment_error" class='text-danger' id="AdditionalComment_error" style="display: none;">*</label>
-    <br>
-    <h5>Job Category</h5>
-    {% for jb in job_cat %}
-    <input type="checkbox" name="job_role" value="{{jb.name}}" class='ml-2'> {{jb.name}}
-{% endfor %}
+        <br><br>
 
-<br>
-<label for="">Other</label>
-<input type="text" name='job_role'>
-<br>
-    <label for="" class='mt-3'><b>Near by : </b></label>
-    <input type="checkbox" name="near_by" id="" class='mt-3'>
- 
-    <br><br>
+        <button type='submit' class='btn btn-primary my-2' id="submitBtn">Create</button>
+        <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
+    </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all form elements you want to attach the onchange event to
+            const formElements = document.querySelectorAll('input, select, textarea');
 
-    <button type='submit' class='btn btn-primary my-2' id="submitBtn">Create</button>
-    <a href="{% url 'lead_list' %}" class='btn btn-secondary'>Back</a>
-</form>
-<script>
-       document.addEventListener('DOMContentLoaded', function() {
-        // Get all form elements you want to attach the onchange event to
-        const formElements = document.querySelectorAll('input, select, textarea');
+            // Loop through the form elements and attach the onchange event
+            for (const element of formElements) {
+                element.addEventListener('change', function () {
+                    validateForm();
+                });
+            }
+        });
+        document.querySelector('#submitBtn').addEventListener('click', function (event) {
+            if (!validateForm()) {
+                event.preventDefault(); // Prevent form submission if validation fails
+            }
+        });
 
-        // Loop through the form elements and attach the onchange event
-        for (const element of formElements) {
-            element.addEventListener('change', function() {
-                validateForm();
-            });
+        function validateForm() {
+            var isValid = true;
+
+            function validateField(fieldId, pattern, errorMessageId, errorMessage) {
+                var fieldValue = $(fieldId).val();
+
+                if ($('#addr').val()) {
+                    $('#addr_error').css("display", "none");
+                } else {
+                    $('#addr_error').css("display", "block");
+                    $('#addr_error').text('Please enter a valid  address');
+                    isValid = false;
+
+
+                }
+
+                if (pattern.test(fieldValue)) {
+                    $(errorMessageId).css("display", "none");
+                } else {
+                    $(errorMessageId).css("display", "block");
+                    $(errorMessageId).text(errorMessage);
+                    isValid = false;
+
+
+                }
+
+            }
+
+            // Validate all fields
+            validateField('#name', /^[A-Za-z\s]+$/, '#name_error', 'Please enter a valid name');
+            validateField('#phone', /^[1-9][0-9]{9}$/, '#phone_error', 'Please enter a valid 10-digit primary phone number');
+            // validateField('#email', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#email_error', 'Please enter a valid email address');
+            validateField('[name="locality"]', /^[A-Za-z0-9\s,(){}[\]]+$/, '#locality_error', 'Please select a society');
+            validateField('#availability', /^[A-Za-z0-9._-]+$/, '#availability_error', 'Please select a job role');
+
+
+            // Add similar validations for other fields here
+
+            return isValid;
         }
-    });
-    document.querySelector('#submitBtn').addEventListener('click', function (event) {
-        if (!validateForm()) {
-            event.preventDefault(); // Prevent form submission if validation fails
+
+
+        function ondemand_dates() {
+            var availability = document.getElementById('availability')
+            var on_demand_dates = document.getElementById('on_demand_dates')
+            if (availability.value == 'on_demand') {
+                on_demand_dates.style.display = 'block';
+            } else {
+                on_demand_dates.style.display = 'none';
+            }
         }
-    });
-     function validateForm() {
-    var isValid = true;
 
-    function validateField(fieldId, pattern, errorMessageId, errorMessage) {
-        var fieldValue = $(fieldId).val();
-      
-        if ($('#addr').val()) {
-            $('#addr_error').css("display", "none");
-        } else {
-                $('#addr_error').css("display", "block");
-            $('#addr_error').text('Please enter a valid  address');
-            isValid = false;
-            
-          
-        }
-     
-            if (pattern.test(fieldValue)) {
-            $(errorMessageId).css("display", "none");
-        } else {
-                $(errorMessageId).css("display", "block");
-            $(errorMessageId).text(errorMessage);
-            isValid = false;
-            
-          
-        }
-  
-    }  
-
-    // Validate all fields
-    validateField('#name', /^[A-Za-z\s]+$/, '#name_error', 'Please enter a valid name');
-    validateField('#phone', /^[1-9][0-9]{9}$/, '#phone_error', 'Please enter a valid 10-digit primary phone number');
-    // validateField('#email', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#email_error', 'Please enter a valid email address');
-    validateField('[name="locality"]', /^[A-Za-z0-9\s,(){}[\]]+$/, '#locality_error', 'Please select a society');
-    validateField('#availability', /^[A-Za-z0-9._-]+$/, '#availability_error', 'Please select a job role');
-
-
-    // Add similar validations for other fields here
-
-    return isValid;
-}
-
-
-function ondemand_dates() {
-    var availability =document.getElementById('availability')
-    var on_demand_dates =document.getElementById('on_demand_dates')
-    if(availability.value=='on_demand'){
-        on_demand_dates.style.display='block';
-    }
-    else{
-        on_demand_dates.style.display='none';
-    }
-}
-
-</script>
+    </script>
 {% endblock body %}
 
