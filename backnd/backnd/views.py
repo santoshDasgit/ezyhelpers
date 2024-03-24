@@ -1,7 +1,6 @@
 import hashlib
-import traceback
 import re
-
+import traceback
 from datetime import date
 from datetime import datetime
 
@@ -305,7 +304,7 @@ def HelperAddView(request):
         # data input
         language = request.POST.getlist('language')
         additional_skill = request.POST.getlist('ad-skill')
-        skill = request.POST.getlist('skill')
+        skill = request.POST['Skills']
         job_role = request.POST.getlist('job_role')
 
         # language required condition
@@ -385,9 +384,8 @@ def HelperAddView(request):
                             helper=data, additional_skill=i).save()
 
                 # skill inserted
-                for i in skill:
-                    if i != '':
-                        HelperSkillSetModel(helper=data, skill=i).save()
+                if skill != '':
+                    HelperSkillSetModel(helper=data, skill=skill).save()
 
                 # job role
                 for i in job_role:
@@ -577,9 +575,12 @@ def get_helper(request, helper):
         police_verification=helper.split(',police_verification:')[1].split(',engagement_date:')[0] or '',
 
         # YYYY-MM-DD
-        engagement_date=None if helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0] == 'None' else helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0].split(' ')[0],
-        previous_employer_name=helper.split(',previous_employer_name:')[1].split(',previous_employer_contact:')[0] or '',
-        previous_employer_contact=helper.split(',previous_employer_contact:')[1].split(',previous_employer_society:')[0] or '',
+        engagement_date=None if helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0] == 'None' else
+        helper.split(',engagement_date:')[1].split(',previous_employer_name:')[0].split(' ')[0],
+        previous_employer_name=helper.split(',previous_employer_name:')[1].split(',previous_employer_contact:')[
+                                   0] or '',
+        previous_employer_contact=helper.split(',previous_employer_contact:')[1].split(',previous_employer_society:')[
+                                      0] or '',
         previous_employer_society=helper.split(',previous_employer_society:')[1].split(',rating:')[0] or '',
         rating=None if helper.split(',rating:')[1].split(',remarks:')[0] == 'None' else
         helper.split(',rating:')[1].split(',remarks:')[0],
@@ -618,7 +619,7 @@ def ExcelFileHelperFileView(request):
                         if primary_phone is None:
                             raise Exception('Invalid phone number')
 
-                        if HelperModel.objects.filter(primary_phone = primary_phone).exists():
+                        if HelperModel.objects.filter(primary_phone=primary_phone).exists():
                             duplicates.append(create_helper(request, i))
                             contains_duplicate = True
                             pass
@@ -871,7 +872,8 @@ def get_lead(request, lead):
         duration=lead.split(',duration:')[1].split(',payment_date:')[0],
 
         # YYYY-MM-DD
-        payment_date=None if lead.split(',payment_date:')[1].split(',payment_status:')[0] == 'None' else lead.split(',payment_date:')[1].split(',payment_status:')[0].split(' ')[0],
+        payment_date=None if lead.split(',payment_date:')[1].split(',payment_status:')[0] == 'None' else
+        lead.split(',payment_date:')[1].split(',payment_status:')[0].split(' ')[0],
 
         payment_status=lead.split(',payment_status:')[1].split(',payment_mode:')[0],
         payment_mode=lead.split(',payment_mode:')[1].split(',salary:')[0],
@@ -1259,6 +1261,7 @@ def HelperEditView(request, id):
     # all model object get as of our requirement
     helper = HelperModel.objects.get(id=id)
     helper_skill = HelperSkillSetModel.objects.filter(helper=helper)
+    skill_set = Skills.objects.all()
     helper_additional_skill = HelperAdditionalSkillSetModel.objects.filter(
         helper=helper)
     helper_language = HelperPreferredLanguageModel.objects.filter(
@@ -1399,7 +1402,8 @@ def HelperEditView(request, id):
         'job_role': HelperJobRoleModel.objects.filter(helper=helper),
         'locations': location_values,
         'locality': helper.locality,
-        'job_cat': job_cat
+        'job_cat': job_cat,
+        'skill_set': skill_set
     }
     return render(request, 'helper_edit.html', data)
 
@@ -1607,8 +1611,18 @@ def LeadEditView(request, no):
             near_by = request.POST.get('near_by', False)
             availability = request.POST['availability']
             flat_number = request.POST['flat_num']
-            lead_req_date = request.POST['LeadRequirementDate']
-            lead_placement_date = request.POST['LeadPlacementDate']
+            if request.POST['LeadRequirementDate'] != '':
+                lead_req_date = datetime.date.fromisoformat(request.POST['LeadRequirementDate'])
+                today = datetime.date.today()
+                if lead_req_date < today:
+                    raise Exception('Invalid Lead requirement date.')
+
+            if request.POST['LeadPlacementDate'] != '':
+                lead_placement_date = datetime.date.fromisoformat(request.POST['LeadPlacementDate'])
+                today = datetime.date.today()
+                if lead_placement_date > today:
+                    raise Exception('Invalid Lead placement date.')
+
             lead_status = request.POST['LeadStatus']
             additional_comment = request.POST['AdditionalComment']
             job_role = ', '.join(request.POST.getlist('job_role'))
@@ -1699,7 +1713,7 @@ def LeadEditView(request, no):
     except Exception as e:
 
         messages.error(
-            request, f'Something error try again! may be network issue!')
+            request, f'Some error try again! may be network issue!')
     return render(request, 'lead_edit.html', data)
 
 
@@ -2158,14 +2172,16 @@ def LeadInsertDataView(request):
                     lead_data_all.role_on_demand_start_date = None
 
                 try:
-                    lead_data_all.role_on_demand_start_from_time = datetime.time.fromisoformat(request.POST.get('s_StartDuration'))
+                    lead_data_all.role_on_demand_start_from_time = datetime.time.fromisoformat(
+                        request.POST.get('s_StartDuration'))
                 except Exception as e:
                     messages.warning(request, 'Ignored invalid data for, s_StartDuration.')
                     print('s_StartDuration: Invalid data, ' + request.POST['s_StartDuration'])
                     lead_data_all.role_on_demand_start_from_time = None
 
                 try:
-                    lead_data_all.role_on_demand_start_to_time = datetime.time.fromisoformat(request.POST.get('s_EndDuration'))
+                    lead_data_all.role_on_demand_start_to_time = datetime.time.fromisoformat(
+                        request.POST.get('s_EndDuration'))
                 except Exception as e:
                     messages.warning(request, 'Ignored invalid data for, s_StartDuration.')
                     print('s_EndDuration: Invalid data, ' + request.POST['s_EndDuration'])
@@ -2179,14 +2195,16 @@ def LeadInsertDataView(request):
                     lead_data_all.role_on_demand_end_date = None
 
                 try:
-                    lead_data_all.role_on_demand_end_from_time = datetime.time.fromisoformat(request.POST.get('e_StartDuration'))
+                    lead_data_all.role_on_demand_end_from_time = datetime.time.fromisoformat(
+                        request.POST.get('e_StartDuration'))
                 except Exception as e:
                     messages.warning(request, 'Ignored invalid data for, e_StartDuration.')
                     print('e_StartDuration: Invalid data, ' + request.POST['e_StartDuration'])
                     lead_data_all.role_on_demand_end_from_time = None
 
                 try:
-                    lead_data_all.role_on_demand_end_to_time = datetime.time.fromisoformat(request.POST.get('e_EndDuration'))
+                    lead_data_all.role_on_demand_end_to_time = datetime.time.fromisoformat(
+                        request.POST.get('e_EndDuration'))
                 except Exception as e:
                     messages.warning(request, 'Ignored invalid data for, e_EndDuration.')
                     print('e_EndDuration: Invalid data, ' + request.POST['e_EndDuration'])

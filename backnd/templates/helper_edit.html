@@ -2,249 +2,251 @@
 
 {% block body %}
 
-<section class='shadow  p-2'>
+    <section class='shadow  p-2'>
 
-    <!--message-->
-    {% include "msg.html" %}
+        <!--message-->
+        {% include "msg.html" %}
 
-    <form method="post" enctype="multipart/form-data" class="needs-validation" id="myForm">
-        {% csrf_token %}
+        <form method="post" enctype="multipart/form-data" class="needs-validation" id="myForm">
+            {% csrf_token %}
 
-        <!--helper form-->
-        <div class="row">
-            <!--form object-->
-            {% for i in fm %}
+            <!--helper form-->
+            <div class="row">
+                <!--form object-->
+                {% for i in fm %}
 
-            <!--if some error!-->
-           
+                    <!--if some error!-->
 
-            <!--form input & labels-->
-            <div class="col-md-4">
-                {{i.label|safe}}
-                {{i}}
-          
-                <label for="{{ i.id_for_label }}_error" class='text-danger' id="{{ i.id_for_label }}_error" style="display: none;">*{{i.errors}}</label>
-              
+
+                    <!--form input & labels-->
+                    <div class="col-md-4">
+                        {{ i.label|safe }}
+                        {{ i }}
+
+                        <label for="{{ i.id_for_label }}_error" class='text-danger' id="{{ i.id_for_label }}_error"
+                               style="display: none;">*{{ i.errors }}</label>
+
+                    </div>
+
+                {% endfor %}
+
+                <!-- location  -->
+                <div class="col-md-4">
+                    Society
+                    <b class="text-danger">* </b>
+                    <input name="locality" list="locality" class='form-control' required value="{{ locality }}">
+                    <datalist id="locality">
+                        {% for i in locations %}
+                            <option value="{{ i.name }}" {% if locality == i.name %}
+                                    selected {% endif %}>{{ i.name }}</option>
+                        {% endfor %}
+                    </datalist>
+                </div>
             </div>
 
-            {% endfor %}
+            <!--helper  language-->
+            <div class="helper-language-div">
+                <b>Helper preferred language : </b> <br>
+                {% for i in helper_language %}
 
-            <!-- location  -->
-            <div class="col-md-4">
-                Society
-                <b class="text-danger">* </b>
-                <input name="locality"  list="locality"  class='form-control' required value="{{ locality }}">
-                <datalist id="locality">
-                    {% for i in locations %}
-                    <option value="{{i.name}}" {% if locality == i.name %} selected {% endif %}>{{i.name}}</option>
+                    <input type="text" name='language' value="{{ i.language }}">
+
+                    {% empty %}
+                    <b class='text-danger'>NULL</b>
+                {% endfor %}
+                <div>
+                    <!--input-->
+                </div>
+                <button class="btn btn-primary btn-sm helper-language-btn" type="button"><i
+                        class="fa-solid fa-plus"></i></button>
+            </div>
+
+
+            <!--helper additional skill-->
+            <div class="helper-job-role">
+                <b>Helper Job Category : </b> <br>
+                {% for i in job_role %}
+                    <label for="" class='bg-danger '>
+                        <input type="text" name='job_role' value="{{ i.job }}">
+                    </label>
+                    {% empty %}
+                    <b class='text-danger'>NULL</b>
+                {% endfor %}
+                <div>
+                    <!-- input  -->
+                </div>
+                <button class="btn btn-primary btn-sm helper-job-role-btn" type="button"><i
+                        class="fa-solid fa-plus"></i></button>
+            </div>
+
+
+            <!--helper additional skill-->
+            <div class="helper-add-skill">
+                <b>Helper additional skills : </b> <br>
+                {% for i in additional_skill %}
+                    <label for="" class='bg-danger '>
+                        <input type="text" name='ad-skill' value="{{ i.additional_skill }}">
+                    </label>
+                    {% empty %}
+                    <b class='text-danger'>NULL</b>
+                {% endfor %}
+                <div>
+                    <!-- input  -->
+                </div>
+                <button class="btn btn-primary btn-sm helper-ad-skill-btn" type="button"><i
+                        class="fa-solid fa-plus"></i></button>
+            </div>
+
+
+            <!--helper skill-->
+            <div class="helper-skill" style="max-width: 700px;">
+                <b>Helper skills : </b> <br>
+                <select name="Skills" id="Skills" class='form-control'>
+                    {% for skills in skill_set %}
+                        {% if skills.name == skill %}
+                            <option selected value="{{ skills.name }}">{{ skills.name }}</option>
+                        {% else %}
+                            <option value="{{ skills.name }}">{{ skills.name }}</option>
+                        {% endif %}
                     {% endfor %}
-                </datalist>
+                </select>
+                <div>
+                    <!--input-->
+                </div>
+                <button class="btn btn-primary btn-sm helper-skill-btn" type="button"><i
+                        class="fa-solid fa-plus"></i></button>
             </div>
-        </div>
 
-        <!--helper  language-->
-        <div class="helper-language-div">
-            <b>Helper preferred language : </b> <br>
-            {% for i in helper_language %}
-
-            <input type="text" name='language' value="{{i.language}}">
-
-            {% empty %}
-            <b class='text-danger'>NULL</b>
-            {% endfor %}
-            <div>
-                <!--input-->
-            </div>
-            <button class="btn btn-primary btn-sm helper-language-btn" type="button"><i
-                    class="fa-solid fa-plus"></i></button>
-        </div>
+            <!--helper additional skill-->
 
 
-        <!--helper additional skill-->
-        <div class="helper-job-role">
-            <b>Helper Job Category : </b> <br>
-            {% for i in job_role %}
-            <label for="" class='bg-danger '>
-                <input type="text" name='job_role' value="{{i.job}}">
-            </label>
-            {% empty %}
-            <b class='text-danger'>NULL</b>
-            {% endfor %}
-            <div>
-                <!-- input  -->
-            </div>
-            <button class="btn btn-primary btn-sm helper-job-role-btn" type="button"><i
-                    class="fa-solid fa-plus"></i></button>
-        </div>
+            <button type='submit' class='btn btn-primary mt-2' id="submitBtn">Save</button>
+            <a href="{% url 'helper_list' %}" class='btn btn-secondary mt-2'>Back</a>
+        </form>
 
 
-        <!--helper additional skill-->
-        <div class="helper-add-skill">
-            <b>Helper additional skills : </b> <br>
-            {% for i in additional_skill %}
-            <label for="" class='bg-danger '>
-                <input type="text" name='ad-skill' value="{{i.additional_skill}}">
-            </label>
-            {% empty %}
-            <b class='text-danger'>NULL</b>
-            {% endfor %}
-            <div>
-                <!-- input  -->
-            </div>
-            <button class="btn btn-primary btn-sm helper-ad-skill-btn" type="button"><i
-                    class="fa-solid fa-plus"></i></button>
-        </div>
+        <script>
 
+            // div 
+            let helper_language_div = document.querySelector('.helper-language-div div')
+            let helper_skill_div = document.querySelector('.helper-skill div')
+            let helper_add_skill_div = document.querySelector('.helper-add-skill div')
+            let helper_job_role_div = document.querySelector('.helper-job-role div')
 
-        <!--helper skill-->
-        <div class="helper-skill">
-            <b>Helper skills : </b> <br>
-            {% for i in skill %}
-            <label for="" class='bg-danger '>
-                <input type="text" name='skill' value="{{i.skill}}">
-            </label>
-            {% empty %}
-            <b class='text-danger'>NULL</b>
-            {% endfor %}
-            <div>
-                <!--input-->
-            </div>
-            <button class="btn btn-primary btn-sm helper-skill-btn" type="button"><i
-                    class="fa-solid fa-plus"></i></button>
-        </div>
+            // button
+            let helper_language_btn = document.querySelector(".helper-language-btn")
+            let helper_skill_btn = document.querySelector(".helper-skill-btn")
+            let helper_ad_skill_btn = document.querySelector(".helper-ad-skill-btn")
+            let helper_job_role_btn = document.querySelector(".helper-job-role-btn")
 
-        <!--helper additional skill-->
-    
+            //    add inp logic 
+            helper_language_btn.addEventListener('click', function () {
+                helper_language_div.innerHTML += "<input type='text' name='language'>"
+            })
 
+            helper_skill_btn.addEventListener('click', function () {
+                helper_skill_div.innerHTML += "<input type='text' name='skill'>"
+            })
 
-        <button type='submit' class='btn btn-primary mt-2' id="submitBtn">Save</button>
-        <a href="{% url 'helper_list' %}" class='btn btn-secondary mt-2'>Back</a>
-    </form>
+            helper_ad_skill_btn.addEventListener('click', function () {
+                helper_add_skill_div.innerHTML += "<input type='text' name='ad-skill'>"
+            })
 
-
-    <script>
-
-        // div 
-        let helper_language_div = document.querySelector('.helper-language-div div')
-        let helper_skill_div = document.querySelector('.helper-skill div')
-        let helper_add_skill_div = document.querySelector('.helper-add-skill div')
-        let helper_job_role_div = document.querySelector('.helper-job-role div')
-
-        // button
-        let helper_language_btn = document.querySelector(".helper-language-btn")
-        let helper_skill_btn = document.querySelector(".helper-skill-btn")
-        let helper_ad_skill_btn = document.querySelector(".helper-ad-skill-btn")
-        let helper_job_role_btn = document.querySelector(".helper-job-role-btn")
-
-        //    add inp logic 
-        helper_language_btn.addEventListener('click', function () {
-            helper_language_div.innerHTML += "<input type='text' name='language'>"
-        })
-
-        helper_skill_btn.addEventListener('click', function () {
-            helper_skill_div.innerHTML += "<input type='text' name='skill'>"
-        })
-
-        helper_ad_skill_btn.addEventListener('click', function () {
-            helper_add_skill_div.innerHTML += "<input type='text' name='ad-skill'>"
-        })
-
-        helper_job_role_btn.addEventListener('click', function () {
-            helper_job_role_div.innerHTML += "<input type='text' name='job_role'>"
-        })
-    </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const fileInput = document.querySelector('input[type="file"][accept=".pdf"]');
-        if (fileInput) {
-            fileInput.addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const maxSize = 5 * 1024 * 1024; // 5MB
-                    if (file.size > maxSize) {
-                        alert('File size must be 5MB or less.');
-                        event.target.value = ''; // Clear the input
-                    }
+            helper_job_role_btn.addEventListener('click', function () {
+                helper_job_role_div.innerHTML += "<input type='text' name='job_role'>"
+            })
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const fileInput = document.querySelector('input[type="file"][accept=".pdf"]');
+                if (fileInput) {
+                    fileInput.addEventListener('change', function (event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            const maxSize = 5 * 1024 * 1024; // 5MB
+                            if (file.size > maxSize) {
+                                alert('File size must be 5MB or less.');
+                                event.target.value = ''; // Clear the input
+                            }
+                        }
+                    });
                 }
             });
-        }
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get all form elements you want to attach the onchange event to
-        const formElements = document.querySelectorAll('input, select, textarea');
+            document.addEventListener('DOMContentLoaded', function () {
+                // Get all form elements you want to attach the onchange event to
+                const formElements = document.querySelectorAll('input, select, textarea');
 
-        // Loop through the form elements and attach the onchange event
-        for (const element of formElements) {
-            element.addEventListener('change', function() {
-                validateForm();
+                // Loop through the form elements and attach the onchange event
+                for (const element of formElements) {
+                    element.addEventListener('change', function () {
+                        validateForm();
+                    });
+                }
             });
-        }
-    });
-    document.querySelector('#submitBtn').addEventListener('click', function (event) {
-        if (!validateForm()) {
-            event.preventDefault(); // Prevent form submission if validation fails
-        }
-    });
+            document.querySelector('#submitBtn').addEventListener('click', function (event) {
+                if (!validateForm()) {
+                    event.preventDefault(); // Prevent form submission if validation fails
+                }
+            });
 
-    function validateForm() {
-    var isValid = true;
+            function validateForm() {
+                var isValid = true;
 
-    function validateField(fieldId, pattern, errorMessageId, errorMessage) {
-        var fieldValue = $(fieldId).val();
-      
-            if($('#id_secondary_phone').val()!=''){
-                if (/^[1-9][0-9]{9}$/.test($('#id_secondary_phone').val())) {
-            $('#id_secondary_phone_error').css("display", "none");
-        } else {
-                $('#id_secondary_phone_error').css("display", "block");
-            $('#id_secondary_phone_error').text('Please enter a valid 10-digit primary phone number');
-            isValid = false;
+                function validateField(fieldId, pattern, errorMessageId, errorMessage) {
+                    var fieldValue = $(fieldId).val();
+
+                    if ($('#id_secondary_phone').val() != '') {
+                        if (/^[1-9][0-9]{9}$/.test($('#id_secondary_phone').val())) {
+                            $('#id_secondary_phone_error').css("display", "none");
+                        } else {
+                            $('#id_secondary_phone_error').css("display", "block");
+                            $('#id_secondary_phone_error').text('Please enter a valid 10-digit primary phone number');
+                            isValid = false;
+                        }
+                    } else {
+                        $('#id_secondary_phone_error').css("display", "none");
+                    }
+
+                    if (pattern.test(fieldValue)) {
+                        $(errorMessageId).css("display", "none");
+                    } else {
+                        $(errorMessageId).css("display", "block");
+                        $(errorMessageId).text(errorMessage);
+                        isValid = false;
+
+
+                    }
+
+                }
+
+                // Validate all fields
+                validateField('#id_first_name', /^[A-Za-z]+$/, '#id_first_name_error', 'Please enter a valid first name');
+                validateField('#id_last_name', /^[A-Za-z]+$/, '#id_last_name_error', 'Please enter a valid last name');
+                validateField('#id_primary_phone', /^[1-9][0-9]{9}$/, '#id_primary_phone_error', 'Please enter a valid 10-digit primary phone number');
+
+                // validateField('#id_email_id', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#id_email_id_error', 'Please enter a valid email address');
+                validateField('#id_street', /^[A-Za-z0-9\s]+$/, '#id_street_error', 'Please enter a valid street address');
+                validateField('#id_city', /^[A-Za-z]+$/, '#id_city_error', 'Please enter a valid city name');
+
+                validateField('#id_zipcode', /^[1-9][0-9]{5}$/, '#id_zipcode_error', 'Please enter a valid zipcode');
+                validateField('#id_state', /^[A-Za-z0-9._-]+$/, '#id_state_error', 'Please select a state');
+                validateField('#id_country', /^[A-Za-z0-9._-]+$/, '#id_country_error', 'Please select a country');
+                validateField('#id_work_experience', /^[A-Za-z0-9\s+.\\-]+$/, '#id_work_experience_error', 'Please select your work expirience');
+                validateField('#id_availability_status_week', /^[A-Za-z0-9._-]+$/, '#id_availability_status_week_error', 'Please select job role (weekly)');
+                validateField('#id_dob', /^\d{4}-\d{2}-\d{2}$/, '#id_dob_error', 'Please select  date of birth');
+                validateField('#id_availability_status', /^[A-Za-z0-9._-]+$/, '#id_availability_status_error', 'Please select job role');
+                validateField('[name="locality"]', /^[A-Za-z0-9\s,(){}[\]]+$/, '#id_locality_error', 'Please select society');
+                validateField('#id_call_status', /^[A-Za-z0-9\s]+$/, '#id_call_status_error', 'Please select call status');
+                validateField('#id_id_type', /^[A-Za-z0-9\s]+$/, '#id_id_type_error', 'Please select id proof type');
+
+                // Add similar validations for other fields here
+
+                return isValid;
             }
-        }
-        else{
-          $('#id_secondary_phone_error').css("display", "none");
-        }
-     
-            if (pattern.test(fieldValue)) {
-            $(errorMessageId).css("display", "none");
-        } else {
-                $(errorMessageId).css("display", "block");
-            $(errorMessageId).text(errorMessage);
-            isValid = false;
-            
-          
-        }
-  
-    }  
-
-    // Validate all fields
-    validateField('#id_first_name', /^[A-Za-z]+$/, '#id_first_name_error', 'Please enter a valid first name');
-    validateField('#id_last_name', /^[A-Za-z]+$/, '#id_last_name_error', 'Please enter a valid last name');
-    validateField('#id_primary_phone', /^[1-9][0-9]{9}$/, '#id_primary_phone_error', 'Please enter a valid 10-digit primary phone number');
-   
-    // validateField('#id_email_id', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#id_email_id_error', 'Please enter a valid email address');
-    validateField('#id_street', /^[A-Za-z0-9\s]+$/, '#id_street_error', 'Please enter a valid street address');
-    validateField('#id_city', /^[A-Za-z]+$/, '#id_city_error', 'Please enter a valid city name');
-
-    validateField('#id_zipcode', /^[1-9][0-9]{5}$/, '#id_zipcode_error', 'Please enter a valid zipcode');
-    validateField('#id_state',  /^[A-Za-z0-9._-]+$/, '#id_state_error', 'Please select a state');
-    validateField('#id_country',  /^[A-Za-z0-9._-]+$/, '#id_country_error', 'Please select a country');
-    validateField('#id_work_experience',  /^[A-Za-z0-9\s+.\\-]+$/, '#id_work_experience_error', 'Please select your work expirience');
-    validateField('#id_availability_status_week',/^[A-Za-z0-9._-]+$/, '#id_availability_status_week_error', 'Please select job role (weekly)');
-    validateField('#id_dob',/^\d{4}-\d{2}-\d{2}$/, '#id_dob_error', 'Please select  date of birth');
-    validateField('#id_availability_status',  /^[A-Za-z0-9._-]+$/, '#id_availability_status_error', 'Please select job role');
-    validateField('[name="locality"]',/^[A-Za-z0-9\s,(){}[\]]+$/, '#id_locality_error', 'Please select society');
-    validateField('#id_call_status', /^[A-Za-z0-9\s]+$/, '#id_call_status_error', 'Please select call status');
-    validateField('#id_id_type', /^[A-Za-z0-9\s]+$/, '#id_id_type_error', 'Please select id proof type');
-
-    // Add similar validations for other fields here
-
-    return isValid;
-}
 
 
-</script>
+        </script>
 
 
-</section>
+    </section>
 {% endblock body %}

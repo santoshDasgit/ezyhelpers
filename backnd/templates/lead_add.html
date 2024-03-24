@@ -21,7 +21,7 @@
 
     <form action="" method="post" class='shadow p-3'>
         {% csrf_token %}
-    
+
         <label for="">Customer Name</label>
         {% if lead %}
             <input type="text" class="form-control" name='name' id="name" value="{{ lead.name }}" required>
@@ -30,7 +30,7 @@
         {% endif %}
         <label for="name_error" class='text-danger' id="name_error" style="display: none;">*</label>
         <label for="">Phone</label>
-    
+
         {% if lead %}
             <input type="text" class="form-control" name='phone' id="phone" value="{{ lead.phone }}" required>
         {% else %}
@@ -38,7 +38,7 @@
         {% endif %}
         <label for="phone_error" class='text-danger' id="phone_error" style="display: none;">*</label>
         <label for="">Email</label>
-        
+
         {% if lead %}
             <input type="email" class="form-control" name='email' id="email" value="{{ lead.email_id }}">
         {% else %}
@@ -46,7 +46,7 @@
         {% endif %}
         <!-- <label for="email_error" class='text-danger' id="email_error" style="display: none;">*</label> -->
         <label for="">Address</label>
-    
+
         {% if lead %}
             <input type="text" class="form-control" name='addr' id="addr" value="{{ lead.address }}" required>
         {% else %}
@@ -67,9 +67,9 @@
 
         <label for="locality_error" class='text-danger' id="locality_error" style="display: none;">*</label>
         <label for="">Flat Number</label>
-    
+
         {% if lead %}
-            <input type="text" class="form-control" name='flat_num' id="flat_num" value="{{ lead.flat_number }}" >
+            <input type="text" class="form-control" name='flat_num' id="flat_num" value="{{ lead.flat_number }}">
         {% else %}
             <input type="text" class="form-control" name='flat_num' id="flat_num">
         {% endif %}
@@ -86,7 +86,8 @@
             <div class="col-md-6">
                 <label for="">Lead Requirement Date</label>
                 {% if lead %}
-                    <input type="date" class="form-control" name='LeadRequirementDate' id="LeadRequirementDate" value="{{ lead.lead_req_date }}">
+                    <input type="date" class="form-control" name='LeadRequirementDate' id="LeadRequirementDate"
+                           value="{{ lead.lead_req_date }}">
                 {% else %}
                     <input type="date" class="form-control" name='LeadRequirementDate' id="LeadRequirementDate">
                 {% endif %}
@@ -96,7 +97,8 @@
             <div class="col-md-6">
                 <label for="">Lead Placement Date</label>
                 {% if lead %}
-                    <input type="date" class="form-control" name='LeadPlacementDate' id="LeadPlacementDate" value="{{ lead.lead_placement_date }}">
+                    <input type="date" class="form-control" name='LeadPlacementDate' id="LeadPlacementDate"
+                           value="{{ lead.lead_placement_date }}">
                 {% else %}
                     <input type="date" class="form-control" name='LeadPlacementDate' id="LeadPlacementDate">
                 {% endif %}
@@ -128,7 +130,8 @@
                 <div class="col-md-6">
                     <label for="">Start Date</label>
                     {% if lead %}
-                        <input type="date" class="form-control" name='Start_Date' id="Start_Date" value="{{ lead.role_on_demand_start_date }}">
+                        <input type="date" class="form-control" name='Start_Date' id="Start_Date"
+                               value="{{ lead.role_on_demand_start_date }}">
                     {% else %}
                         <input type="date" class="form-control" name='Start_Date' id="Start_Date">
                     {% endif %}
@@ -139,7 +142,8 @@
                 <div class="col-md-3">
                     <label for="">Start Duration</label>
                     {% if lead %}
-                    <input type="time" class="form-control" name='s_StartDuration' id="s_StartDuration" value="{{ lead.role_on_demand_start_from_time }}">
+                        <input type="time" class="form-control" name='s_StartDuration' id="s_StartDuration"
+                               value="{{ lead.role_on_demand_start_from_time }}">
                     {% else %}
                         <input type="time" class="form-control" name='s_StartDuration' id="s_StartDuration">
                     {% endif %}
@@ -149,7 +153,8 @@
                 <div class="col-md-3">
                     <label for="">End Duration</label>
                     {% if lead %}
-                        <input type="time" class="form-control" name='s_EndDuration' id="s_EndDuration" value="{{ lead.role_on_demand_start_to_time }}">
+                        <input type="time" class="form-control" name='s_EndDuration' id="s_EndDuration"
+                               value="{{ lead.role_on_demand_start_to_time }}">
                     {% else %}
                         <input type="time" class="form-control" name='s_EndDuration' id="s_EndDuration">
                     {% endif %}
@@ -162,7 +167,8 @@
                 <div class="col-md-6">
                     <label for="">End Date</label>
                     {% if lead %}
-                        <input type="date" class="form-control" name='End_Date' id="End_Date" value="{{ lead.role_on_demand_end_date }}">
+                        <input type="date" class="form-control" name='End_Date' id="End_Date"
+                               value="{{ lead.role_on_demand_end_date }}">
                     {% else %}
                         <input type="date" class="form-control" name='End_Date' id="End_Date">
                     {% endif %}
@@ -172,7 +178,8 @@
                 <div class="col-md-3">
                     <label for="">Start Duration</label>
                     {% if lead %}
-                        <input type="time" class="form-control" name='e_StartDuration' id="e_StartDuration" value="{{ lead.role_on_demand_end_from_time }}">
+                        <input type="time" class="form-control" name='e_StartDuration' id="e_StartDuration"
+                               value="{{ lead.role_on_demand_end_from_time }}">
                     {% else %}
                         <input type="time" class="form-control" name='e_StartDuration' id="e_StartDuration">
                     {% endif %}
@@ -182,7 +189,8 @@
                 <div class="col-md-3">
                     <label for="">End Duration</label>
                     {% if lead %}
-                        <input type="time" class="form-control" name='e_EndDuration' id="e_EndDuration" value="{{ lead.role_on_demand_end_to_time }}">
+                        <input type="time" class="form-control" name='e_EndDuration' id="e_EndDuration"
+                               value="{{ lead.role_on_demand_end_to_time }}">
                     {% else %}
                         <input type="time" class="form-control" name='e_EndDuration' id="e_EndDuration">
                     {% endif %}
@@ -191,10 +199,11 @@
                 </div>
             </div>
         </div>
-    
+
         <label for="">Additional Comment</label>
         {% if lead %}
-            <input type="text" class="form-control" name='AdditionalComment' id="AdditionalComment" value="{{ lead.additional_comment }}">
+            <input type="text" class="form-control" name='AdditionalComment' id="AdditionalComment"
+                   value="{{ lead.additional_comment }}">
         {% else %}
             <input type="text" class="form-control" name='AdditionalComment' id="AdditionalComment">
         {% endif %}
@@ -239,6 +248,36 @@
         function validateForm() {
             var isValid = true;
 
+            function validateLeadPlacementDate() {
+                {#    current/ past date  #}
+                let currentDate = new Date()
+                let assignedValue = $('#LeadPlacementDate').val();
+                if (assignedValue == '') {
+                } else {
+                    let assignedDate = new Date(assignedValue)
+                    if (assignedDate > currentDate) {
+                        $('#LeadPlacementDate_error').css("display", "block");
+                        $('#LeadPlacementDate_error').text('Placement Date can\'t be in the future.');
+                        isValid = false;
+                    }
+                }
+            }
+
+            function validateLeadRequirementDate() {
+                {#    current/ future date  #}
+                let currentDate = new Date()
+                let assignedValue = $('#LeadRequirementDate').val();
+                if (assignedValue == '') {
+                } else {
+                    let assignedDate = new Date(assignedValue)
+                    if (assignedDate < currentDate) {
+                        $('#LeadRequirementDate_error').css("display", "block");
+                        $('#LeadRequirementDate_error').text('Requirement Date can\'t be in the past.');
+                        isValid = false;
+                    }
+                }
+            }
+
             function validateField(fieldId, pattern, errorMessageId, errorMessage) {
                 var fieldValue = $(fieldId).val();
 
@@ -248,8 +287,6 @@
                     $('#addr_error').css("display", "block");
                     $('#addr_error').text('Please enter a valid  address');
                     isValid = false;
-
-
                 }
 
                 if (pattern.test(fieldValue)) {
@@ -270,7 +307,8 @@
             // validateField('#email', /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, '#email_error', 'Please enter a valid email address');
             validateField('[name="locality"]', /^[A-Za-z0-9\s,(){}[\]]+$/, '#locality_error', 'Please select a society');
             validateField('#availability', /^[A-Za-z0-9._-]+$/, '#availability_error', 'Please select a job role');
-
+            validateLeadPlacementDate();
+            validateLeadRequirementDate();
 
             // Add similar validations for other fields here
 
