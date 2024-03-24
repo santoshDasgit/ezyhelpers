@@ -108,6 +108,9 @@ def validate_pdf(value):
     if not value.name.endswith('.pdf'):
         raise ValidationError('Only PDF files are allowed.')
 
+def validate_image(value):
+    if not value.name.endswith('.jpeg'):
+        raise ValidationError('Only JPEG files are allowed.')
 
 ID_TYPE = (
     ('dl', 'DL'),
@@ -172,6 +175,9 @@ class HelperModel(models.Model):
         User, on_delete=models.CASCADE, null=True, blank=True)
     create_date = models.DateField(auto_now_add=True)
     update_date = models.DateField(null=True, blank=True)
+
+    photo = models.FileField(
+        upload_to='images/', validators=[validate_image], null=True, blank=True)
 
     # ID Proof Copy (Drive Link - Public)
     id_pdf = models.FileField(
