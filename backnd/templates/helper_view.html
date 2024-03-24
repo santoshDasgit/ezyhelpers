@@ -1,68 +1,68 @@
 {% extends 'index.html' %}
 
 {% block body %}
-<table>
-    <thead>
+    <table>
+        <thead>
         <tr>
             <th>name</th>
             <th>details</th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
 
         <tr>
             <td>helper id</td>
-            <td>{{helper.helper_id}}</td>
+            <td>{{ helper.helper_id }}</td>
         </tr>
 
         <tr>
             <td>email</td>
-            <td>{{helper.email_id}}</td>
+            <td>{{ helper.email_id }}</td>
         </tr>
 
         <tr>
             <td>first name</td>
-            <td>{{helper.first_name}}</td>
+            <td>{{ helper.first_name }}</td>
         </tr>
 
         <tr>
             <td>middle name</td>
-            <td>{{helper.middle_name}}</td>
+            <td>{{ helper.middle_name }}</td>
         </tr>
 
         <tr>
             <td>last name</td>
-            <td>{{helper.last_name}}</td>
+            <td>{{ helper.last_name }}</td>
         </tr>
 
         <tr>
             <td>Dob</td>
-            <td>{{helper.dob}}</td>
+            <td>{{ helper.dob }}</td>
         </tr>
 
         <tr>
             <td>helper status</td>
-            <td>{{helper.helper_status}}</td>
+            <td>{{ helper.helper_status }}</td>
         </tr>
 
         <tr>
             <td>primary ph.</td>
-            <td>{{helper.primary_phone}}</td>
+            <td>{{ helper.primary_phone }}</td>
         </tr>
 
         <tr>
             <td>secondary ph.</td>
-            <td>{{helper.secondary_phone}}</td>
+            <td>{{ helper.secondary_phone }}</td>
         </tr>
 
         <tr>
             <td>Inserted date</td>
-            <td>{{helper.create_date}}</td>
+            <td>{{ helper.create_date }}</td>
         </tr>
 
         <tr>
             <td>Call ststus</td>
-            <td>{{helper.call_status}}</td>
+            <td>{{ helper.call_status }}</td>
         </tr>
 
 
@@ -75,33 +75,33 @@
 
         <tr>
             <td>street</td>
-            <td>{{helper.street}}</td>
+            <td>{{ helper.street }}</td>
         </tr>
 
         <tr>
             <td>city</td>
-            <td>{{helper.city}}</td>
+            <td>{{ helper.city }}</td>
         </tr>
 
         <tr>
             <td>Zipcode</td>
-            <td>{{helper.zipcode}}</td>
+            <td>{{ helper.zipcode }}</td>
         </tr>
 
         <tr>
             <td>State</td>
-            <td>{{helper.state}}</td>
+            <td>{{ helper.state }}</td>
         </tr>
 
 
         <tr>
             <td>country</td>
-            <td>{{helper.country}}</td>
+            <td>{{ helper.country }}</td>
         </tr>
 
         <tr>
             <td>Locality</td>
-            <td>{{helper.locality}}</td>
+            <td>{{ helper.locality }}</td>
         </tr>
 
         <tr>
@@ -109,9 +109,9 @@
             <td>{% if not helper.near_by %}Current location {% else %}Range in <b>5 k.m</b> {% endif %}</td>
         </tr>
 
-       
-         <!--Availability Status -->
-         <tr class="mt-2">
+
+        <!--Availability Status -->
+        <tr class="mt-2">
             <td colspan="2">
                 <h6><u>Availability Status </u></h6>
             </td>
@@ -119,44 +119,50 @@
 
         <tr>
             <td> work experience</td>
-            <td>{{helper.work_experience}}</td>
+            <td>{{ helper.work_experience }}</td>
         </tr>
-        
+
         <tr>
-            <td> Availability status </td>
-            <td>{{helper.availability_status}}</td>
+            <td> Availability status</td>
+            <td>{{ helper.availability_status }}</td>
         </tr>
 
         <tr>
             <td> Availability status week</td>
-            <td>{{helper.availability_status_week}} day in week</td>
+            <td>{{ helper.availability_status_week }} day in week</td>
         </tr>
 
         <!--id proved-->
-       {% if helper.id_type and helper.id_pdf %}
-        <tr>
-            <td colspan="2">
-                <h6><u>Id proved details </u></h6>
-            </td>
-          
-        </tr>
+        {% if helper.id_type and helper.id_pdf %}
+            <tr>
+                <td colspan="2">
+                    <h6><u>Id proved details </u></h6>
+                </td>
+            </tr>
 
-        <tr>
-            <td> Id prove type </td>
-            <td><b>{{helper.id_type}}</b></td>
-        </tr>
+            <tr>
+                <td> Id prove type</td>
+                <td><b>{{ helper.id_type }}</b></td>
+            </tr>
 
-        <tr>
-            <td> PDF</td>
-            <td>
-                <a href="{{helper.id_pdf.url}}" class="btn btn-outline-primary btn-sm" download>download </a>
-                <a href="{{helper.id_pdf.url}}" target="_blank" class="btn btn-outline-success btn-sm">view</a>
-            </td>
-          
-        </tr>
+            <tr>
+                <td> PDF</td>
+                <td>
+                    <a href="{{ helper.id_pdf.url }}" class="btn btn-outline-primary btn-sm" download>download </a>
+                    <a href="{{ helper.id_pdf.url }}" target="_blank" class="btn btn-outline-success btn-sm">view</a>
+                </td>
+            </tr>
+
+            <tr>
+                <td> Photo</td>
+                <td>
+                    <a href="{{ helper.photo.url }}" class="btn btn-outline-primary btn-sm" download>download </a>
+                    <a href="{{ helper.photo.url }}" target="_blank" class="btn btn-outline-success btn-sm">view</a>
+                </td>
+            </tr>
         {% endif %}
 
-    
+
 
 
         <!--Additional comment -->
@@ -167,8 +173,8 @@
         </tr>
 
         <tr>
-            <td> additional comment : </td>
-            <td>{{helper.additional_comment}}</td>
+            <td> additional comment :</td>
+            <td>{{ helper.additional_comment }}</td>
         </tr>
 
         <!--Job  role -->
@@ -178,10 +184,10 @@
             </td>
         </tr>
         <tr>
-            <td>Helper job role : </td>
+            <td>Helper job role :</td>
             <td>
                 {% for i in job_role %}
-                {{i.job}},
+                    {{ i.job }},
                 {% endfor %}
             </td>
         </tr>
@@ -194,37 +200,37 @@
         </tr>
 
         <tr>
-            <td> helper Preferred Language : </td>
+            <td> helper Preferred Language :</td>
             <td>
                 {% for i in language %}
-                {{i.language}},
+                    {{ i.language }},
                 {% endfor %}
             </td>
         </tr>
 
 
         <tr>
-            <td>Helper Skill : </td>
+            <td>Helper Skill :</td>
             <td>
                 {% for i in skill %}
-                {{i.skill}},
+                    {{ i.skill }},
                 {% endfor %}
             </td>
         </tr>
 
 
         <tr>
-            <td>Helper Additional Skill : </td>
+            <td>Helper Additional Skill :</td>
             <td>
                 {% for i in additional_skill %}
-                {{i.additional_skill}},
+                    {{ i.additional_skill }},
                 {% endfor %}
             </td>
         </tr>
 
 
-    </tbody>
-</table>
-<a href="{% url 'helper_pdf' helper.id %}" target="_blank" class='btn btn-outline-success'>View pdf</a>
-<a href="{% url 'helper_list' %}" class="btn btn-secondary">Back</a>
+        </tbody>
+    </table>
+    <a href="{% url 'helper_pdf' helper.id %}" target="_blank" class='btn btn-outline-success'>View pdf</a>
+    <a href="{% url 'helper_list' %}" class="btn btn-secondary">Back</a>
 {% endblock body %}
